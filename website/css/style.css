@@ -1,0 +1,827 @@
+/* Enperfeitas Studio — static site stylesheet
+   Matched to the live site's actual type, color and spacing:
+   Roboto Slab (headings) + Roboto (body/nav/buttons), black on white,
+   fully-rounded black buttons, minimal borders. */
+
+:root {
+  --white: #ffffff;
+  --ink: #000000;
+  --muted: #5a5a5a;
+  --line: #e6e6e6;
+  --accent: #954a1e; /* rust/terracotta sampled from the book cloth in home-books-portfolio.webp */
+  --accent-light: #c97f4a;
+  --max: 1140px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--ink);
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--accent); }
+
+.wrap {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Header / nav */
+header.site {
+  background: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  transition: transform 0.25s ease;
+}
+/* On narrow viewports the header takes up a large share of the screen, so
+   it slides away while scrolling down (reading) and returns the instant
+   the user scrolls up again. Desktop keeps the header always visible. */
+@media (max-width: 760px) {
+  header.site.header-hidden { transform: translateY(-100%); }
+}
+
+.nav-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-top: 18px;
+  padding-bottom: 22px;
+}
+
+.header-utility {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+.header-utility a {
+  display: inline-flex;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.header-utility a:hover { color: var(--accent); }
+.header-utility svg { width: 17px; height: 17px; display: block; }
+
+.logo {
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+.logo:hover { color: var(--ink); text-decoration: none; }
+.logo-img { height: 70px; width: auto; max-width: 200px; object-fit: contain; }
+.logo-text {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-size: 2.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+nav.primary ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 26px;
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+}
+
+nav.primary a {
+  color: var(--ink);
+  text-decoration: none;
+}
+nav.primary a:hover { color: var(--accent); }
+
+nav.primary a.active { color: var(--ink); border-bottom: 1px solid var(--accent); }
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.nav-toggle-bar {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--ink);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+header.site.nav-open .nav-toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+header.site.nav-open .nav-toggle-bar:nth-child(2) { opacity: 0; }
+header.site.nav-open .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 760px) {
+  .nav-row { padding-top: 22px; padding-bottom: 18px; }
+  .nav-toggle {
+    display: flex;
+    position: absolute;
+    top: 72px;
+    right: 32px;
+  }
+  nav.primary {
+    display: none;
+    width: 100%;
+  }
+  nav.primary ul {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    border-top: 1px solid var(--line);
+    margin-top: 20px;
+    padding-top: 8px;
+  }
+  nav.primary li { width: 100%; }
+  nav.primary a { display: block; padding: 12px 2px; }
+  header.site.nav-open nav.primary { display: block; }
+}
+
+/* Hero (legacy plain-text hero, kept for any page still using it) */
+.hero {
+  padding: 90px 0 70px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  margin: 0 0 22px;
+}
+
+.hero p.sub {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 1.15rem;
+}
+
+/* Full-bleed cover hero — background photo with text overlaid,
+   matching the live site's page-header banners. */
+.hero-cover {
+  position: relative;
+  width: 100%;
+  height: 78vh;
+  min-height: 480px;
+  max-height: 720px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+.hero-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-cover-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.72) 100%);
+}
+.hero-cover.img-missing .hero-cover-scrim {
+  background: linear-gradient(135deg, #2b2b2b, #111);
+}
+.hero-cover-content {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 0 32px 56px;
+}
+.hero-cover-content h1 {
+  color: #fff;
+  text-transform: uppercase;
+  font-size: clamp(2rem, 4.6vw, 4rem);
+  line-height: 1.08;
+  max-width: 900px;
+  margin: 0 0 18px;
+}
+.hero-cover-content p.sub {
+  color: #fff;
+  opacity: 0.92;
+  max-width: 620px;
+  font-family: "Roboto Slab", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+}
+/* A second hero paragraph (a longer, plainly-weighted line following a short
+   bold tagline) — regular weight, body font, its own line. */
+.hero-cover-content p.sub.regular {
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  margin-top: 12px;
+}
+.hero-cover-content .btn.hero-cta {
+  display: inline-block;
+  margin-top: 26px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+}
+.hero-cover-content .btn.hero-cta:hover {
+  background: #fff;
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+@media (max-width: 760px) {
+  .hero-cover { height: 62vh; min-height: 380px; }
+  .hero-cover-content { padding: 0 20px 36px; }
+}
+
+.img-wrap {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: #f4f4f4;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.06);
+}
+.img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.img-wrap:hover img { transform: scale(1.05); }
+.img-wrap .ph-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.gallery .img-wrap .ph-label { font-size: 0.75rem; }
+
+/* Page header (non-home pages) */
+.page-header {
+  padding: 70px 0 40px;
+  text-align: center;
+}
+.page-header h1 {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0 0 16px;
+}
+.page-header p { color: var(--muted); max-width: 620px; margin: 0 auto; }
+
+/* A page-header-sized title used inline within flowing copy (e.g. above a
+   paragraph in a two-column section), rather than in its own centered band. */
+.title-lg {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.1;
+  margin: 0 0 20px;
+}
+
+/* A short bold subheading sitting directly under an h2/h4, inside flowing
+   copy (e.g. Bespoke Binding's "For the day people will talk about..." line
+   under each offering's h2) — matches the live site's computed style there
+   (Roboto Slab, 700, ~23px against an 18px base). */
+.kicker {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+}
+
+/* A plain bulleted list inside a copy block (e.g. "What to expect?"),
+   matching the body-copy scale rather than the accordion-only list rules. */
+.offer-list {
+  margin: 0 0 16px;
+  padding-left: 22px;
+}
+.offer-list li { margin-bottom: 6px; }
+
+/* Vertically centers its content within a stretched grid cell — used to
+   center a tall image/icon alongside a taller text column. */
+.v-center-cell { display: flex; align-items: center; justify-content: center; height: 100%; }
+
+/* Sections */
+section { padding: 64px 0; scroll-margin-top: 128px; }
+@media (max-width: 760px) {
+  section { scroll-margin-top: 272px; }
+}
+section.alt { background: #fafafa; }
+
+h1, h2, h3 { font-family: "Roboto Slab", Georgia, serif; font-weight: 700; letter-spacing: -0.01em; }
+
+h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  line-height: 1.15;
+  margin: 0 0 20px;
+}
+h3 { font-size: 1.25rem; margin: 28px 0 10px; color: var(--ink); }
+
+.stat-line {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.grid-2.bottom-align { align-items: end; }
+.narrow-text { max-width: 420px; }
+
+.grid-2.two-paths {
+  text-align: center;
+  margin-top: 40px;
+}
+.grid-2.two-paths h3 {
+  margin: 0 0 18px;
+  font-size: 1.5rem;
+}
+.grid-2.two-paths p {
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.grid-2.two-paths .btn { margin-top: 20px; }
+.grid-2.two-paths .path-image { margin-top: 32px; }
+@media (max-width: 760px) {
+  .grid-2.two-paths > div:first-child { margin-bottom: 8px; }
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+@media (max-width: 760px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--white);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+}
+
+.price {
+  font-weight: 500;
+  color: var(--ink);
+  font-size: 1.05rem;
+  margin-top: 6px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 18px 38px;
+  background: var(--ink);
+  color: #fff;
+  border: 1px solid var(--ink);
+  border-radius: 300px;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  text-decoration: none;
+  margin-top: 10px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn:hover {
+  background: #fff;
+  color: var(--ink);
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+.btn.secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+.btn.secondary:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+@media (max-width: 760px) {
+  /* Headlines and buttons read as centered, deliberate statements on
+     mobile rather than trailing off at the left edge of a narrow column;
+     body copy stays left-aligned for readability.
+     .title-lg is deliberately NOT included here (see its own definition
+     above): it's a page-header-*sized* title meant to sit inline within
+     flowing two-column copy, not in its own centered band, so it must stay
+     left at every width, matching its desktop treatment — the same
+     left-must-stay-left logic as the hero exception below. */
+  h1, h2, h3 { text-align: center; }
+  .btn {
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* Exception: the full-bleed image hero (Home, Workshops, Bespoke Binding,
+     Bespoke Boxes) stays left-aligned on mobile, matching the live site.
+     Unlike .page-header (already centered on desktop too), this hero's
+     desktop treatment is deliberately left-aligned over the photo, and that
+     shouldn't flip just because the viewport narrows. This selector's
+     higher specificity (class + tag) wins over the generic h1 rule above
+     without needing !important. */
+  .hero-cover-content h1 { text-align: left; }
+  /* Exception: .title-lg (the Studio page's "What's New at Enperfeitas
+     Studio?" opener, and any future inline-hero title). Removing it from
+     the selector list above isn't enough on its own — the element is
+     *also* a plain h1 (`<h1 class="title-lg">`), so the generic `h1` rule
+     still matches it by tag regardless of its class. A dedicated
+     `.title-lg` override is required to win: a single-class selector
+     (specificity 0,1,0) beats a single-tag selector (0,0,1). */
+  .title-lg { text-align: left; }
+  /* Bespoke Binding / Bespoke Boxes-style offering rows: on desktop the
+     image legitimately alternates sides row to row (matching the live
+     site's own left/right pattern), but once the two columns stack into
+     one vertical column on mobile, an alternating image-then-text /
+     text-then-image order reads as inconsistent rather than deliberate —
+     each row is now a coin flip instead of a scannable rhythm. Force one
+     consistent order at this breakpoint regardless of desktop side:
+     heading and copy first, supporting photo after, since the copy is
+     what the visitor is actually deciding on. */
+  .offer-row .text-col { order: 1; }
+  .offer-row .img-col { order: 2; }
+}
+
+table.policy { width: 100%; border-collapse: collapse; margin: 18px 0; }
+table.policy th, table.policy td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+
+blockquote {
+  font-style: italic;
+  color: var(--ink);
+  border-left: 2px solid var(--accent);
+  padding-left: 20px;
+  margin: 20px 0;
+}
+
+.testimonials {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px 28px;
+  margin-top: 36px;
+}
+@media (max-width: 980px) { .testimonials { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .testimonials { grid-template-columns: 1fr; } }
+.testimonial {
+  background: transparent;
+  padding: 0;
+  font-size: 0.95rem;
+}
+.testimonial-photo {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f4f4f4;
+  margin: 0 auto 18px;
+  transition: transform 0.25s ease;
+}
+.testimonial:hover .testimonial-photo { transform: scale(1.05); }
+.testimonial-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.testimonial-photo .ph-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.65rem;
+  line-height: 1.2;
+}
+.testimonial .who {
+  display: block;
+  color: var(--ink);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.testimonial p { margin: 0 0 10px; }
+.testimonial cite {
+  display: block;
+  font-style: normal;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+@media (max-width: 760px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+
+.embed-note {
+  background: #fafafa;
+  border: none;
+  border-radius: 2px;
+  padding: 22px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Footer */
+footer.site {
+  border-top: 1px solid var(--line);
+  padding: 56px 0 36px;
+  background: var(--white);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 36px;
+  margin-bottom: 32px;
+}
+@media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; } }
+footer.site h4 {
+  font-family: "Roboto", Arial, sans-serif;
+  color: var(--ink);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  margin: 0 0 14px;
+}
+footer.site ul { list-style: none; margin: 0; padding: 0; }
+footer.site li { margin-bottom: 10px; }
+footer.site a { color: var(--muted); text-decoration: none; }
+footer.site a:hover { color: var(--accent); text-decoration: underline; }
+.footer-bottom {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.footer-bottom a { color: var(--muted); }
+
+.footer-minimal { text-align: center; }
+.footer-tagline {
+  margin: 0 0 22px;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.footer-minimal .footer-bottom {
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-links { list-style: none; padding: 0; margin: 0; }
+.list-links li { margin-bottom: 14px; }
+.list-links a {
+  display: block;
+  padding: 18px 22px;
+  background: var(--white);
+  border: 1px solid var(--ink);
+  border-radius: 300px;
+  text-align: center;
+  color: var(--ink);
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.list-links a:hover { background: var(--ink); color: #fff; transform: translateY(-2px); }
+
+.steps { counter-reset: step; list-style: none; padding: 0; }
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 50px;
+  margin-bottom: 24px;
+}
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0; top: 0;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+/* Doodle icons — square illustration spots used above accordion cards
+   and beside intro copy, matching the live site's hand-drawn icons. */
+.doodle-icon {
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto 20px;
+  background: transparent;
+}
+.doodle-icon img { width: 100%; height: auto; object-fit: contain; display: block; }
+.doodle-icon .ph-label { border: 1px dashed #cfcfcf; padding: 30px 12px; display: block; text-align: center; color: var(--muted); font-size: 0.85rem; }
+.doodle-icon.large { max-width: 420px; margin: 0 auto; }
+
+/* Native accordion (details/summary) — no JS, matches the live site's
+   expandable Description / Pricing / Benefits rows. */
+.accordion-card {
+  text-align: left;
+  padding: 20px;
+  border-radius: 4px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.accordion-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px rgba(0,0,0,0.08); }
+@media (max-width: 760px) {
+  /* Stacked single-column cards need their own boundary, or a plain
+     (non-featured) card blends straight into the one after it with
+     nothing but whitespace between a button and the next doodle icon. */
+  .accordion-card {
+    background: var(--white);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .accordion-card:hover { transform: none; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+  .accordion-card.featured:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+}
+.accordion-card h3 { text-align: center; margin-bottom: 4px; }
+.accordion-card .price { text-align: center; margin-bottom: 18px; }
+
+/* Membership Pass gets a raised, highlighted treatment to guide attention
+   toward the primary offer. */
+.accordion-card.featured {
+  position: relative;
+  background: var(--white);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+.accordion-card.featured:hover { box-shadow: 0 24px 48px rgba(0,0,0,0.12); }
+.accordion-card .badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 300px;
+  white-space: nowrap;
+}
+
+.accordion-card details {
+  border-top: 1px solid #ddd;
+}
+.accordion-card details:last-of-type { border-bottom: 1px solid #ddd; }
+.accordion-card summary {
+  cursor: pointer;
+  padding: 14px 4px;
+  margin: 0 -4px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  border-radius: 3px;
+  transition: background 0.15s ease;
+}
+.accordion-card summary:hover { background: rgba(0,0,0,0.035); }
+.accordion-card summary::-webkit-details-marker { display: none; }
+.accordion-card summary::after {
+  content: "+";
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+.accordion-card details[open] summary::after { content: "\2212"; }
+.accordion-card details > div {
+  padding: 0 4px 18px;
+  color: var(--muted);
+}
+.accordion-card details > div p { margin: 0 0 10px; }
+.accordion-card details > div ul { margin: 0 0 10px; padding-left: 20px; }
+.accordion-card .btn { display: block; text-align: center; margin-top: 22px; }
+
+/* Plain accordion list — FAQ-style, no card chrome (no padding/shadow/hover
+   lift), just a divider line under each row. Same +/- toggle language as
+   .accordion-card for visual consistency, used where an accordion sits
+   inline in flowing text rather than inside its own card. */
+.faq-list { border-top: 1px solid var(--line); margin-top: 26px; }
+.faq-list details { border-bottom: 1px solid var(--line); }
+.faq-list summary {
+  cursor: pointer;
+  padding: 16px 4px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  list-style: none;
+  transition: color 0.15s ease;
+}
+.faq-list summary:hover { color: var(--accent); }
+.faq-list summary::-webkit-details-marker { display: none; }
+.faq-list summary::after {
+  content: "+";
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.faq-list details[open] summary::after { content: "\2212"; }
+.faq-list details > div { padding: 0 4px 18px; color: var(--muted); }
+.faq-list details > div p { margin: 0 0 10px; }
+.faq-list details > div ul { margin: 0 0 10px; padding-left: 20px; }
+
+/* An image that should stretch to match the height of its taller sibling
+   text column, instead of keeping its own fixed 4:3 aspect ratio. The grid
+   row already sizes to the tallest cell — this just lets the image cell
+   fill that height instead of centering a shorter fixed-ratio box in it.
+   Desktop only: once the columns stack on mobile there is no sibling
+   height to match, so the image keeps its normal fixed aspect ratio. */
+@media (min-width: 761px) {
+  .grid-2.match-height { align-items: stretch; }
+  .grid-2.match-height .img-wrap { aspect-ratio: auto; height: 100%; }
+  /* A plain height:100% (above) only reliably matches the sibling's height
+     when the photo's own natural ratio happens to be close to it. A
+     percentage height resolved against a grid row whose own height is
+     still "auto" isn't actually definite yet, so during the row's
+     auto-sizing pass the browser falls back to the image's OWN intrinsic
+     ratio — a naturally tall/vertical photo can then inflate the row well
+     past the text column's height, leaving the image overhanging below
+     where the text ends (found on Bespoke Binding's offer rows, where the
+     close-up product photos are taller than 4:3). Fix: take the image
+     wrapper out of flow entirely inside its (now relatively positioned)
+     column, so it contributes nothing to the row's height calculation —
+     the row height comes only from the text column, and the
+     absolutely-positioned image just fills whatever height results,
+     cropped by the existing object-fit:cover exactly as before. Scoped to
+     .img-col (not the generic .img-wrap rule above) so it only overrides
+     rows that use that wrapper class, leaving other match-height rows
+     (e.g. Workshops, where the image column has no .img-col wrapper) on
+     the simpler rule, which is safe there since position:absolute needs a
+     positioned ancestor most match-height rows don't have. */
+  .offer-row .img-col { position: relative; }
+  .offer-row .img-col .img-wrap { position: absolute; inset: 0; height: 100%; }
+}
+
+/* A row of .accordion-card items that should keep their own natural height
+   (top-aligned) instead of .grid-2's default vertical centering, which
+   would otherwise misalign cards whose accordions hold a different number
+   of items. */
+.grid-2.cards-row { align-items: start; }
+
+/* Tighter section rhythm for shorter, lower-density content blocks. */
+.section-tight { padding: 44px 0; }
