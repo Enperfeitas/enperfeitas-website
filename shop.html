@@ -80,7 +80,30 @@
         <h3>Bookbinding Spacers (Acrylic)</h3>
         <div class="price">From 75 kr</div>
         <p class="desc">Precision acrylic spacers for perfectly even cover edges, every time. Available in 7mm, 10mm, 15mm, 20mm, 25mm, a 90&deg; L-shape, or the complete set of 6 (25cm long).</p>
-        <a class="btn secondary" href="https://buy.stripe.com/eVq8wO0Y0gT4b9VdGHew801" aria-label="Buy Bookbinding Spacers (Acrylic)">Buy now</a>
+        
+        <label class="variant-label" for="variant-spacers">Size</label>
+        <select class="variant-select" id="variant-spacers">
+          <option value="">Choose a size&hellip;</option><option value="https://buy.stripe.com/eVq8wO0Y0gT4b9VdGHew801">7mm</option><option value="https://buy.stripe.com/4gM28q6ikbyK2Dpauvew80a">10mm</option><option value="https://buy.stripe.com/bJe14mayAeKWem79qrew80b">15mm</option><option value="https://buy.stripe.com/fZu6oG0Y01Yafqbbyzew80c">20mm</option><option value="https://buy.stripe.com/8x228q7mocCO3HtdGHew80d">25mm</option><option value="https://buy.stripe.com/8x2dR84acgT4fqb9qrew80e">90° L-shape</option><option value="https://buy.stripe.com/eVq6oG7mo32eem7auvew80f">complete set of 6</option>
+        </select>
+        <a class="btn secondary disabled" id="buy-spacers" href="mailto:info@enperfeitas.com?subject=Order%20-%20Bookbinding%20Spacers%20%28Acrylic%29" aria-label="Buy Bookbinding Spacers (Acrylic)">Choose a size first</a>
+        <script>
+        (function () {
+          var sel = document.getElementById("variant-spacers");
+          var buyEl = document.getElementById("buy-spacers");
+          sel.addEventListener("change", function () {
+            if (sel.value) {
+              buyEl.href = sel.value;
+              buyEl.textContent = "Buy now";
+              buyEl.classList.remove("disabled");
+            } else {
+              buyEl.href = "mailto:info@enperfeitas.com?subject=Order%20-%20Bookbinding%20Spacers%20%28Acrylic%29";
+              buyEl.textContent = "Choose a size first";
+              buyEl.classList.add("disabled");
+            }
+          });
+        })();
+        </script>
+        
       </div>
     </div>
     
@@ -91,7 +114,30 @@
         <h3>Corner Cutting Jig</h3>
         <div class="price">From 90 kr</div>
         <p class="desc">A 3D-printed mitring tool for precise 45&deg; cuts on cover turn-ins. Available in 2mm, 2.5mm, 3mm, or all three sizes.</p>
-        <a class="btn secondary" href="https://buy.stripe.com/dRmcN42247iu0vhgSTew802" aria-label="Buy Corner Cutting Jig">Buy now</a>
+        
+        <label class="variant-label" for="variant-corner-jig">Size</label>
+        <select class="variant-select" id="variant-corner-jig">
+          <option value="">Choose a size&hellip;</option><option value="https://buy.stripe.com/dRmcN42247iu0vhgSTew802">2mm</option><option value="https://buy.stripe.com/3cI7sK8qseKW91NfOPew807">2.5mm</option><option value="https://buy.stripe.com/7sY14m224cCOguf5abew808">3mm</option><option value="https://buy.stripe.com/28E3cueOQ5amfqbcCDew809">all three sizes</option>
+        </select>
+        <a class="btn secondary disabled" id="buy-corner-jig" href="mailto:info@enperfeitas.com?subject=Order%20-%20Corner%20Cutting%20Jig" aria-label="Buy Corner Cutting Jig">Choose a size first</a>
+        <script>
+        (function () {
+          var sel = document.getElementById("variant-corner-jig");
+          var buyEl = document.getElementById("buy-corner-jig");
+          sel.addEventListener("change", function () {
+            if (sel.value) {
+              buyEl.href = sel.value;
+              buyEl.textContent = "Buy now";
+              buyEl.classList.remove("disabled");
+            } else {
+              buyEl.href = "mailto:info@enperfeitas.com?subject=Order%20-%20Corner%20Cutting%20Jig";
+              buyEl.textContent = "Choose a size first";
+              buyEl.classList.add("disabled");
+            }
+          });
+        })();
+        </script>
+        
       </div>
     </div>
     
