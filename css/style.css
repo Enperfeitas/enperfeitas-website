@@ -3,6 +3,13 @@
    Roboto Slab (headings) + Roboto (body/nav/buttons), black on white,
    fully-rounded black buttons, minimal borders. */
 
+/* The [hidden] attribute's default UA rule (display:none) loses to any
+   author rule on the same element that sets its own `display` (e.g.
+   .btn's display:inline-block) — same specificity, but author beats
+   user-agent regardless. Without this, toggling `.hidden = true/false`
+   from JS (see the digital-download pages) silently does nothing. */
+[hidden] { display: none !important; }
+
 :root {
   --white: #ffffff;
   --ink: #000000;
@@ -570,6 +577,38 @@ h3 { font-size: 1.25rem; margin: 28px 0 10px; color: var(--ink); }
   border: 1px solid var(--ink);
 }
 .btn.secondary:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* "Coming soon" state for a CTA whose backend isn't wired up yet (a
+   membership or space-rental sign-up before the new booking system is
+   ready). Rendered as a <span>, not an <a>, so it's never a dead link or
+   an accidental double-negative (href="#") -- it just isn't a link. */
+.btn.disabled {
+  background: var(--white);
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  cursor: not-allowed;
+}
+.btn.disabled:hover { transform: none; box-shadow: none; background: var(--white); color: var(--muted); }
+.construction-note {
+  margin-top: 12px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  max-width: 360px;
+}
+.construction-note a { color: var(--ink); }
+
+/* Digital-download "thank you" pages (linked to from Stripe's post-payment
+   redirect, not from the main nav -- see downloads/*.html). */
+.download-status { margin-top: 22px; }
+.download-pending {
+  display: block;
+  padding: 16px 20px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  max-width: 420px;
+}
 
 @media (max-width: 760px) {
   /* Headlines and buttons read as centered, deliberate statements on
