@@ -1157,64 +1157,6 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
   .builder-summary { position: static; }
 }
 
-/* ---------------------------------------------------------------------
-   Box Maker -- password gate. This is a light deterrent, not real
-   security: the page and its check both ship to the browser, so anyone
-   who reads the page's source can find the password. It keeps the tool
-   off Google and away from casual visitors, which is what it's for. */
-.gate-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--white);
-  padding: 24px;
-}
-.gate-card {
-  width: 100%;
-  max-width: 360px;
-  text-align: center;
-}
-.gate-card .gate-title {
-  font-family: "Roboto Slab", Georgia, serif;
-  font-size: 1.6rem;
-  margin-bottom: 8px;
-}
-.gate-card .gate-sub {
-  color: var(--muted);
-  font-size: 0.92rem;
-  margin: 0 0 22px;
-}
-.gate-card form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.gate-card input[type="password"] {
-  display: block;
-  width: 100%;
-  padding: 14px 16px;
-  font: inherit;
-  font-size: 1rem;
-  text-align: center;
-  color: var(--ink);
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: 300px;
-}
-.gate-card input[type="password"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-.gate-card .btn { width: 100%; text-align: center; border: none; cursor: pointer; font: inherit; }
-.gate-error {
-  color: var(--tight, #9c3b2e);
-  font-size: 0.85rem;
-  margin-top: 14px;
-}
-#boxmaker-wrap { display: none; }
-html.unlocked .gate-overlay { display: none; }
-html.unlocked #boxmaker-wrap { display: block; }
-
 /* Box Maker's own two-column layout (sidebar + content) -- stacks to one
    column under 760px so it doesn't overflow the screen sideways on a
    phone, matching the .builder-grid pattern on design-your-book.html. */

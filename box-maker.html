@@ -52,63 +52,11 @@
 </header>
 
 
-<div class="gate-overlay" id="boxmaker-gate">
-  <div class="gate-card">
-    <div class="gate-title">Box Maker</div>
-    <p class="gate-sub">This tool is private to the studio. Enter the password to continue.</p>
-    <form id="gate-form">
-      <input type="password" id="gate-password" autocomplete="off" placeholder="Password" required>
-      <button type="submit" class="btn">Enter</button>
-    </form>
-    <div class="gate-error" id="gate-error" hidden>That&rsquo;s not right &mdash; try again.</div>
-  </div>
-</div>
 <div class="wrap" id="boxmaker-wrap">
   <div id="boxmaker-root"></div>
 </div>
 
 <script src="js/boxmaker.bundle.js"></script>
-<script>
-(function () {
-  var STORAGE_KEY = "enperfeitas_boxmaker_unlocked";
-  var HASH = "d27c69e0f521bf576939fed7311b157858dad0948e18fe97ed8e35995caecd2c";
-
-  function sha256Hex(text) {
-    var enc = new TextEncoder().encode(text);
-    return crypto.subtle.digest("SHA-256", enc).then(function (buf) {
-      return Array.prototype.map.call(new Uint8Array(buf), function (b) {
-        return b.toString(16).padStart(2, "0");
-      }).join("");
-    });
-  }
-
-  function unlock() {
-    document.documentElement.classList.add("unlocked");
-    try { localStorage.setItem(STORAGE_KEY, "1"); } catch (e) {}
-  }
-
-  try {
-    if (localStorage.getItem(STORAGE_KEY) === "1") unlock();
-  } catch (e) {}
-
-  var form = document.getElementById("gate-form");
-  var input = document.getElementById("gate-password");
-  var error = document.getElementById("gate-error");
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    sha256Hex(input.value).then(function (hex) {
-      if (hex === HASH) {
-        error.hidden = true;
-        unlock();
-      } else {
-        error.hidden = false;
-        input.select();
-        input.focus();
-      }
-    });
-  });
-})();
-</script>
 
 
 <footer class="site">
