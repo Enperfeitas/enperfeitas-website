@@ -1043,3 +1043,184 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 
 /* Tighter section rhythm for shorter, lower-density content blocks. */
 .section-tight { padding: 44px 0; }
+
+/* ---------------------------------------------------------------------
+   Design Your Own Book -- the Artisan Edition customisation page.
+   A spec-builder (size / paper / cover colour chips + swatches feeding a
+   live summary and a pre-filled mailto), not a live per-combination photo
+   preview -- see build.py's comment above the page for why. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.option-group { margin-bottom: 32px; }
+.option-group:last-child { margin-bottom: 0; }
+.option-group h3 { margin: 0 0 6px; }
+.option-hint { color: var(--muted); font-size: 0.9rem; margin: 0 0 14px; }
+
+.chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+  display: inline-block;
+  padding: 10px 20px;
+  border: 1px solid var(--line);
+  border-radius: 300px;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  color: var(--ink);
+}
+.chip:hover { border-color: var(--accent); }
+.chip-input:checked + .chip {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.chip-input:focus-visible + .chip { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.swatch-row { display: flex; flex-wrap: wrap; gap: 16px; }
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  width: 68px;
+  text-align: center;
+}
+.swatch-dot {
+  display: block;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 0 0 0 2px var(--white);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.swatch:hover .swatch-dot { transform: scale(1.08); }
+.chip-input:checked + .swatch .swatch-dot { box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--ink); }
+.chip-input:focus-visible + .swatch .swatch-dot { outline: 2px solid var(--accent); outline-offset: 3px; }
+.swatch-name { font-size: 0.78rem; color: var(--muted); }
+
+.design-notes {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  resize: vertical;
+}
+.design-notes:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.builder-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+.builder-summary {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 26px 24px;
+  position: sticky;
+  top: 24px;
+}
+.builder-summary h3 { margin: 0 0 14px; }
+.summary-list { margin: 0 0 18px; }
+.summary-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.summary-list > div:first-child { padding-top: 0; }
+.summary-list dt { color: var(--muted); font-size: 0.85rem; }
+.summary-list dd { margin: 0; font-weight: 500; text-align: right; }
+.builder-summary .price { font-size: 0.88rem; margin: 0 0 20px; }
+.builder-summary .price em { font-style: normal; color: var(--muted); display: block; }
+.builder-summary .btn { display: block; text-align: center; width: 100%; padding: 16px 20px; }
+.builder-summary .form-note { color: var(--muted); font-size: 0.8rem; margin: 12px 0 0; }
+
+@media (max-width: 860px) {
+  .builder-grid { grid-template-columns: 1fr; gap: 32px; }
+  .builder-summary { position: static; }
+}
+
+/* ---------------------------------------------------------------------
+   Box Maker -- password gate. This is a light deterrent, not real
+   security: the page and its check both ship to the browser, so anyone
+   who reads the page's source can find the password. It keeps the tool
+   off Google and away from casual visitors, which is what it's for. */
+.gate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  padding: 24px;
+}
+.gate-card {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+.gate-card .gate-title {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+.gate-card .gate-sub {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin: 0 0 22px;
+}
+.gate-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gate-card input[type="password"] {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 300px;
+}
+.gate-card input[type="password"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.gate-card .btn { width: 100%; text-align: center; border: none; cursor: pointer; font: inherit; }
+.gate-error {
+  color: var(--tight, #9c3b2e);
+  font-size: 0.85rem;
+  margin-top: 14px;
+}
+#boxmaker-wrap { display: none; }
+html.unlocked .gate-overlay { display: none; }
+html.unlocked #boxmaker-wrap { display: block; }
+
+/* Box Maker's own two-column layout (sidebar + content) -- stacks to one
+   column under 760px so it doesn't overflow the screen sideways on a
+   phone, matching the .builder-grid pattern on design-your-book.html. */
+.boxmaker-layout { display: flex; gap: 24px; }
+.boxmaker-sidebar { width: 250px; flex-shrink: 0; }
+@media (max-width: 760px) {
+  .boxmaker-layout { flex-direction: column; }
+  .boxmaker-sidebar { width: 100%; }
+}

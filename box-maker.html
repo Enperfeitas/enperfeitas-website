@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Box Maker | Enperfeitas Studio</title>
+<meta name="description" content="A private studio tool for working out Solander and hinged box piece dimensions, cutting layout, and a preview -- from Constructing and Covering Boxes.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap nav-row">
+    <div class="header-utility">
+      <a href="mailto:info@enperfeitas.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M3 6l9 7 9-7"/></svg>
+      </a>
+      <a href="https://www.instagram.com/enperfeitas" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="https://www.facebook.com/enperfeitas" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5h2.5V5.2C16.1 5.1 15 5 13.7 5c-2.7 0-4.5 1.7-4.5 4.7v2.3H6.5v3.6h2.7V22h3.7v-6.4h2.7l.5-3.6h-3.2V10c0-1 .3-1.5 1.6-1.5z"/></svg>
+      </a>
+    </div>
+    <a class="logo" href="index.html">
+      <img src="images/logo.webp" alt="Enperfeitas" class="logo-img" style="display:none;"
+           onload="this.style.display='block';this.nextElementSibling.style.display='none';"
+           onerror="this.style.display='none';">
+      <span class="logo-text">Enperfeitas</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <nav class="primary"><ul>
+      <li><a href="index.html">Home</a></li>
+<li><a href="studio.html">The Studio</a></li>
+<li><a href="workshops.html">Workshops</a></li>
+<li><a href="bespoke-binding.html">Bespoke Binding</a></li>
+<li><a href="bespoke-boxes.html">Bespoke Boxes</a></li>
+<li><a href="latest-work.html">Latest Work</a></li>
+<li><a href="shop.html">Shop</a></li>
+<li><a href="about.html">About</a></li>
+<li><a href="contact.html">Contact</a></li>
+
+    </ul></nav>
+  </div>
+</header>
+
+
+<div class="gate-overlay" id="boxmaker-gate">
+  <div class="gate-card">
+    <div class="gate-title">Box Maker</div>
+    <p class="gate-sub">This tool is private to the studio. Enter the password to continue.</p>
+    <form id="gate-form">
+      <input type="password" id="gate-password" autocomplete="off" placeholder="Password" required>
+      <button type="submit" class="btn">Enter</button>
+    </form>
+    <div class="gate-error" id="gate-error" hidden>That&rsquo;s not right &mdash; try again.</div>
+  </div>
+</div>
+<div class="wrap" id="boxmaker-wrap">
+  <div id="boxmaker-root"></div>
+</div>
+
+<script src="js/boxmaker.bundle.js"></script>
+<script>
+(function () {
+  var STORAGE_KEY = "enperfeitas_boxmaker_unlocked";
+  var HASH = "d27c69e0f521bf576939fed7311b157858dad0948e18fe97ed8e35995caecd2c";
+
+  function sha256Hex(text) {
+    var enc = new TextEncoder().encode(text);
+    return crypto.subtle.digest("SHA-256", enc).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+        return b.toString(16).padStart(2, "0");
+      }).join("");
+    });
+  }
+
+  function unlock() {
+    document.documentElement.classList.add("unlocked");
+    try { localStorage.setItem(STORAGE_KEY, "1"); } catch (e) {}
+  }
+
+  try {
+    if (localStorage.getItem(STORAGE_KEY) === "1") unlock();
+  } catch (e) {}
+
+  var form = document.getElementById("gate-form");
+  var input = document.getElementById("gate-password");
+  var error = document.getElementById("gate-error");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    sha256Hex(input.value).then(function (hex) {
+      if (hex === HASH) {
+        error.hidden = true;
+        unlock();
+      } else {
+        error.hidden = false;
+        input.select();
+        input.focus();
+      }
+    });
+  });
+})();
+</script>
+
+
+<footer class="site">
+  <div class="wrap footer-minimal">
+    <p class="footer-tagline">Enperfeitas Studio &mdash; Stockholm. Making things that last.</p>
+    <div class="footer-bottom" style="border-top:none;">
+      <div>&copy; 2026 Enperfeitas Studio</div>
+      <div><a href="shipping-info.html">Shipping Info</a> &middot; <a href="refund-policy.html">Refunds and Returns</a> &middot; <a href="privacy-policy.html">Privacy Policy</a> &middot; <a href="terms-of-service.html">Terms of Service</a> &middot; <a href="links.html">All Links</a></div>
+    </div>
+  </div>
+</footer>
+<script src="js/nav.js"></script>
+</body>
+</html>
