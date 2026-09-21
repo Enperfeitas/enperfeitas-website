@@ -1167,3 +1167,32 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
   .boxmaker-sidebar { width: 100%; }
 }
 
+/* Booklet Imposition tool's layout. Named grid areas (not source order)
+   drive the mobile stacking order deliberately: Settings & Generate sits
+   right after Upload on a phone, not buried below the Sheet Preview and
+   Bookbinding Tips at the very bottom -- the two things you actually act
+   on come first, reference material comes last. */
+.imposition-layout {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 320px;
+  grid-template-areas:
+    "upload  aside"
+    "preview aside"
+    "tips    aside";
+}
+.imp-upload { grid-area: upload; }
+.imp-aside { grid-area: aside; }
+.imp-preview { grid-area: preview; }
+.imp-tips { grid-area: tips; }
+@media (max-width: 860px) {
+  .imposition-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "upload"
+      "aside"
+      "preview"
+      "tips";
+  }
+}
+

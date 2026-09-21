@@ -19,6 +19,21 @@ NAV = [
     ("contact.html", "Contact"),
 ]
 
+# Pages temporarily switched off the main menu without deleting them or
+# breaking their web address. A hidden page keeps working normally for
+# anyone who already has its link, finds it through Google, or reaches it
+# from another page's own text/buttons -- it just disappears from the
+# navigation bar at the top of every page (the same menu on every page,
+# so hiding one page rebuilds and re-delivers the whole site, not just
+# that page). Bring a page back by removing its line below and rebuilding
+# -- nothing else needs to change.
+#
+# Example -- to hide The Studio page:
+#   HIDDEN_FROM_NAV = ["studio.html"]
+HIDDEN_FROM_NAV = [
+    # "studio.html",
+]
+
 FOOTER_COLS = {
     "Studio": [
         ("studio.html", "The Studio"),
@@ -31,6 +46,7 @@ FOOTER_COLS = {
         ("bespoke-boxes.html", "Bespoke Boxes"),
         ("latest-work.html", "Latest Work"),
         ("collectibles.html", "Collectibles"),
+        ("design-your-book.html", "Design Your Own Book"),
         ("shop.html", "Shop"),
     ],
     "Studio Info": [
@@ -75,10 +91,18 @@ def img_block(label, filename, page="", small=False, source="", extra_class=""):
     display_label = _short_label(label, 70 if small else 140)
     alt_html = html.escape(label, quote=True)
     span_html = html.escape(display_label, quote=False)
+    # opacity:0 (not display:none) on the initial state: native loading="lazy"
+    # decides when to fetch an image by its layout geometry, and a
+    # display:none element has no box for it to measure -- the browser would
+    # simply defer the fetch forever and the image would never appear.
+    # opacity:0 keeps the image's box in the layout (so lazy-loading can see
+    # it and fire onload/onerror normally) while staying invisible under the
+    # label until it's ready.
     return (
         f'<div class="{cls}">'
-        f'<img src="images/{filename}" alt="{alt_html}" style="display:none;" '
-        f'onload="this.style.display=\'block\';this.nextElementSibling.style.display=\'none\';" '
+        f'<img src="images/{filename}" alt="{alt_html}" style="opacity:0;" '
+        f'loading="lazy" decoding="async" '
+        f'onload="this.style.opacity=\'1\';this.nextElementSibling.style.display=\'none\';" '
         f'onerror="this.style.display=\'none\';">'
         f'<span class="ph-label">{span_html}</span>'
         f'</div>'
@@ -90,8 +114,9 @@ def doodle_icon(label, filename, page="", source="", large=False):
     cls = "doodle-icon large" if large else "doodle-icon"
     return (
         f'<div class="{cls}">'
-        f'<img src="images/{filename}" alt="{label}" style="display:none;" '
-        f'onload="this.style.display=\'block\';this.nextElementSibling.style.display=\'none\';" '
+        f'<img src="images/{filename}" alt="{label}" style="opacity:0;" '
+        f'loading="lazy" decoding="async" '
+        f'onload="this.style.opacity=\'1\';this.nextElementSibling.style.display=\'none\';" '
         f'onerror="this.style.display=\'none\';">'
         f'<span class="ph-label">{label}</span>'
         f'</div>'
@@ -119,8 +144,9 @@ def testimonial_card(title, quote, name, filename, source=""):
         IMAGE_MANIFEST.append((filename, f"Testimonial photo — {title}", "Home", source))
         photo_html = f"""
       <div class="testimonial-photo">
-        <img src="images/{filename}" alt="{title}" style="display:none;"
-             onload="this.style.display='block';this.nextElementSibling.style.display='none';"
+        <img src="images/{filename}" alt="{title}" style="opacity:0;"
+             loading="lazy" decoding="async"
+             onload="this.style.opacity='1';this.nextElementSibling.style.display='none';"
              onerror="this.style.display='none';">
         <span class="ph-label">{title}</span>
       </div>"""
@@ -162,13 +188,16 @@ def hero_cover(filename, heading, subtext, label, page="", source="", cta_label=
 """
 
 
-def page(filename, title, description, body, active=None):
+def page(filename, title, description, body, active=None, robots=None):
     nav_items = ""
     for href, label in NAV:
+        if href in HIDDEN_FROM_NAV:
+            continue
         cls = ' class="active"' if href == active else ""
         nav_items += f'<li><a href="{href}"{cls}>{label}</a></li>\n'
 
     legal = " &middot; ".join(f'<a href="{href}">{label}</a>' for href, label in LEGAL_LINKS)
+    robots_tag = f'<meta name="robots" content="{robots}">\n' if robots else ""
 
     html = f"""<!doctype html>
 <html lang="en">
@@ -177,7 +206,7 @@ def page(filename, title, description, body, active=None):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{description}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+{robots_tag}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -641,7 +670,7 @@ body = f"""
       <li>Artist-led classes, intimate talks, or creative wellness sessions</li>
     </ul>
     <p style="color:var(--muted);">We do not host loud events, parties, or commercial product launches.</p>
-    <p><strong>2. Submit your application.</strong> Online applications are coming soon &mdash; for now, email your application directly (see below). You&rsquo;ll be asked to share:</p>
+    <p><strong>2. Submit your application.</strong> Applications go by email (see below). You&rsquo;ll be asked to share:</p>
     <ul>
       <li>A short description of your activity</li>
       <li>Estimated number of participants (max 6)</li>
@@ -657,8 +686,8 @@ body = f"""
 <section class="alt" style="text-align:center;">
   <div class="wrap" style="max-width:600px;">
     <h2>Application for Studio Use</h2>
-    <span class="btn disabled">Coming soon</span>
-    <p class="construction-note" style="margin-left:auto;margin-right:auto;">The online application form is being set up. To apply now, email <a href="mailto:info@enperfeitas.com?subject=Studio%20Space%20Application">info@enperfeitas.com</a> with your activity, group size, and preferred date(s) &mdash; see the details above.</p>
+    <a class="btn" href="mailto:info@enperfeitas.com?subject=Studio%20Space%20Application" aria-label="Apply for studio use by email">Apply by email</a>
+    <p class="construction-note" style="margin-left:auto;margin-right:auto;">Include your activity, group size, and preferred date(s) &mdash; see the details above.</p>
   </div>
 </section>
 """
@@ -765,7 +794,7 @@ body = f"""
            "<li>How to make book covers</li><li>How to assemble different book structures</li></ul>"),
           ("Cancellation policy", WORKSHOP_CANCELLATION),
         ],
-        "https://enperfeitas.as.me/singlecase", "Reserve your seat - Single Section")}
+        "https://enperfeitas.understory.io/experience/51e87999-2d00-4418-a890-9d921a166ef6", "Reserve your seat - Single Section")}
       {workshop_card("Curved Spine",
         "Hands shaping the curved spine of a Bradel binding", "workshop-curved-spine.webp",
         "https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/d68ae535-7f67-46a4-8eb8-4d2317f96f7a/Enperfeitas+Portfolio-12.jpg?format=1000w",
@@ -781,7 +810,7 @@ body = f"""
            "<li>How to assemble the book</li></ul>"),
           ("Cancellation policy", WORKSHOP_CANCELLATION),
         ],
-        "https://enperfeitas.as.me/curvedspine", "Reserve your seat - Curved Spine")}
+        "https://enperfeitas.understory.io/experience/4e0d697b-0aa1-4414-9ed6-8ad5b1ccf499", "Reserve your seat - Curved Spine")}
       {workshop_card("Exposed Spine",
         "A finished exposed-spine binding showing the sewn spine and bands", "workshop-exposed-spine.webp",
         "https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/4afb904c-0865-4e87-887a-d0af2f3a377e/Enperfeitas+Portfolio-29.jpg?format=1000w",
@@ -796,7 +825,7 @@ body = f"""
            "<li>How to assemble the book</li></ul>"),
           ("Cancellation policy", WORKSHOP_CANCELLATION),
         ],
-        "https://enperfeitas.as.me/exposedspine", "Reserve your seat - Exposed Spine")}
+        "https://enperfeitas.understory.io/experience/8a10f73d-dd3c-4c9e-86cb-1cd06bf21a4e", "Reserve your seat - Exposed Spine")}
     </div>
   </div>
 </section>
@@ -837,7 +866,7 @@ body = f"""
            "personal guidance. Get in touch to craft your perfect creative event: "
            "<a href='mailto:info@enperfeitas.com?subject=Private%20marbling%20session'>info@enperfeitas.com</a></p>"),
         ],
-        "https://enperfeitas.as.me/marbleandsip", "Reserve your seat - Marble and Sip", featured=True)}
+        "https://enperfeitas.understory.io/experience/e903162e-8758-4038-b3d6-74c5fe12bfbe", "Reserve your seat - Marble and Sip", featured=True)}
       {workshop_card("Marbling Lab (Advanced)",
         "Marbling inks and brushes laid out ready to use in the studio", "workshop-marbling-lab.webp",
         "https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/251ba560-421c-4763-915f-b4588cf0b465/IMG_4682.jpeg?format=1000w",
@@ -1118,7 +1147,7 @@ body = f"""
       <div class="shop-card-body">
         <h3>Artisan Edition</h3>
         <p class="desc">A handbound notebook, journal, or sketchbook &mdash; made to your specifications. For those who want a beautiful object for their own daily practice, or a gift that will actually be kept.</p>
-        <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Artisan%20Edition%20-%20Custom%20Notebook%2FJournal%2FSketchbook" aria-label="Personalise your own handbound book">Personalise your book</a>
+        <a class="btn secondary" href="design-your-book.html" aria-label="Design your own handbound book">Design your own book</a>
       </div>
     </div>
     <div class="card shop-card">
@@ -1149,6 +1178,215 @@ body = f"""
 """
 page("collectibles.html", "Unique Collectibles | Enperfeitas Studio",
      "Handbound, one-of-a-kind books, boxes, and portfolios from Enperfeitas Studio in Stockholm.",
+     body, active=None)
+
+# ---------------------------------------------------------------- DESIGN YOUR OWN BOOK
+# A standalone customisation page for the "Artisan Edition" offer (not a shop
+# picker -- Suzete asked for "a unique customisation page" of its own,
+# separate from shop.html). No live per-combination product preview: unlike
+# a paid 3D-configurator SaaS, this is a spec-builder -- pick size, paper and
+# cover colour, jot any extra requests, and one button turns the whole thing
+# into a pre-filled email to the studio. Every book is still bespoke and
+# individually quoted (see bespoke-binding.html / bespoke-boxes.html for the
+# same pattern), so no price figure is invented here -- only the timeline
+# already stated on shipping-info.html ("Custom orders: 3 weeks to 2 months")
+# is reused.
+COVER_SWATCHES = [
+    ("Rust", "#954a1e"),
+    ("Charcoal", "#2b2b2b"),
+    ("Sand", "#d8c7a1"),
+    ("Forest", "#3f5c46"),
+    ("Indigo", "#33415c"),
+    ("Blush", "#d98a86"),
+    ("Ochre", "#c98f2b"),
+]
+swatch_inputs = ""
+for i, (label, hexval) in enumerate(COVER_SWATCHES):
+    swatch_id = f"colour-{label.lower()}"
+    checked = " checked" if i == 0 else ""
+    swatch_inputs += f"""
+            <input type="radio" name="colour" id="{swatch_id}" value="{label}" class="sr-only chip-input"{checked}>
+            <label class="swatch" for="{swatch_id}">
+              <span class="swatch-dot" style="background:{hexval};"></span>
+              <span class="swatch-name">{label}</span>
+            </label>"""
+
+inspiration_gallery = "".join([
+    img_block("A person holding a beige patterned notebook with yellow and brown binding on a white background.",
+               "work-21-beige-patterned-notebook-yellow.webp", "Design Your Own Book",
+               source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/b72e3372-6327-4a98-9b2b-7dc7286228d6/Enperfeitas+Products+Images+Nov+24-083.jpg"),
+    img_block("A person holding a closed, light green hardcover notebook with a green and white striped elastic band and a light green fabric cover against a plain white background.",
+               "work-27-closed-light-green-hardcover.webp", "Design Your Own Book",
+               source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/759af381-57b6-4b60-97ff-85d9bdf55e09/Enperfeitas+Products+Images+Nov+24-062.jpg"),
+    img_block("Hand holding a yellow hardcover notebook with an orange elastic strap on a white surface.",
+               "work-34-yellow-hardcover-notebook-orange.webp", "Design Your Own Book",
+               source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/5896b93e-3793-45e5-99be-038b9bab8d84/Enperfeitas+Products+Images+Nov+24-038.jpg"),
+])
+
+body = f"""
+{hero_cover("work-09-notebooks-flatlay.webp", "Design Your Own Book",
+            "A handbound notebook, journal, or sketchbook, built around your choices &mdash; not picked off a shelf.",
+            "Close-up of a hand holding two watercolor-designed personalised notebooks, with options for blank, dotted, or lined pages",
+            "Design Your Own Book",
+            source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1681115714668-LEMN4KP4RUSKI0CHAQ6H/Colors+-78.jpg?format=1000w")}
+
+<section>
+  <div class="wrap">
+    <ol class="steps" style="max-width:640px;margin:0 auto;">
+      <li><strong>Build your design.</strong> Pick a size, paper, and cover colour below &mdash; add any extra requests in the notes.</li>
+      <li><strong>Send it to the studio.</strong> One button turns your choices into an email, already written for you.</li>
+      <li><strong>Get your quote.</strong> Suzete confirms materials, price, and timeline before anything is cut.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="builder-grid" id="book-builder">
+      <div class="builder-options">
+
+        <div class="option-group">
+          <h3>Size &amp; format</h3>
+          <p class="option-hint">Pocket-sized for a bag, A5 for a daily journal, or A4 for a sketchbook or guest book.</p>
+          <div class="chip-row" role="radiogroup" aria-label="Size and format">
+            <input type="radio" name="size" id="size-a6" value="Pocket (A6)" class="sr-only chip-input">
+            <label class="chip" for="size-a6">Pocket (A6)</label>
+            <input type="radio" name="size" id="size-a5" value="A5" class="sr-only chip-input">
+            <label class="chip" for="size-a5">A5</label>
+            <input type="radio" name="size" id="size-a4" value="A4" class="sr-only chip-input">
+            <label class="chip" for="size-a4">A4</label>
+            <input type="radio" name="size" id="size-other" value="Something else -- I'll describe it in the notes" class="sr-only chip-input">
+            <label class="chip" for="size-other">Something else</label>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <h3>Paper &amp; layout</h3>
+          <p class="option-hint">What the inside pages should do.</p>
+          <div class="chip-row" role="radiogroup" aria-label="Paper and layout">
+            <input type="radio" name="paper" id="paper-blank" value="Blank" class="sr-only chip-input">
+            <label class="chip" for="paper-blank">Blank</label>
+            <input type="radio" name="paper" id="paper-ruled" value="Ruled" class="sr-only chip-input">
+            <label class="chip" for="paper-ruled">Ruled</label>
+            <input type="radio" name="paper" id="paper-dotted" value="Dotted" class="sr-only chip-input">
+            <label class="chip" for="paper-dotted">Dotted</label>
+            <input type="radio" name="paper" id="paper-squared" value="Squared" class="sr-only chip-input">
+            <label class="chip" for="paper-squared">Squared</label>
+            <input type="radio" name="paper" id="paper-mixed" value="Mixed / custom" class="sr-only chip-input">
+            <label class="chip" for="paper-mixed">Mixed / custom</label>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <h3>Cover colour</h3>
+          <p class="option-hint">Shown as a guide &mdash; the exact leather, bookcloth, or paper is confirmed with you before anything is cut.</p>
+          <div class="swatch-row" role="radiogroup" aria-label="Cover colour">{swatch_inputs}
+          </div>
+        </div>
+
+        <div class="option-group">
+          <label for="design-notes" class="option-hint" style="display:block;margin-bottom:8px;">Anything else? <span style="color:var(--muted);">Embossing, ribbons, a closure, a special occasion &mdash; optional.</span></label>
+          <textarea id="design-notes" class="design-notes" rows="3" placeholder="e.g. add my initials embossed on the cover, a red ribbon marker, it's a wedding gift..."></textarea>
+        </div>
+
+      </div>
+
+      <aside class="builder-summary">
+        <h3>Your design so far</h3>
+        <dl class="summary-list">
+          <div><dt>Size</dt><dd id="summary-size">Not chosen yet</dd></div>
+          <div><dt>Paper</dt><dd id="summary-paper">Not chosen yet</dd></div>
+          <div><dt>Cover colour</dt><dd id="summary-colour">Rust</dd></div>
+        </dl>
+        <p class="price"><em>Every book is quoted individually, based on size, materials, and any personalisation.</em><br><em>You'll see the full price before anything is made.</em></p>
+        <a class="btn disabled" id="request-design-btn" href="mailto:info@enperfeitas.com?subject=Artisan%20Edition%20-%20Custom%20Book%20Design" aria-label="Request this design">Choose a size and paper first</a>
+        <p class="form-note">This sends your choices to the studio by email &mdash; nothing is booked or charged yet.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 style="text-align:center;">For inspiration</h2>
+    <p style="text-align:center;color:var(--muted);margin-top:-8px;">A few recent pieces from the studio &mdash; see more on <a href="latest-work.html">Latest Work</a>.</p>
+    <div class="grid-3" style="margin-top:24px;">
+      {inspiration_gallery}
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap" style="max-width:720px;">
+    <h2 style="text-align:center;">Good to know</h2>
+    <div class="faq-list">
+      {accordion([
+          ("How is pricing worked out?",
+           "<p>Every book is quoted individually, based on size, materials, and any personalisation you've asked for &mdash; there's no fixed price list. You'll always see the full price before any work begins.</p>"),
+          ("How long does it take?",
+           "<p>Custom orders typically take 3 weeks to 2 months for creation and shipment, depending on complexity and the studio's schedule at the time.</p>"),
+          ("What if I'm not sure about everything yet?",
+           "<p>That's completely fine &mdash; choose what you know and describe the rest in the notes. Suzete will talk it through with you before anything is finalised.</p>"),
+          ("Can I see more examples first?",
+           '<p>Browse recent pieces on <a href="latest-work.html">Latest Work</a>, or just <a href="mailto:info@enperfeitas.com">get in touch</a> and describe what you have in mind.</p>'),
+      ])}
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {{
+  var wrap = document.getElementById("book-builder");
+  var btn = document.getElementById("request-design-btn");
+  var notes = document.getElementById("design-notes");
+  var summarySize = document.getElementById("summary-size");
+  var summaryPaper = document.getElementById("summary-paper");
+  var summaryColour = document.getElementById("summary-colour");
+  var baseHref = "mailto:info@enperfeitas.com?subject=Artisan%20Edition%20-%20Custom%20Book%20Design";
+
+  function selected(name) {{
+    var el = wrap.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : "";
+  }}
+
+  function update() {{
+    var size = selected("size");
+    var paper = selected("paper");
+    var colour = selected("colour");
+    summarySize.textContent = size || "Not chosen yet";
+    summaryPaper.textContent = paper || "Not chosen yet";
+    summaryColour.textContent = colour || "Not chosen yet";
+
+    if (size && paper && colour) {{
+      var lines = [
+        "Hi! I'd love to have this book made:",
+        "",
+        "Size/format: " + size,
+        "Paper: " + paper,
+        "Cover colour: " + colour
+      ];
+      if (notes.value.trim()) {{
+        lines.push("Notes: " + notes.value.trim());
+      }}
+      lines.push("", "");
+      btn.href = baseHref + "&body=" + encodeURIComponent(lines.join("\\n"));
+      btn.textContent = "Send this design to the studio";
+      btn.classList.remove("disabled");
+    }} else {{
+      btn.href = baseHref;
+      btn.textContent = "Choose a size and paper first";
+      btn.classList.add("disabled");
+    }}
+  }}
+
+  wrap.addEventListener("change", update);
+  notes.addEventListener("input", update);
+  update();
+}})();
+</script>
+"""
+page("design-your-book.html", "Design Your Own Book | Enperfeitas Studio",
+     "Build your own handbound notebook, journal, or sketchbook with Enperfeitas Studio -- choose a size, paper, and cover colour, then send your design straight to the studio for a personal quote.",
      body, active=None)
 
 # ---------------------------------------------------------------- LATEST WORK
@@ -1283,11 +1521,6 @@ page("latest-work.html", "Latest Work | Enperfeitas Studio",
 # SHOP_PAUSED: kill-switch from when every link was on the wrong Stripe
 # account. Correct-account links are wired in below, so this is back to
 # False -- flip it to True again instantly if something goes wrong.
-# Two items (see the "complete set of 6" Spacers and "2mm" Corner Jig
-# variants below) are deliberately left without a stripe_link: Suzete's
-# two links for those came through identical to each other, so rather
-# than guess which product each belongs to, both fall back to the
-# pre-filled mailto until she confirms the right link for each.
 SHOP_PAUSED = False
 
 PRODUCTS = [
@@ -1322,11 +1555,7 @@ PRODUCTS = [
             {"label": "20mm", "stripe_link": "https://buy.stripe.com/5kQ9ATccebvY1Mw3iF14404"},
             {"label": "25mm", "stripe_link": "https://buy.stripe.com/dRm7sLekmbvY4YI5qN14405"},
             {"label": "90° L-shape", "stripe_link": "https://buy.stripe.com/3cI00jekmdE676Q7yV14406"},
-            # Pasted in identical to the Corner Jig "2mm" link below -- almost
-            # certainly one of the two got copied into the wrong field.
-            # Left blank (falls back to mailto) until Suzete confirms which
-            # link actually belongs here.
-            {"label": "complete set of 6", "stripe_link": None},
+            {"label": "complete set of 6", "stripe_link": "https://buy.stripe.com/cNidR92BEbvYezi3iF1440f"},
         ],
     },
     {
@@ -1339,11 +1568,7 @@ PRODUCTS = [
         "source": "http://static1.squarespace.com/static/6287cba0410c800d0ff1f2b2/6288d8c4ef40836604a51764/63e9328ae785253f65371480/1676227224944/Enperfeitas+Starting+Kit-4.jpg?format=1500w",
         "stripe_link": "https://buy.stripe.com/5kQcN5a462ZsfDmaL714408",
         "variant_options": [
-            # Pasted in identical to the Spacers "complete set of 6" link
-            # above -- almost certainly one of the two got copied into the
-            # wrong field. Left blank (falls back to mailto) until Suzete
-            # confirms which link actually belongs here.
-            {"label": "2mm", "stripe_link": None},
+            {"label": "2mm", "stripe_link": "https://buy.stripe.com/aFa5kD2BE0Rkcra4mJ14407"},
             {"label": "2.5mm", "stripe_link": "https://buy.stripe.com/5kQcN5a462ZsfDmaL714408"},
             {"label": "3mm", "stripe_link": "https://buy.stripe.com/bJe9AT5NQ6bEgHq1ax14409"},
             {"label": "all three sizes", "stripe_link": "https://buy.stripe.com/28E6oH3FI1Vo9eYcTf1440a"},
@@ -1514,6 +1739,29 @@ body = f"""
 page("shop.html", "Shop | Enperfeitas Studio",
      "Bookbinding tools and digital tutorials from Enperfeitas Studio &mdash; punching cradle, spacers, corner jig, and step-by-step guides.",
      body, active="shop.html")
+
+# ---------------------------------------------------------------- ORDER CONFIRMED
+# A generic "thank you" page for Tools purchases -- optional to use.
+# Stripe's own optional-items checkout (see the Shop Cart Setup guide) can
+# combine several different Tools products into one payment, so unlike the
+# single-tutorial download pages above there's no one specific thing to
+# show next; this just confirms the order went through. To use it: on each
+# Tools Payment Link in the Stripe Dashboard, under "After payment", choose
+# "Don't show confirmation page" and redirect to this page's URL -- exactly
+# the same pattern already used for the digital tutorials. Not linked from
+# the main nav; nobody should land here except a buyer coming back from
+# Stripe.
+body = """
+<section class="page-header wrap" style="max-width:560px;">
+  <h1>Thank you for your order!</h1>
+  <p>Your payment went through and the studio has been notified. You'll get an email receipt from Stripe right away, and a shipping confirmation once your order is on its way.</p>
+  <p style="color:var(--muted);">Questions in the meantime? <a href="mailto:info@enperfeitas.com">Get in touch</a>. See also <a href="shipping-info.html">Shipping Info</a>.</p>
+  <a class="btn" href="shop.html">Back to Shop</a>
+</section>
+"""
+page("order-confirmed.html", "Order Confirmed | Enperfeitas Studio",
+     "Your Enperfeitas Studio order was received.",
+     body, active=None, robots="noindex, nofollow")
 
 # ---------------------------------------------------------------- DIGITAL DOWNLOADS
 # One "thank you" page per digital tutorial -- this is the page each
@@ -1714,6 +1962,44 @@ body = f"""
 page("contact.html", "Contact | Enperfeitas Studio",
      "Get in touch with Enperfeitas Studio in Vällingby, Stockholm — send an inquiry, or reach us by email, Instagram, or Facebook.",
      body, active="contact.html")
+
+# ---------------------------------------------------------------- BOX MAKER
+# A private studio tool (Suzete's own React component, reviewed, two real
+# bugs fixed, and compiled to one self-contained JS file -- see
+# tools/boxmaker/ for the source and build step). Not in NAV or HIDDEN_FROM_NAV
+# since it was never in NAV to begin with -- it's simply not linked from
+# anywhere on the site, reachable only by direct URL, same idea as
+# onboarding.html. Also marked noindex so it stays out of Google.
+#
+# No password gate -- removed at Suzete's request. The page is still
+# unlisted (not linked from anywhere, noindex), just no longer gated.
+body = """
+<div class="wrap" id="boxmaker-wrap">
+  <div id="boxmaker-root"></div>
+</div>
+
+<script src="js/boxmaker.bundle.js"></script>
+"""
+page("box-maker.html", "Box Maker | Enperfeitas Studio",
+     "A private studio tool for working out Solander and hinged box piece dimensions, cutting layout, and a preview -- from Constructing and Covering Boxes.",
+     body, active=None, robots="noindex, nofollow")
+
+# ---------------------------------------------------------------- BOOKLET IMPOSITION
+# A private studio tool (built from scratch with Suzete, starting from a
+# Lovable-generated page shell that had no working code behind it yet --
+# see tools/imposition/ for the source and build step). Same pattern as
+# Box Maker above: unlisted (not in NAV, not linked anywhere), noindex, no
+# password gate, reachable only by direct URL.
+body = """
+<div class="wrap" id="imposition-wrap">
+  <div id="imposition-root"></div>
+</div>
+
+<script src="js/imposition.bundle.js"></script>
+"""
+page("booklet-imposition.html", "Booklet Imposition | Enperfeitas Studio",
+     "A private studio tool for imposing a page-sequence PDF into saddle-stitch signatures ready to fold, nest, and sew -- with optional creep compensation.",
+     body, active=None, robots="noindex, nofollow")
 
 # ---------------------------------------------------------------- LINKS
 link_items = [
