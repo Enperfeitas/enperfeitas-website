@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Your download: Punching Cradle Tutorial (DIY) | Enperfeitas</title>
-<meta name="description" content="Download page for Punching Cradle Tutorial (DIY), shown automatically after Stripe checkout.">
+<title>Order Confirmed | Enperfeitas Studio</title>
+<meta name="description" content="Your Enperfeitas Studio order was received.">
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
@@ -51,30 +52,12 @@
 </header>
 
 
-<section class="page-header wrap">
-  <h1>Thank you for your purchase!</h1>
-  <p>Here's your Punching Cradle Tutorial (DIY) &mdash; a PDF guide. Save it somewhere you'll find it again; this link works any time you come back to it.</p>
+<section class="page-header wrap" style="max-width:560px;">
+  <h1>Thank you for your order!</h1>
+  <p>Your payment went through and the studio has been notified. You'll get an email receipt from Stripe right away, and a shipping confirmation once your order is on its way.</p>
+  <p style="color:var(--muted);">Questions in the meantime? <a href="mailto:info@enperfeitas.com">Get in touch</a>. See also <a href="shipping-info.html">Shipping Info</a>.</p>
+  <a class="btn" href="shop.html">Back to Shop</a>
 </section>
-
-<section>
-  <div class="wrap" style="max-width:520px;">
-    <div class="download-status">
-      <a class="btn" id="dl-btn-tutorial-punching-cradle" href="downloads/tutorial-punching-cradle.pdf" download hidden>Download Punching Cradle Tutorial (DIY)</a>
-      <span class="download-pending" id="dl-pending-tutorial-punching-cradle">This file is still being added &mdash; check back soon, or email <a href="mailto:info@enperfeitas.com?subject=Download%20-%20Punching%20Cradle%20Tutorial%20%28DIY%29">info@enperfeitas.com</a> and Suzete will send it straight to you.</span>
-    </div>
-    <p style="margin-top:28px;color:var(--muted);font-size:0.9rem;">Questions about your order? <a href="mailto:info@enperfeitas.com">Get in touch</a>.</p>
-  </div>
-</section>
-<script>
-(function () {
-  fetch("downloads/tutorial-punching-cradle.pdf", { method: "HEAD" }).then(function (r) {
-    if (r.ok) {
-      document.getElementById("dl-btn-tutorial-punching-cradle").hidden = false;
-      document.getElementById("dl-pending-tutorial-punching-cradle").hidden = true;
-    }
-  }).catch(function () { /* leave the "still being added" message showing */ });
-})();
-</script>
 
 
 <footer class="site">

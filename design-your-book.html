@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Your Own Book | Enperfeitas Studio</title>
+<meta name="description" content="Build your own handbound notebook, journal, or sketchbook with Enperfeitas Studio -- choose a size, paper, and cover colour, then send your design straight to the studio for a personal quote.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap nav-row">
+    <div class="header-utility">
+      <a href="mailto:info@enperfeitas.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M3 6l9 7 9-7"/></svg>
+      </a>
+      <a href="https://www.instagram.com/enperfeitas" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="https://www.facebook.com/enperfeitas" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5h2.5V5.2C16.1 5.1 15 5 13.7 5c-2.7 0-4.5 1.7-4.5 4.7v2.3H6.5v3.6h2.7V22h3.7v-6.4h2.7l.5-3.6h-3.2V10c0-1 .3-1.5 1.6-1.5z"/></svg>
+      </a>
+    </div>
+    <a class="logo" href="index.html">
+      <img src="images/logo.webp" alt="Enperfeitas" class="logo-img" style="display:none;"
+           onload="this.style.display='block';this.nextElementSibling.style.display='none';"
+           onerror="this.style.display='none';">
+      <span class="logo-text">Enperfeitas</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <nav class="primary"><ul>
+      <li><a href="index.html">Home</a></li>
+<li><a href="studio.html">The Studio</a></li>
+<li><a href="workshops.html">Workshops</a></li>
+<li><a href="bespoke-binding.html">Bespoke Binding</a></li>
+<li><a href="bespoke-boxes.html">Bespoke Boxes</a></li>
+<li><a href="latest-work.html">Latest Work</a></li>
+<li><a href="shop.html">Shop</a></li>
+<li><a href="about.html">About</a></li>
+<li><a href="contact.html">Contact</a></li>
+
+    </ul></nav>
+  </div>
+</header>
+
+
+
+<section class="hero-cover">
+  <img class="hero-cover-img" src="images/work-09-notebooks-flatlay.webp" alt="Close-up of a hand holding two watercolor-designed personalised notebooks, with options for blank, dotted, or lined pages"
+       onerror="this.style.display='none';this.closest('.hero-cover').classList.add('img-missing');">
+  <div class="hero-cover-scrim"></div>
+  <div class="wrap hero-cover-content">
+    <h1>Design Your Own Book</h1>
+    <p class="sub">A handbound notebook, journal, or sketchbook, built around your choices &mdash; not picked off a shelf.</p>
+    
+    
+  </div>
+</section>
+
+
+<section>
+  <div class="wrap">
+    <ol class="steps" style="max-width:640px;margin:0 auto;">
+      <li><strong>Build your design.</strong> Pick a size, paper, and cover colour below &mdash; add any extra requests in the notes.</li>
+      <li><strong>Send it to the studio.</strong> One button turns your choices into an email, already written for you.</li>
+      <li><strong>Get your quote.</strong> Suzete confirms materials, price, and timeline before anything is cut.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="builder-grid" id="book-builder">
+      <div class="builder-options">
+
+        <div class="option-group">
+          <h3>Size &amp; format</h3>
+          <p class="option-hint">Pocket-sized for a bag, A5 for a daily journal, or A4 for a sketchbook or guest book.</p>
+          <div class="chip-row" role="radiogroup" aria-label="Size and format">
+            <input type="radio" name="size" id="size-a6" value="Pocket (A6)" class="sr-only chip-input">
+            <label class="chip" for="size-a6">Pocket (A6)</label>
+            <input type="radio" name="size" id="size-a5" value="A5" class="sr-only chip-input">
+            <label class="chip" for="size-a5">A5</label>
+            <input type="radio" name="size" id="size-a4" value="A4" class="sr-only chip-input">
+            <label class="chip" for="size-a4">A4</label>
+            <input type="radio" name="size" id="size-other" value="Something else -- I'll describe it in the notes" class="sr-only chip-input">
+            <label class="chip" for="size-other">Something else</label>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <h3>Paper &amp; layout</h3>
+          <p class="option-hint">What the inside pages should do.</p>
+          <div class="chip-row" role="radiogroup" aria-label="Paper and layout">
+            <input type="radio" name="paper" id="paper-blank" value="Blank" class="sr-only chip-input">
+            <label class="chip" for="paper-blank">Blank</label>
+            <input type="radio" name="paper" id="paper-ruled" value="Ruled" class="sr-only chip-input">
+            <label class="chip" for="paper-ruled">Ruled</label>
+            <input type="radio" name="paper" id="paper-dotted" value="Dotted" class="sr-only chip-input">
+            <label class="chip" for="paper-dotted">Dotted</label>
+            <input type="radio" name="paper" id="paper-squared" value="Squared" class="sr-only chip-input">
+            <label class="chip" for="paper-squared">Squared</label>
+            <input type="radio" name="paper" id="paper-mixed" value="Mixed / custom" class="sr-only chip-input">
+            <label class="chip" for="paper-mixed">Mixed / custom</label>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <h3>Cover colour</h3>
+          <p class="option-hint">Shown as a guide &mdash; the exact leather, bookcloth, or paper is confirmed with you before anything is cut.</p>
+          <div class="swatch-row" role="radiogroup" aria-label="Cover colour">
+            <input type="radio" name="colour" id="colour-rust" value="Rust" class="sr-only chip-input" checked>
+            <label class="swatch" for="colour-rust">
+              <span class="swatch-dot" style="background:#954a1e;"></span>
+              <span class="swatch-name">Rust</span>
+            </label>
+            <input type="radio" name="colour" id="colour-charcoal" value="Charcoal" class="sr-only chip-input">
+            <label class="swatch" for="colour-charcoal">
+              <span class="swatch-dot" style="background:#2b2b2b;"></span>
+              <span class="swatch-name">Charcoal</span>
+            </label>
+            <input type="radio" name="colour" id="colour-sand" value="Sand" class="sr-only chip-input">
+            <label class="swatch" for="colour-sand">
+              <span class="swatch-dot" style="background:#d8c7a1;"></span>
+              <span class="swatch-name">Sand</span>
+            </label>
+            <input type="radio" name="colour" id="colour-forest" value="Forest" class="sr-only chip-input">
+            <label class="swatch" for="colour-forest">
+              <span class="swatch-dot" style="background:#3f5c46;"></span>
+              <span class="swatch-name">Forest</span>
+            </label>
+            <input type="radio" name="colour" id="colour-indigo" value="Indigo" class="sr-only chip-input">
+            <label class="swatch" for="colour-indigo">
+              <span class="swatch-dot" style="background:#33415c;"></span>
+              <span class="swatch-name">Indigo</span>
+            </label>
+            <input type="radio" name="colour" id="colour-blush" value="Blush" class="sr-only chip-input">
+            <label class="swatch" for="colour-blush">
+              <span class="swatch-dot" style="background:#d98a86;"></span>
+              <span class="swatch-name">Blush</span>
+            </label>
+            <input type="radio" name="colour" id="colour-ochre" value="Ochre" class="sr-only chip-input">
+            <label class="swatch" for="colour-ochre">
+              <span class="swatch-dot" style="background:#c98f2b;"></span>
+              <span class="swatch-name">Ochre</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <label for="design-notes" class="option-hint" style="display:block;margin-bottom:8px;">Anything else? <span style="color:var(--muted);">Embossing, ribbons, a closure, a special occasion &mdash; optional.</span></label>
+          <textarea id="design-notes" class="design-notes" rows="3" placeholder="e.g. add my initials embossed on the cover, a red ribbon marker, it's a wedding gift..."></textarea>
+        </div>
+
+      </div>
+
+      <aside class="builder-summary">
+        <h3>Your design so far</h3>
+        <dl class="summary-list">
+          <div><dt>Size</dt><dd id="summary-size">Not chosen yet</dd></div>
+          <div><dt>Paper</dt><dd id="summary-paper">Not chosen yet</dd></div>
+          <div><dt>Cover colour</dt><dd id="summary-colour">Rust</dd></div>
+        </dl>
+        <p class="price"><em>Every book is quoted individually, based on size, materials, and any personalisation.</em><br><em>You'll see the full price before anything is made.</em></p>
+        <a class="btn disabled" id="request-design-btn" href="mailto:info@enperfeitas.com?subject=Artisan%20Edition%20-%20Custom%20Book%20Design" aria-label="Request this design">Choose a size and paper first</a>
+        <p class="form-note">This sends your choices to the studio by email &mdash; nothing is booked or charged yet.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 style="text-align:center;">For inspiration</h2>
+    <p style="text-align:center;color:var(--muted);margin-top:-8px;">A few recent pieces from the studio &mdash; see more on <a href="latest-work.html">Latest Work</a>.</p>
+    <div class="grid-3" style="margin-top:24px;">
+      <div class="img-wrap"><img src="images/work-21-beige-patterned-notebook-yellow.webp" alt="A person holding a beige patterned notebook with yellow and brown binding on a white background." style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">A person holding a beige patterned notebook with yellow and brown binding on a white background.</span></div><div class="img-wrap"><img src="images/work-27-closed-light-green-hardcover.webp" alt="A person holding a closed, light green hardcover notebook with a green and white striped elastic band and a light green fabric cover against a plain white background." style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">A person holding a closed, light green hardcover notebook with a green and white striped elastic band and a light green fabric cover…</span></div><div class="img-wrap"><img src="images/work-34-yellow-hardcover-notebook-orange.webp" alt="Hand holding a yellow hardcover notebook with an orange elastic strap on a white surface." style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Hand holding a yellow hardcover notebook with an orange elastic strap on a white surface.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap" style="max-width:720px;">
+    <h2 style="text-align:center;">Good to know</h2>
+    <div class="faq-list">
+      <details><summary>How is pricing worked out?</summary><div><p>Every book is quoted individually, based on size, materials, and any personalisation you've asked for &mdash; there's no fixed price list. You'll always see the full price before any work begins.</p></div></details><details><summary>How long does it take?</summary><div><p>Custom orders typically take 3 weeks to 2 months for creation and shipment, depending on complexity and the studio's schedule at the time.</p></div></details><details><summary>What if I'm not sure about everything yet?</summary><div><p>That's completely fine &mdash; choose what you know and describe the rest in the notes. Suzete will talk it through with you before anything is finalised.</p></div></details><details><summary>Can I see more examples first?</summary><div><p>Browse recent pieces on <a href="latest-work.html">Latest Work</a>, or just <a href="mailto:info@enperfeitas.com">get in touch</a> and describe what you have in mind.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var wrap = document.getElementById("book-builder");
+  var btn = document.getElementById("request-design-btn");
+  var notes = document.getElementById("design-notes");
+  var summarySize = document.getElementById("summary-size");
+  var summaryPaper = document.getElementById("summary-paper");
+  var summaryColour = document.getElementById("summary-colour");
+  var baseHref = "mailto:info@enperfeitas.com?subject=Artisan%20Edition%20-%20Custom%20Book%20Design";
+
+  function selected(name) {
+    var el = wrap.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : "";
+  }
+
+  function update() {
+    var size = selected("size");
+    var paper = selected("paper");
+    var colour = selected("colour");
+    summarySize.textContent = size || "Not chosen yet";
+    summaryPaper.textContent = paper || "Not chosen yet";
+    summaryColour.textContent = colour || "Not chosen yet";
+
+    if (size && paper && colour) {
+      var lines = [
+        "Hi! I'd love to have this book made:",
+        "",
+        "Size/format: " + size,
+        "Paper: " + paper,
+        "Cover colour: " + colour
+      ];
+      if (notes.value.trim()) {
+        lines.push("Notes: " + notes.value.trim());
+      }
+      lines.push("", "");
+      btn.href = baseHref + "&body=" + encodeURIComponent(lines.join("\n"));
+      btn.textContent = "Send this design to the studio";
+      btn.classList.remove("disabled");
+    } else {
+      btn.href = baseHref;
+      btn.textContent = "Choose a size and paper first";
+      btn.classList.add("disabled");
+    }
+  }
+
+  wrap.addEventListener("change", update);
+  notes.addEventListener("input", update);
+  update();
+})();
+</script>
+
+
+<footer class="site">
+  <div class="wrap footer-minimal">
+    <p class="footer-tagline">Enperfeitas Studio &mdash; Stockholm. Making things that last.</p>
+    <div class="footer-bottom" style="border-top:none;">
+      <div>&copy; 2026 Enperfeitas Studio</div>
+      <div><a href="shipping-info.html">Shipping Info</a> &middot; <a href="refund-policy.html">Refunds and Returns</a> &middot; <a href="privacy-policy.html">Privacy Policy</a> &middot; <a href="terms-of-service.html">Terms of Service</a> &middot; <a href="links.html">All Links</a></div>
+    </div>
+  </div>
+</footer>
+<script src="js/nav.js"></script>
+</body>
+</html>
