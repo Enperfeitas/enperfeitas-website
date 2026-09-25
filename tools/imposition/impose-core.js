@@ -207,15 +207,16 @@ export async function readPdfInfo(PDFLib, bytes) {
 }
 
 /**
- * Build the final imposed PDF: one sheet-sized page per sheet-side (front,
- * then back, for every sheet of every signature, in order), with the
- * original pages embedded as vector content (not rasterised) at the
- * computed positions, with creep compensation applied as a horizontal
- * nudge toward the spine.
+ * Shared worker: build one imposed PDF (sheet-sized pages, front then back
+ * for each given sheet, in order) from an explicit list of sheets. Both
+ * generateImposedPdf (all sheets, one file) and
+ * generateImposedPdfsBySignature (one file per signature) call this with
+ * a different slice of sheets.
  *
  * @param {object} PDFLib the pdf-lib module
  * @param {Uint8Array} sourceBytes the uploaded PDF's bytes
- * @param {object} imposition result of computeImposition()
+ * @param {Array} sheets sheet objects (as produced by flattenSheets(), or
+ *   a subset of them) -- each needs .front/.back/.creepShiftMm/etc.
  * @param {object} opts { sheetWPt, sheetHPt, pageWPt, pageHPt, includeInstructions,
  *   marginHeadPt, marginFeetPt, onProgress }
  *   marginHeadPt/marginFeetPt: blank space (in points) left above/below
@@ -227,15 +228,17 @@ export async function readPdfInfo(PDFLib, bytes) {
  *   fold-line centring below already splits any extra sheet width evenly
  *   onto the two outer edges.
  */
-export async function generateImposedPdf(PDFLib, sourceBytes, imposition, opts) {
-  const { PDFDocument, degrees } = PDFLib;
+async function generateImposedPdfForSheets(PDFLib, sourceBytes, sheets, opts) {
+  const { PDFDocument } = PDFLib;
   const srcDoc = await PDFDocument.load(sourceBytes, { ignoreEncryption: true });
   const srcPageCount = srcDoc.getPageCount();
 
   const outDoc = await PDFDocument.create();
 
   // Embed every real source page once, up front, as a reusable vector
-  // form — much faster than re-embedding per placement.
+  // form — much faster than re-embedding per placement. (Harmless to embed
+  // pages this particular output file never ends up using, e.g. when
+  // called per-signature -- embedding is cheap relative to drawing.)
   const indices = Array.from({ length: srcPageCount }, (_, i) => i);
   const embeddedPages = await outDoc.embedPdf(sourceBytes, indices);
 
@@ -258,7 +261,6 @@ export async function generateImposedPdf(PDFLib, sourceBytes, imposition, opts) 
   // around the head+content+feet block rather than assuming symmetry.
   const y = marginFeetPt + (sheetH - pageH - marginHeadPt - marginFeetPt) / 2;
 
-  const sheets = flattenSheets(imposition);
   const total = sheets.length * 2;
   let done = 0;
 
@@ -299,6 +301,46 @@ export async function generateImposedPdf(PDFLib, sourceBytes, imposition, opts) 
   }
 
   return outDoc.save();
+}
+
+/**
+ * Build the final imposed PDF as a single file: one sheet-sized page per
+ * sheet-side (front, then back, for every sheet of every signature, in
+ * order). See generateImposedPdfsBySignature for the one-file-per-signature
+ * alternative most people actually want to print from.
+ */
+export async function generateImposedPdf(PDFLib, sourceBytes, imposition, opts) {
+  return generateImposedPdfForSheets(PDFLib, sourceBytes, flattenSheets(imposition), opts);
+}
+
+/**
+ * Build the imposed output as one PDF per signature, each internally 2-up
+ * imposed (front/back sheets, creep and trim allowance all applied exactly
+ * as generateImposedPdf does) -- so every signature is its own ready-to-
+ * print file, in the order you'll actually print, fold, and sew them.
+ * opts is the same shape as generateImposedPdf's, plus opts.onProgress is
+ * called with overall progress (0..1) across every signature combined.
+ */
+export async function generateImposedPdfsBySignature(PDFLib, sourceBytes, imposition, opts) {
+  const results = [];
+  const numSignatures = imposition.signatures.length;
+  for (const sig of imposition.signatures) {
+    const sheets = sig.sheets.map((s) => ({ ...s, signatureIndex: sig.index }));
+    const bytes = await generateImposedPdfForSheets(PDFLib, sourceBytes, sheets, {
+      ...opts,
+      onProgress: opts.onProgress
+        ? (localP) => opts.onProgress((sig.index + localP) / numSignatures)
+        : undefined,
+    });
+    results.push({
+      signatureIndex: sig.index,
+      contentStart: sig.contentStart,
+      contentEnd: sig.contentEnd,
+      sheetsInSignature: sig.sheets.length,
+      bytes,
+    });
+  }
+  return results;
 }
 
 /**
