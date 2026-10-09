@@ -730,7 +730,7 @@ export default function ImpositionTool() {
   const [sourceBytes, setSourceBytes] = useState(null);
   const [error, setError] = useState(null);
 
-  const [sheetsPerSignature, setSheetsPerSignature] = useState(2);
+  const [sheetsPerSignature, setSheetsPerSignature] = useState(5);
   const [paperKey, setPaperKey] = useState("a4");
   const [creepEnabled, setCreepEnabled] = useState(false);
   const [creepTotalMm, setCreepTotalMm] = useState(1);
