@@ -2055,10 +2055,11 @@ body = """
     <div class="accordion-card" style="display:flex;flex-direction:column;">
       <div style="text-align:center;margin-bottom:6px;" aria-hidden="true">
         <svg viewBox="0 0 96 96" width="112" height="112" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="16" y="50" width="64" height="26" rx="2"/>
-          <path d="M22 50 30 22H66L74 50"/>
-          <path d="M16 62h64"/>
-          <path d="M16 86h64M16 82v8M80 82v8M32 86v-3M48 86v-3M64 86v-3" stroke="var(--accent)"/>
+          <path d="M57.6,34.6 L90.0,53.3 L67.1,66.5 L34.7,47.8 Z"/>
+          <path d="M34.7,47.8 L34.7,63.2 L67.1,81.9 L67.1,66.5 M90.0,53.3 L90.0,68.7 L67.1,81.9"/>
+          <path d="M57.6,34.6 L57.6,47.8 L90.0,66.5 M57.6,47.8 L34.7,61.0 M90.0,53.3 L90.0,66.5 M34.7,47.8 L34.7,61.0"/>
+          <path d="M57.6,34.6 L29.0,18.1 L6.1,31.3 L34.7,47.8" stroke="var(--accent)" fill="var(--accent)" fill-opacity="0.12"/>
+          <path d="M57.6,34.6 L34.7,47.8" stroke="var(--accent)" stroke-width="3.2"/>
         </svg>
       </div>
       <h3>Box Maker</h3>
