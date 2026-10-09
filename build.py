@@ -563,21 +563,21 @@ body = f"""
       <h3>Membership Pass</h3>
       <div class="price">From 1,200 SEK</div>
       {membership_accordion}
-      <a class="btn" href="studio-membership.html">Become a member</a>
+      <a class="btn" href="mailto:info@enperfeitas.com?subject=Studio%20Membership" aria-label="Become a member: send me an email about studio membership">Become a member</a>
     </div>
     <div class="accordion-card">
       {doodle_icon("A doodle illustrating collaboration and brainstorming", "studio-creative-events.webp", "The Studio", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/42cb4145-027a-46fe-ad67-f4b778afd604/Enperfeitas+doodles?format=1000w")}
       <h3>Workshop Space</h3>
       <div class="price">From 1,500 SEK</div>
       {workshop_accordion}
-      <a class="btn" href="book-workshop-space.html">Book your space</a>
+      <a class="btn" href="mailto:info@enperfeitas.com?subject=Workshop%20Space" aria-label="Email me about renting the workshop space">Email me about it</a>
     </div>
     <div class="accordion-card">
       {doodle_icon("A doodle illustrating creatives hanging out", "studio-hangout.webp", "The Studio", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/bde8fd72-9d96-4980-9a29-cf177dc2b5d8/Enperfeitas+doodles?format=1000w")}
       <h3>Creative Events</h3>
       <div class="price">Free</div>
       {events_accordion}
-      <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Creative%20Events">Join an event</a>
+      <span class="btn secondary disabled">Coming soon</span>
     </div>
   </div>
 </section>
