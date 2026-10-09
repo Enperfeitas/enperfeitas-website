@@ -1969,21 +1969,21 @@ page("contact.html", "Contact | Enperfeitas Studio",
 SUPPORT_SECTION = """<section class="section-tight" id="support">
   <div class="wrap">
     <h2 style="text-align:center;">Free to use. Pay if you like.</h2>
-    <p style="text-align:center;max-width:620px;margin:0 auto 32px;color:var(--muted);">This tool is free, and it stays free. If it saved you {intro_task}, feel free to throw a coin in the jar &mdash; entirely up to you. Thank you!</p>
+    <p style="text-align:left;max-width:620px;margin:0 auto 32px;color:var(--muted);">This tool is free, and it stays free. If it saved you {intro_task}, feel free to throw a coin in the jar &mdash; entirely up to you. Thank you!</p>
     <div class="grid-3">
       <div class="accordion-card" style="display:flex;flex-direction:column;">
         <h3>&#9749; Coffee</h3>
-        <p style="text-align:center;color:var(--muted);margin-bottom:22px;">Fuel for the next tool. A small thank-you that goes a long way.</p>
+        <p style="text-align:left;color:var(--muted);margin-bottom:22px;">Fuel for the next tool. A small thank-you that goes a long way.</p>
         <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/7sYbJ1foqcA2fDm1ax1440g" target="_blank" rel="noopener" aria-label="Buy Suzete a coffee">Buy me a coffee</a>
       </div>
       <div class="accordion-card" style="display:flex;flex-direction:column;">
         <h3>&#129525; Bookcloth for the studio</h3>
-        <p style="text-align:center;color:var(--muted);margin-bottom:22px;">Helps me stock the studio with lovely bookcloth for more books and workshops.</p>
+        <p style="text-align:left;color:var(--muted);margin-bottom:22px;">Helps me stock the studio with lovely bookcloth for more books and workshops.</p>
         <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/cNi7sL3FI1Vo9eYaL71440h" target="_blank" rel="noopener" aria-label="Contribute bookcloth for the studio">Add some bookcloth</a>
       </div>
       <div class="accordion-card" style="display:flex;flex-direction:column;">
         <h3>&#10024; Hot foil machine jar</h3>
-        <p style="text-align:center;color:var(--muted);margin-bottom:22px;">Every coin gets the studio closer to gold-stamped covers.</p>
+        <p style="text-align:left;color:var(--muted);margin-bottom:22px;">Every coin gets the studio closer to gold-stamped covers.</p>
         <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/00wdR92BE57A62M7yV1440i" target="_blank" rel="noopener" aria-label="Contribute to the hot foil machine saving jar">Fill the jar</a>
       </div>
     </div>
@@ -2009,7 +2009,7 @@ body = """
 <script src="js/boxmaker-v3.js"></script>
 """ + SUPPORT_SECTION.replace("{intro_task}", "an evening of measuring, cutting and recutting board")
 page("box-maker.html", "Box Maker | Enperfeitas Studio",
-     "A private studio tool for working out Solander and hinged box piece dimensions, cutting layout, and a preview -- from Constructing and Covering Boxes.",
+     "Free online Box Maker for bookbinders: work out Solander and hinged box piece dimensions, a cutting layout and a numbered preview. Pay what you like.",
      body, active="tools.html")
 
 # ---------------------------------------------------------------- BOOKLET IMPOSITION
@@ -2027,7 +2027,7 @@ body = """
 <script src="js/imposition-v2.js"></script>
 """ + SUPPORT_SECTION.replace("{intro_task}", "an evening of folding and swearing")
 page("booklet-imposition.html", "Booklet Imposition | Enperfeitas Studio",
-     "A private studio tool for imposing a page-sequence PDF into saddle-stitch signatures ready to fold, nest, and sew -- with optional creep compensation.",
+     "Free online Booklet Imposition tool: turn a page-sequence PDF into saddle-stitch signatures ready to print, fold, nest and sew, with optional creep compensation. Pay what you like.",
      body, active="tools.html")
 
 # ---------------------------------------------------------------- FREE TOOLS

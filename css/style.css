@@ -1257,3 +1257,6 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
     flex-basis: 100%; margin-left: 0 !important; justify-content: space-between;
   }
 }
+
+/* Design rule: descriptive text is always left-aligned (headings may stay centred). */
+#support p, .tool-card p, .tools-note p { text-align: left; }
