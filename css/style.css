@@ -256,13 +256,14 @@ header.site.nav-open .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) 
 .hero-cover-content .btn.hero-cta {
   display: inline-block;
   margin-top: 26px;
-  background: transparent;
-  color: #fff;
+  background: #fff;
+  color: var(--ink);
   border: 1px solid #fff;
 }
 .hero-cover-content .btn.hero-cta:hover {
-  background: #fff;
-  color: var(--ink);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
   transform: translateY(-2px);
 }
 @media (max-width: 760px) {
@@ -493,7 +494,6 @@ h3 { font-size: 1.25rem; margin: 28px 0 10px; color: var(--ink); }
   gap: 20px;
 }
 .contact-form button[type="submit"] {
-  border: none;
   cursor: pointer;
   font: inherit;
 }
@@ -585,8 +585,8 @@ h3 { font-size: 1.25rem; margin: 28px 0 10px; color: var(--ink); }
 .btn {
   display: inline-block;
   padding: 18px 38px;
-  background: var(--ink);
-  color: #fff;
+  background: #fff;
+  color: var(--ink);
   border: 1px solid var(--ink);
   border-radius: 300px;
   font-size: 1rem;
@@ -598,14 +598,15 @@ h3 { font-size: 1.25rem; margin: 28px 0 10px; color: var(--ink); }
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn:hover {
-  background: #fff;
-  color: var(--ink);
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
   text-decoration: none;
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
 }
 .btn.secondary {
-  background: transparent;
+  background: #fff;
   color: var(--ink);
   border: 1px solid var(--ink);
 }
@@ -857,7 +858,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
   text-decoration: none;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
-.list-links a:hover { background: var(--ink); color: #fff; transform: translateY(-2px); }
+.list-links a:hover { background: var(--accent); border-color: var(--accent); color: #fff; transform: translateY(-2px); }
 
 .steps { counter-reset: step; list-style: none; padding: 0; }
 .steps li {
@@ -1267,9 +1268,8 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 .hero-home .hero-cover-content { padding-bottom: 150px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
 .hero-actions .btn { background: #fff; color: var(--ink); border: 1px solid #fff; }
-.hero-actions .btn:hover { background: transparent; color: #fff; }
-.hero-actions .btn.ghost { background: transparent; color: #fff; }
-.hero-actions .btn.ghost:hover { background: #fff; color: var(--ink); }
+.hero-actions .btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+/* both hero buttons use the same white button as the rest of the site */
 
 .path-float { padding: 0 0 40px; margin-top: -96px; position: relative; z-index: 3; }
 .path-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: stretch; }
@@ -1307,7 +1307,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 .testimonials.featured { grid-template-columns: repeat(3, 1fr); }
 .more-reviews { margin-top: 34px; text-align: center; }
 .more-reviews summary {
-  display: inline-block; cursor: pointer; list-style: none; padding: 14px 30px;
+  display: inline-block; background: #fff; cursor: pointer; list-style: none; padding: 14px 30px;
   border: 1px solid var(--ink); border-radius: 300px;
 }
 .more-reviews summary::-webkit-details-marker { display: none; }
@@ -1348,3 +1348,22 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 @media (max-width: 760px) { .path-photo .img-wrap { aspect-ratio: 16 / 9; } }
 
 @media (max-width: 760px) { .soft-card .btn { align-self: stretch; text-align: center; } }
+
+/* ---------------------------------------------------------------------
+   One button behaviour for the whole site: white with a dark outline, and it
+   lights up in the brand colour (--accent) on hover. The free tools draw their
+   own buttons, so they carry the .tool-btn class to share the same look. A
+   selected tab keeps the brand colour (.is-on) so you can see where you are. */
+.tool-btn {
+  background: #fff !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--ink) !important;
+  border-radius: 300px !important;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.tool-btn:hover:not(:disabled), .tool-btn.is-on {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+}
+.tool-btn:disabled { cursor: not-allowed; }

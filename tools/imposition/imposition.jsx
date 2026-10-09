@@ -208,7 +208,7 @@ function Button({ children, onClick, disabled, variant = "primary", full }) {
     secondary: { ...base, background: C.panel, color: C.ink, border: `1px solid ${C.lineStrong}` },
   };
   return (
-    <button type="button" onClick={onClick} disabled={disabled} style={styles[variant]}>
+    <button type="button" className="tool-btn" onClick={onClick} disabled={disabled} style={styles[variant]}>
       {children}
     </button>
   );
