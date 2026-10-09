@@ -247,7 +247,7 @@ def page(filename, title, description, body, active=None, robots=None):
 
 <footer class="site">
   <div class="wrap footer-minimal">
-    <p class="footer-tagline">Enperfeitas Studio, Stockholm. Making things that last.</p>
+    <p class="footer-tagline">Enperfeitas Studio, Stockholm.<br>Making things that last.</p>
     <div class="footer-bottom" style="border-top:none;">
       <div>&copy; 2026 Enperfeitas Studio</div>
       <div>{legal}</div>
