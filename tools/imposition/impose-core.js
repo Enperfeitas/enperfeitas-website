@@ -1,18 +1,18 @@
 /* =========================================================================
-   Imposition math + PDF I/O — pure logic, no React.
+   Imposition math + PDF I/O, pure logic, no React.
 
    Terminology used throughout:
-     "content page"  — a real page from the uploaded PDF (1-indexed, as the
+     "content page" , a real page from the uploaded PDF (1-indexed, as the
                         reader will see it in the finished book).
-     "signature"     — a group of nested, folded sheets that get sewn
+     "signature"    , a group of nested, folded sheets that get sewn
                         together as one unit; a book is made of one or more
                         signatures bound side by side along the spine.
-     "sheet"         — one physical piece of paper, printed on both sides,
+     "sheet"        , one physical piece of paper, printed on both sides,
                         that gets folded once and nested inside (or around)
                         the other sheets of its signature. Printing a sheet
                         means printing a 2-up spread on the front and a 2-up
                         spread on the back.
-     sheet index i=0 — the OUTERMOST sheet of a signature (it wraps around
+     sheet index i=0. The OUTERMOST sheet of a signature (it wraps around
                         every other sheet, so it carries the signature's
                         first and last content pages). i = sheetsInSig-1 is
                         the INNERMOST sheet (the one straddling the true
@@ -24,7 +24,7 @@
      front-right = 2i + 1
      back-left   = 2i + 2
      back-right  = P - 2i - 1
-   Both halves of a spread sit upright, side by side — no rotation is
+   Both halves of a spread sit upright, side by side, no rotation is
    needed for a plain saddle-stitch spread (unlike, say, work-and-turn
    sheetwork for perfect binding).
 
@@ -51,10 +51,10 @@
 
    The fix is to nudge each sheet's printed content *toward the spine*
    before trimming, more so for inner sheets, tapering to no shift at all
-   on the outermost sheet — so that after the single trim cut, every page
+   on the outermost sheet, so that after the single trim cut, every page
    in the signature ends up with the same margin. The total amount to
    compensate depends on paper thickness and how many sheets are nested,
-   which this tool can't measure for you — it's exposed as a plain "total
+   which this tool can't measure for you. It's exposed as a plain "total
    creep" number in millimetres, off by default, with guidance to get it
    by folding a real test signature and measuring the offset by hand.
    ========================================================================= */
@@ -179,7 +179,7 @@ export function flattenSheets(imposition) {
 
 /**
  * Read basic info from an uploaded PDF: page count and the size of its
- * first page (used as "the" page size — a mixed-size source PDF is flagged
+ * first page (used as "the" page size, a mixed-size source PDF is flagged
  * so the studio can catch it before printing, rather than silently
  * misimposing it).
  */
@@ -236,7 +236,7 @@ async function generateImposedPdfForSheets(PDFLib, sourceBytes, sheets, opts) {
   const outDoc = await PDFDocument.create();
 
   // Embed every real source page once, up front, as a reusable vector
-  // form — much faster than re-embedding per placement. (Harmless to embed
+  // form, much faster than re-embedding per placement. (Harmless to embed
   // pages this particular output file never ends up using, e.g. when
   // called per-signature -- embedding is cheap relative to drawing.)
   const indices = Array.from({ length: srcPageCount }, (_, i) => i);

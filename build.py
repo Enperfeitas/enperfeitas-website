@@ -68,7 +68,7 @@ LEGAL_LINKS = [
 ]
 
 
-IMAGE_MANIFEST = []  # (filename, label, page, source_url) — for the README
+IMAGE_MANIFEST = []  # (filename, label, page, source_url), for the README
 IMAGE_MANIFEST.append((
     "logo.webp", "Enperfeitas script logo (header)", "Header (all pages)",
     "https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/dd8323fb-820d-4abe-8184-e6039e0260ef/2022_Black__Enperfeitas+Logo+_+web.png?format=1500w",
@@ -125,7 +125,7 @@ def doodle_icon(label, filename, page="", source="", large=False):
 
 
 def accordion(items, open_first=False):
-    """items: list of (title, body_html) tuples. Native <details>/<summary> —
+    """items: list of (title, body_html) tuples. Native <details>/<summary>: 
     no JS, matches the live site's expandable Description/Pricing/Benefits rows."""
     parts = []
     for i, (title, body) in enumerate(items):
@@ -142,7 +142,7 @@ def testimonial_card(title, quote, name, filename, source=""):
     all) -- so we skip the photo block entirely instead of showing an empty
     placeholder box the live site doesn't have."""
     if filename:
-        IMAGE_MANIFEST.append((filename, f"Testimonial photo — {title}", "Home", source))
+        IMAGE_MANIFEST.append((filename, f"Testimonial photo, {title}", "Home", source))
         photo_html = f"""
       <div class="testimonial-photo">
         <img src="images/{filename}" alt="{title}" style="opacity:0;"
@@ -157,7 +157,7 @@ def testimonial_card(title, quote, name, filename, source=""):
     <div class="testimonial">{photo_html}
       <span class="who">{title}</span>
       <p>&ldquo;{quote}&rdquo;</p>
-      <cite>&mdash; {name}</cite>
+      <cite>{name}</cite>
     </div>
     """
 
@@ -167,7 +167,7 @@ def hero_cover(filename, heading, subtext, label, page="", source="", cta_label=
     the live site's page-header treatment (Home, Workshops, Bespoke Binding,
     Bespoke Boxes). Pass cta_label/cta_href to add an optional button (used
     on the homepage hero). Pass subtext2 for a second, regular-weight
-    paragraph below the (bold) tagline in subtext — used where the live site
+    paragraph below the (bold) tagline in subtext, used where the live site
     has a short kicker line followed by a longer, plainly-weighted paragraph."""
     IMAGE_MANIFEST.append((filename, label, page, source))
     cta_html = ""
@@ -247,7 +247,7 @@ def page(filename, title, description, body, active=None, robots=None):
 
 <footer class="site">
   <div class="wrap footer-minimal">
-    <p class="footer-tagline">Enperfeitas Studio &mdash; Stockholm. Making things that last.</p>
+    <p class="footer-tagline">Enperfeitas Studio, Stockholm. Making things that last.</p>
     <div class="footer-bottom" style="border-top:none;">
       <div>&copy; 2026 Enperfeitas Studio</div>
       <div>{legal}</div>
@@ -265,7 +265,7 @@ def page(filename, title, description, body, active=None, robots=None):
 # ---------------------------------------------------------------- HOME
 body = f"""
 {hero_cover("hero-hands-tools.webp", "Some things<br>deserve to last",
-            "Handbound books, albums, and boxes made in Stockholm &mdash; for the moments, stories, and work that matter too much for anything ordinary.",
+            "Handbound books, albums, and boxes made in Stockholm, for the moments, stories, and work that matter too much for anything ordinary.",
             "Hands binding a book, surrounded by bookbinding tools", "Home",
             source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1f0fa009-cffa-404f-8fa5-9d96459a6e65/Banner+custom+made+prodcuts.jpg?format=2500w")}
 
@@ -285,7 +285,7 @@ body = f"""
       <div>
         <h3>I need something made</h3>
         <p><em>Crafted to last generations.</em></p>
-        <p>A wedding guest book. A family history finally bound. A portfolio that does justice to the work inside it. Something that will still exist &mdash; and still matter &mdash; in thirty years.</p>
+        <p>A wedding guest book. A family history finally bound. A portfolio that does justice to the work inside it. Something that will still exist, and still matter, in thirty years.</p>
         <a class="btn" href="collectibles.html" aria-label="See what I can make for you">See what I can make</a>
         <div class="path-image">
           {img_block("A row of orange and patterned notebooks on a shelf", "home-books-portfolio.webp", "Home", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/60d2a1a0-3233-4204-9f1d-502c739571e4/Enperfeitas++Portfolio-17.jpg?format=1500w")}
@@ -304,16 +304,16 @@ body = f"""
         "We absolutely loved our experience with Marble &amp; Sip and created so many beautiful marbled sheets. Absolutely recommend as a couple's event, a ladies' night, or for a special occasion.",
         "Jonathan Ferland", "review-marbling.webp",
         source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/f1317dff-6574-4b3c-b0dd-56abbb38d324/DSCF7991.jpg?format=500w")}
-      {testimonial_card("Marbled Notebooks &mdash; Swirls",
+      {testimonial_card("Marbled Notebooks, Swirls",
         "Very high quality work! Price was very fair, and I love the hand made look and feel of the product. Delivery was fast and excellent. It recently made the perfect gift to a loved one.",
         "Gustav Sj&ouml;", "review-notebooks.webp",
         source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1701085614580-MES44X5GZNBCCN5HN5TC/09.png?format=500w")}
-      {testimonial_card("Bookbinding Workshop &mdash; Curved Spine",
+      {testimonial_card("Bookbinding Workshop, Curved Spine",
         "Otroligt mysigt hantverk med trevligt s&auml;llskap och en pedagogisk kursledare. Bra uppl&auml;gg och niv&aring;. Tiden bara rann iv&auml;g, och r&auml;ckte n&auml;stan inte till! Men vi gick alla d&auml;rifr&aring;n med riktigt fina b&ouml;cker.",
         "Tobias Jensen", "review-curved-spine.webp",
         source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/d68ae535-7f67-46a4-8eb8-4d2317f96f7a/Enperfeitas++Portfolio-12.jpg?format=500w")}
-      {testimonial_card("Bookbinding Workshop &mdash; Exposed Spine",
-        "I had a lot of fun making my first book ever &mdash; warmly encouraged and mentored by Suzete! I will come back!!!",
+      {testimonial_card("Bookbinding Workshop, Exposed Spine",
+        "I had a lot of fun making my first book ever, warmly encouraged and mentored by Suzete! I will come back!!!",
         "Anna Pehrsson", "review-exposed-spine.webp",
         source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/10bc6f08-57d2-4cd4-b02d-e9691d4b4f4a/Enperfeitas++Portfolio-30.jpg?format=500w")}
       {testimonial_card("Bookbinding Tools",
@@ -371,7 +371,7 @@ body = f"""
 <section>
   <div class="wrap" style="max-width:640px;">
     <blockquote>
-      <p>&ldquo;Bookbinding is more than just a craft to me &mdash; it's a way to connect people and ideas, preserve stories and create lasting memories.</p>
+      <p>&ldquo;Bookbinding is more than just a craft to me. It's a way to connect people and ideas, preserve stories and create lasting memories.</p>
       <p>Whether you want to share a personal journey, design a bespoke bookbinding piece, or showcase a professional portfolio, my handmade bookbinding services in Stockholm can bring your vision to life!&rdquo;</p>
     </blockquote>
     <p style="font-weight:700;">/Suzete</p>
@@ -381,7 +381,7 @@ body = f"""
 <section class="alt">
   <div class="wrap" style="text-align:center;">
     <h2>Follow along</h2>
-    <p>Bookbinding techniques, corner jigs, workshop announcements, spine details, and handmade book examples &mdash; on Instagram <a href="https://www.instagram.com/enperfeitas" target="_blank" rel="noopener">@enperfeitas</a>.</p>
+    <p>Bookbinding techniques, corner jigs, workshop announcements, spine details, and handmade book examples, on Instagram <a href="https://www.instagram.com/enperfeitas" target="_blank" rel="noopener">@enperfeitas</a>.</p>
     <a class="btn secondary" href="https://www.instagram.com/enperfeitas" target="_blank" rel="noopener">View on Instagram</a>
   </div>
 </section>
@@ -389,7 +389,7 @@ body = f"""
 <section id="newsletter">
   <div class="wrap" style="max-width:520px;text-align:center;">
     <h2>Enperfeitas Newsletter</h2>
-    <p>Sign up to hear about workshops, new books, exclusive offers, and special events &mdash; plus fun, quirky insights about life as a bookbinder and the occasional simple-book tutorial.</p>
+    <p>Sign up to hear about workshops, new books, exclusive offers, and special events, plus fun, quirky insights about life as a bookbinder and the occasional simple-book tutorial.</p>
     <a class="btn" href="newsletter.html" aria-label="Sign up for the newsletter">Sign up</a>
     <p style="margin-top:14px;color:var(--muted);font-size:0.85rem;">We respect your privacy.</p>
   </div>
@@ -402,25 +402,25 @@ page("about.html", "About | Enperfeitas Studio",
 # ---------------------------------------------------------------- THE STUDIO
 membership_accordion = accordion([
     ("Description", "<p>You get access to the studio, bookbinding tools, and a flexible workspace. Support is available, but sessions are intended for independent work. Spaces are LIMITED.</p>"),
-    ("Pricing", "<p>Regular access to the studio on set days/times with two different packages:</p><ul><li>Basic &mdash; 1,200 SEK</li><li>Premium &mdash; 1,800 SEK</li></ul>"),
+    ("Pricing", "<p>Regular access to the studio on set days/times with two different packages:</p><ul><li>Basic: 1,200 SEK</li><li>Premium: 1,800 SEK</li></ul>"),
     ("Members operating hours", "<p>The studio will be available for members 2 or 3 days a week (depending on the package you choose):</p><ul><li>Basic: Tuesdays and Thursdays, 17:00&ndash;20:00</li><li>Premium: Tuesdays, Wednesdays and Thursdays, 17:00&ndash;20:00</li></ul><p>The studio will be closed on public holidays and may occasionally close for special events. You will be notified as early as possible about any planned closures.</p>"),
     ("Benefits", "<ul><li>Access to dedicated workspace and all bookbinding, printing, and finishing equipment</li><li>Complimentary introduction sessions to familiarize you with the equipment</li><li>15% discount on all workshops</li><li>15% discount on materials from the Enperfeitas shop</li><li>Invitations to all special events at Enperfeitas Studio</li></ul>"),
-    ("Who is this for?", "<p>From casual to serious hobbyists, busy creatives, mindful makers, aspiring pros and collectors/restoration enthusiasts. Those who value a laid-back environment over structured lessons, and people who want flexible access to a professional studio to create as a form of meditation or stress relief.</p><p>PS: to ensure a safe, efficient environment for everyone, new members must either have attended at least one Enperfeitas Studio workshop (or a comparable bookbinding course), or demonstrate prior knowledge of basic bookbinding techniques and tools usage. Unsure whether you meet the requirements? Get in touch &mdash; we're happy to guide you to the best next steps.</p>"),
+    ("Who is this for?", "<p>From casual to serious hobbyists, busy creatives, mindful makers, aspiring pros and collectors/restoration enthusiasts. Those who value a laid-back environment over structured lessons, and people who want flexible access to a professional studio to create as a form of meditation or stress relief.</p><p>PS: to ensure a safe, efficient environment for everyone, new members must either have attended at least one Enperfeitas Studio workshop (or a comparable bookbinding course), or demonstrate prior knowledge of basic bookbinding techniques and tools usage. Unsure whether you meet the requirements? Get in touch. We're happy to guide you to the best next steps.</p>"),
 ])
 
 workshop_accordion = accordion([
     ("Description", "<p>Enperfeitas Studio offers a beautifully designed, fully-equipped workspace for like-minded creators to run their workshops. Our inspiring environment is ideal for small groups (up to 6&ndash;8 people), and offers everything you need to deliver a memorable experience, whether you're teaching bookbinding, art, or any other craft.</p>"),
     ("Pricing", "<ul><li>Half-day rental (4 hours): 1,500 SEK</li><li>Full-day rental (8 hours): 2,250 SEK</li></ul><p>Prices exclude VAT. Dates available can be checked in advance by reaching us via email.</p>"),
     ("Additional fees (optional)", "<ul><li>Cleaning fee: 500 SEK</li><li>Snacks and refreshments (fika, fruit, juices, coffee, tea): 100 SEK per participant</li><li>Damage or repair fees, based on any repairs needed after your workshop</li></ul>"),
-    ("Benefits", "<ul><li>Fully equipped space: access to tools and equipment to host a professional, seamless workshop</li><li>A serene atmosphere, free from big-city distractions &mdash; students can focus fully</li><li>Easy-to-access studio, convenient for you and your attendees</li><li>Become part of a community of like-minded creatives</li></ul>"),
-    ("Who is this for?", "<p>Artists, crafters, and designers looking for a well-lit, fully-equipped space to teach specialized skills &mdash; watercolor painting, ceramics (if portable), calligraphy, or design tutorials. Bookbinders or craft instructors who don't have a dedicated venue but want a cosy environment that matches the handcrafted aesthetic of their lessons. Local hobby groups and instructors just testing ideas are welcome too.</p>"),
+    ("Benefits", "<ul><li>Fully equipped space: access to tools and equipment to host a professional, seamless workshop</li><li>A serene atmosphere, free from big-city distractions. Students can focus fully</li><li>Easy-to-access studio, convenient for you and your attendees</li><li>Become part of a community of like-minded creatives</li></ul>"),
+    ("Who is this for?", "<p>Artists, crafters, and designers looking for a well-lit, fully-equipped space to teach specialized skills: watercolor painting, ceramics (if portable), calligraphy, or design tutorials. Bookbinders or craft instructors who don't have a dedicated venue but want a cosy environment that matches the handcrafted aesthetic of their lessons. Local hobby groups and instructors just testing ideas are welcome too.</p>"),
 ])
 
 events_accordion = accordion([
     ("Description", "<p>A series of free, collaborative sessions designed to bring creatives together in a safe and supportive environment. These events are all about sharing knowledge, exchanging ideas, and fostering creativity across different fields. Whether you're a writer, designer, or crafter, these sessions provide a platform to learn from others, showcase your work, and connect with a vibrant community of like-minded individuals.</p>"),
-    ("How it works?", "<p>No fees, just passion: these events are free to attend, and all we ask is that you come ready to share your creative journey, tips, or even challenges. To ensure a smooth experience, we'll have a sign-up list &mdash; choose whether you want to share something (a project, technique, or experience) or simply join and learn.</p>"),
+    ("How it works?", "<p>No fees, just passion: these events are free to attend, and all we ask is that you come ready to share your creative journey, tips, or even challenges. To ensure a smooth experience, we'll have a sign-up list. Choose whether you want to share something (a project, technique, or experience) or simply join and learn.</p>"),
     ("Event structure", "<p>Each session focuses on one or two creative topics, guided by participants who sign up to share their expertise. Everyone is encouraged to participate, either by sharing or contributing to discussions.</p>"),
-    ("How to join", "<p>Sign up by reserving your (free) spot, indicating if you'd like to share or attend. Bring something to share &mdash; a work-in-progress, a technique, or just an idea &mdash; there's no pressure, just a supportive environment.</p>"),
+    ("How to join", "<p>Sign up by reserving your (free) spot, indicating if you'd like to share or attend. Bring something to share: a work-in-progress, a technique, or just an idea. There's no pressure, just a supportive environment.</p>"),
 ])
 
 body = f"""
@@ -476,7 +476,7 @@ body = f"""
     <p style="max-width:520px;margin:0 auto 24px;color:var(--muted);">A no-pressure way to see if the studio is right for you, before committing to a membership.</p>
     <ul style="max-width:640px;margin:0 auto 28px;text-align:left;">
       <li><strong>Explore</strong> the space, use the tools and materials, and see how the calm, creative atmosphere works for you.</li>
-      <li><strong>Limited</strong> spots available each day to ensure comfort and focus &mdash; book early to secure yours.</li>
+      <li><strong>Limited</strong> spots available each day to ensure comfort and focus. Book early to secure yours.</li>
       <li>If you decide to <strong>join within 48 hours</strong>, your trial fee will be deducted from your first month&rsquo;s membership.</li>
     </ul>
     <a class="btn secondary" href="studio-membership.html">See membership plans</a>
@@ -488,7 +488,7 @@ body = f"""
     <div>
       <h2>Curious about Enperfeitas Studio?</h2>
       <p>Join me for the <strong>Open Studio</strong> events, where you can explore the space, meet fellow creatives, and get a glimpse of what we offer. It's the perfect opportunity to tour the studio, connect with the community, and learn about upcoming workshops and events.</p>
-      <p>Stay updated on event dates by subscribing to our newsletter. Don&rsquo;t miss out &mdash; join today and be the first to know about everything happening at Enperfeitas Studio!</p>
+      <p>Stay updated on event dates by subscribing to our newsletter. Don&rsquo;t miss out. Join today and be the first to know about everything happening at Enperfeitas Studio!</p>
       <a class="btn" href="newsletter.html" aria-label="Sign up for the newsletter">Sign up</a>
     </div>
     <div>
@@ -540,7 +540,7 @@ body = f"""
     </div>
   </div>
   <div class="wrap embed-note" style="margin-top:28px;">
-    The studio will be closed on public holidays and may occasionally close for special events &mdash; you'll be notified as early as possible about any planned closures. Online sign-up is on its way &mdash; in the meantime, use the email link on either membership above to join directly.
+    The studio will be closed on public holidays and may occasionally close for special events. You'll be notified as early as possible about any planned closures. Online sign-up is on its way. In the meantime, use the email link on either membership above to join directly.
   </div>
 </section>
 
@@ -559,7 +559,7 @@ body = f"""
     <div>
       <h2>Who is this for?</h2>
       <p>From casual to serious hobbyists, busy creatives, mindful makers, aspiring pros and collectors/restoration enthusiasts. Those who value a laid-back environment over structured lessons, and people who want flexible access to a professional studio to create as a form of meditation or stress relief.</p>
-      <p style="color:var(--muted);font-size:0.92rem;">PS: to ensure a safe, efficient environment for everyone, new members must either have attended at least one Enperfeitas Studio workshop (or a comparable bookbinding course), or demonstrate prior knowledge of basic bookbinding techniques and tools usage. Unsure whether you meet the requirements? Get in touch &mdash; we're happy to guide you to the best next steps.</p>
+      <p style="color:var(--muted);font-size:0.92rem;">PS: to ensure a safe, efficient environment for everyone, new members must either have attended at least one Enperfeitas Studio workshop (or a comparable bookbinding course), or demonstrate prior knowledge of basic bookbinding techniques and tools usage. Unsure whether you meet the requirements? Get in touch. We're happy to guide you to the best next steps.</p>
     </div>
   </div>
 </section>
@@ -569,7 +569,7 @@ body = f"""
     <h2>Want to give it a try first?</h2>
     <ul style="max-width:640px;margin:0 auto 28px;text-align:left;">
       <li><strong>Explore</strong> the space, use the tools and materials, and see how the calm, creative atmosphere works for you.</li>
-      <li><strong>Limited</strong> spots available each day to ensure comfort and focus &mdash; book early to secure yours.</li>
+      <li><strong>Limited</strong> spots available each day to ensure comfort and focus. Book early to secure yours.</li>
       <li>If you decide to <strong>join within 48 hours</strong>, your trial fee will be deducted from your first month&rsquo;s membership.</li>
     </ul>
     <span class="btn secondary disabled">Coming soon</span>
@@ -591,7 +591,7 @@ body = f"""
 <section>
   <div class="wrap grid-2">
     <div>
-      <p>Enperfeitas Studio occasionally opens its doors to other creatives, artists, and small collectives who wish to use the workshop space for aligned activities &mdash; from intimate art sessions to mindful creative gatherings.</p>
+      <p>Enperfeitas Studio occasionally opens its doors to other creatives, artists, and small collectives who wish to use the workshop space for aligned activities, from intimate art sessions to mindful creative gatherings.</p>
       <p>Because the studio is an active bookbinding atelier, we review all applications carefully to ensure that each activity fits the atmosphere of the space: calm, thoughtful, and rooted in craft and creativity.</p>
       <p>If you&rsquo;d like to host your event, project, or creative day here, please submit an Application for Studio Use below.</p>
     </div>
@@ -688,7 +688,7 @@ body = f"""
   <div class="wrap" style="max-width:600px;">
     <h2>Application for Studio Use</h2>
     <a class="btn" href="mailto:info@enperfeitas.com?subject=Studio%20Space%20Application" aria-label="Apply for studio use by email">Apply by email</a>
-    <p class="construction-note" style="margin-left:auto;margin-right:auto;">Include your activity, group size, and preferred date(s) &mdash; see the details above.</p>
+    <p class="construction-note" style="margin-left:auto;margin-right:auto;">Include your activity, group size, and preferred date(s). See the details above.</p>
   </div>
 </section>
 """
@@ -698,11 +698,11 @@ page("book-workshop-space.html", "Book Workshop Space | Enperfeitas",
 
 # ---------------------------------------------------------------- WORKSHOPS
 # Cancellation policy is identical, verbatim, on every workshop card on the
-# live site (bookbinding and marbling alike) — kept as one constant so it
+# live site (bookbinding and marbling alike), kept as one constant so it
 # stays in sync everywhere instead of drifting between copies.
 WORKSHOP_CANCELLATION = (
     "<p>A full refund is possible if the course is cancelled up to 4 weeks before the starting date. "
-    "After that, a refund of 50% is possible, or rebooking to a later workshop &mdash; if available. "
+    "After that, a refund of 50% is possible, or rebooking to a later workshop, if available. "
     "In the case of cancellation within less than 14 days before the start of the course, unfortunately, "
     "a refund isn't possible anymore and the reservation will be lost.</p>"
     "<p>I reserve the right to cancel the workshop in case of illness or too few participants. "
@@ -743,20 +743,20 @@ body = f"""
 <section>
   <div class="wrap grid-2 match-height">
     <div>
-      <p>Each workshop is thoughtfully designed to <strong>reduce stress</strong> and <strong>celebrate the joy of creativity</strong>. Here, the focus isn&rsquo;t on rushing but on embracing the process &mdash; learning at your pace, sharing ideas, and crafting something truly unique with your own hands.</p>
+      <p>Each workshop is thoughtfully designed to <strong>reduce stress</strong> and <strong>celebrate the joy of creativity</strong>. Here, the focus isn&rsquo;t on rushing but on embracing the process, learning at your pace, sharing ideas, and crafting something truly unique with your own hands.</p>
       <p>Participants will have access to premium materials, traditional bookbinding tools, and a curated library of resources for inspiration in the studio.</p>
       <p>Workshops are conducted in <strong>Swedish, English, or Portuguese</strong>, ensuring an inclusive and comfortable experience for all skill levels and backgrounds.</p>
       <div class="faq-list">
         {accordion([
           ("Where is the bookbinding studio located?",
-           "<p>The studio is located in Stockholm, Sweden, with an address in Gudmundr&aring;gatan 10, V&auml;llingby &mdash; R&aring;cksta. It takes about 8 min to walk from R&aring;cksta metro station.</p>"),
+           "<p>The studio is located in Stockholm, Sweden, with an address in Gudmundr&aring;gatan 10, V&auml;llingby, R&aring;cksta. It takes about 8 min to walk from R&aring;cksta metro station.</p>"),
           ("What to expect?",
            "<ul>"
            "<li><strong>Warm welcome &amp; orientation:</strong> Begin the day with a brief history of bookbinding traditions. Meet fellow creatives over a cup of coffee or tea, and get a sense of the day&rsquo;s flow.</li>"
-           "<li><strong>Step-by-step instruction:</strong> You&rsquo;ll learn to prepare signatures (the sets of pages), properly fold and stitch using classic techniques, and secure your cover with premium fabrics or leathers. Throughout the workshop, we&rsquo;ll discuss the &ldquo;why&rdquo; behind each step &mdash; so you leave understanding both the craft and the heritage.</li>"
+           "<li><strong>Step-by-step instruction:</strong> You&rsquo;ll learn to prepare signatures (the sets of pages), properly fold and stitch using classic techniques, and secure your cover with premium fabrics or leathers. Throughout the workshop, we&rsquo;ll discuss the &ldquo;why&rdquo; behind each step, so you leave understanding both the craft and the heritage.</li>"
            "<li><strong>High-quality materials:</strong> All supplies are provided: papers, threads, covers, and professional-grade adhesives. Carefully curated for durability and a refined finish.</li>"
            "<li><strong>Small group, personalized attention:</strong> We keep the workshop cozy (no large classes!), ensuring you get hands-on help whenever needed. Feel free to ask questions at every step.</li>"
-           "<li><strong>A finished book to take home:</strong> By the end, you&rsquo;ll have a completed, heirloom-quality creation &mdash; be it a journal, sketchbook, or memory keeper. It&rsquo;s the perfect gift for yourself or a loved one.</li>"
+           "<li><strong>A finished book to take home:</strong> By the end, you&rsquo;ll have a completed, heirloom-quality creation, be it a journal, sketchbook, or memory keeper. It&rsquo;s the perfect gift for yourself or a loved one.</li>"
            "</ul>"),
           ("Who It&rsquo;s for?",
            "<ul>"
@@ -882,7 +882,7 @@ body = f"""
            "<li>A supportive studio environment with everything set up for you.</li></ul>"),
           ("Cancellation policy", WORKSHOP_CANCELLATION),
           ("Important to know",
-           "<ul><li>This session skips the theory and demonstrations &mdash; basic marbling experience is required.</li>"
+           "<ul><li>This session skips the theory and demonstrations. Basic marbling experience is required.</li>"
            "<li>Your papers will require drying time. You&rsquo;ll need to consider some last-minute drying time or decide on an alternative pickup time.</li></ul>"),
         ],
         "https://enperfeitas.as.me/marblinglab", "Reserve your seat - Marbling Lab")}
@@ -923,7 +923,7 @@ body = f"""
            "<ul><li><strong>Paper preparation:</strong> Folding, trimming, and handling</li>"
            "<li><strong>Cover design:</strong> Preparing and customizing covers</li>"
            "<li><strong>Assembly:</strong> Constructing books using the Single-Section Case Binding method</li></ul>"
-           "<p>By the end of the workshop, your team will walk away with more than handcrafted books &mdash; they&rsquo;ll "
+           "<p>By the end of the workshop, your team will walk away with more than handcrafted books. They&rsquo;ll "
            "gain a shared sense of accomplishment, stronger interpersonal connections, and memories of a unique creative experience.</p>"),
         ])}
       </div>
@@ -938,7 +938,7 @@ body = f"""
 </section>
 """
 page("workshops.html", "Workshops | Enperfeitas Studio",
-     "Bookbinding and marbling workshops in Stockholm &mdash; single section, curved spine, exposed spine, Marble & Sip, and more.",
+     "Bookbinding and marbling workshops in Stockholm: single section, curved spine, exposed spine, Marble & Sip, and more.",
      body, active="workshops.html")
 
 # ---------------------------------------------------------------- BESPOKE BINDING
@@ -947,15 +947,15 @@ body = f"""
             "Custom bindings for weddings, family histories, cherished editions, and objects that carry too much meaning for a standard cover.",
             "Hands binding a book, surrounded by bookbinding tools", "Bespoke Binding",
             source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1f0fa009-cffa-404f-8fa5-9d96459a6e65/Banner+custom+made+prodcuts.jpg?format=2500w",
-            subtext2="Most things wear out. A well-made binding doesn&rsquo;t. Every project in this category is treated as a legacy piece &mdash; designed with you, made by hand, and built to be passed on.")}
+            subtext2="Most things wear out. A well-made binding doesn&rsquo;t. Every project in this category is treated as a legacy piece, designed with you, made by hand, and built to be passed on.")}
 
 <section>
   <div class="wrap grid-2 offer-row match-height">
     <div class="text-col">
-      <h2>Heritage Editions &mdash; Wedding and Family Albums</h2>
+      <h2>Heritage Editions: Wedding and Family Albums</h2>
       <p class="kicker">For the day people will talk about for the rest of their lives.</p>
       <p>A wedding guest book from a chain store will last five years before the spine splits. A Heritage Edition will be on a shelf in fifty years, still intact, still telling the story of that day.</p>
-      <p>This is for <strong>couples</strong> who have thought carefully about every other detail of their wedding &mdash; and want the physical objects from that day to reflect the same care.</p>
+      <p>This is for <strong>couples</strong> who have thought carefully about every other detail of their wedding, and want the physical objects from that day to reflect the same care.</p>
       <p>It&rsquo;s also for <strong>families</strong>. The person who has spent years tracing their lineage through Swedish parish records, building something no one else has, and wants it bound in a way that honours the work and survives them.</p>
       <p><strong>What to expect?</strong></p>
       <ul class="offer-list">
@@ -979,8 +979,8 @@ body = f"""
       {img_block("A hand lifting a small fabric-covered notebook from a gift box", "binding-rebinding.webp", "Bespoke Binding", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/240300f5-721a-4667-980c-899ca312e357/Enperfeitas_Image-03.png?format=1000w")}
     </div>
     <div class="text-col">
-      <h2>Fine Bindings &mdash; Exclusive Editions</h2>
-      <p class="kicker">For the book that already means something &mdash; and deserves a cover that shows it.</p>
+      <h2>Fine Bindings: Exclusive Editions</h2>
+      <p class="kicker">For the book that already means something, and deserves a cover that shows it.</p>
       <p>Some books aren&rsquo;t read. They&rsquo;re kept. A first edition, a volume that belonged to someone gone, a collection that represents years of obsession. Fine binding gives these objects a cover worthy of what they carry.</p>
       <p><strong>What to expect?</strong></p>
       <ul class="offer-list">
@@ -998,9 +998,9 @@ body = f"""
 <section>
   <div class="wrap grid-2 offer-row match-height">
     <div class="text-col">
-      <h2>Contemporary Rebinding &mdash; Cover Replacement</h2>
+      <h2>Contemporary Rebinding: Cover Replacement</h2>
       <p class="kicker">The story was always worth keeping. The cover just needs to catch up.</p>
-      <p>Mass-market bindings are made to a budget, not to last. If a book matters to you &mdash; a favourite novel read to pieces, a technical reference you&rsquo;ve used for years &mdash; it deserves a cover made with the same intention you&rsquo;ve brought to reading it.</p>
+      <p>Mass-market bindings are made to a budget, not to last. If a book matters to you, a favourite novel read to pieces, a technical reference you&rsquo;ve used for years. It deserves a cover made with the same intention you&rsquo;ve brought to reading it.</p>
       <p><strong>What to expect?</strong></p>
       <ul class="offer-list">
         <li>Cover replacement in cloth or leather.</li>
@@ -1022,9 +1022,9 @@ body = f"""
       {img_block("Close-up of the edge of a brown book with visible pages", "binding-restorations.webp", "Bespoke Binding", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/ecd6cd2f-e673-4491-bdc0-6082f92f10d1/Enperfeitas+.jpg?format=1000w")}
     </div>
     <div class="text-col">
-      <h2>Restorations &mdash; Preservation of Antique Books</h2>
+      <h2>Restorations: Preservation of Antique Books</h2>
       <p class="kicker">Old books carry history. Restoration makes sure they keep carrying it.</p>
-      <p>If it belonged to someone before you, it has already survived things. Restoration work uses conservation-grade materials to repair, stabilise, and protect &mdash; without erasing what the years have left behind.</p>
+      <p>If it belonged to someone before you, it has already survived things. Restoration work uses conservation-grade materials to repair, stabilise, and protect, without erasing what the years have left behind.</p>
       <p><strong>What to expect?</strong></p>
       <ul class="offer-list">
         <li>Spine, page, and cover repair.</li>
@@ -1041,7 +1041,7 @@ body = f"""
   <div class="wrap">
     <h2>How a bespoke project works</h2>
     <p>Every project starts with a <strong>conversation</strong> about what you&rsquo;re making, why it matters, and what you want it to look like in twenty years. From there, I prepare a <strong>tailored proposal</strong> with materials, timeline, and exact <strong>pricing</strong> before any work begins.</p>
-    <p>I work on one-of-a-kind commissions and small editions up to 50 copies. Most projects take a minimum of three months &mdash; good binding can&rsquo;t be rushed, and I won&rsquo;t pretend otherwise. A <strong>50% deposit</strong> begins the work; the balance is <strong>due on completion</strong>.</p>
+    <p>I work on one-of-a-kind commissions and small editions up to 50 copies. Most projects take a minimum of three months. Good binding can&rsquo;t be rushed, and I won&rsquo;t pretend otherwise. A <strong>50% deposit</strong> begins the work; the balance is <strong>due on completion</strong>.</p>
     <a class="btn" href="onboarding.html">See the full process</a>
   </div>
 </section>
@@ -1061,7 +1061,7 @@ page("bespoke-binding.html", "Bespoke Binding | Enperfeitas Studio",
 # ---------------------------------------------------------------- BESPOKE BOXES
 body = f"""
 {hero_cover("boxes-slipcases.webp", "What You Put It In Says as Much as What's Inside",
-            "Handcrafted boxes, slipcases, and portfolios for art, photography, rare books, and anything else that deserves proper protection. A box isn't just storage &mdash; it's a statement that the object inside matters.",
+            "Handcrafted boxes, slipcases, and portfolios for art, photography, rare books, and anything else that deserves proper protection. A box isn't just storage. It's a statement that the object inside matters.",
             "A box with a marbled interior, lined and empty", "Bespoke Boxes",
             source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/99a102ac-3308-4f8a-b4aa-d48f5872409f/IMG_9331.jpg?format=2500w")}
 
@@ -1070,7 +1070,7 @@ body = f"""
     <div class="text-col">
       <h2>Portfolios</h2>
       <p class="kicker">Your work, presented as seriously as it deserves.</p>
-      <p>A handbound portfolio made for your body of work &mdash; not adapted from a generic format. Tailored sizing, material, and finish. For artists and photographers who understand that how work is presented changes how it&rsquo;s received.</p>
+      <p>A handbound portfolio made for your body of work, not adapted from a generic format. Tailored sizing, material, and finish. For artists and photographers who understand that how work is presented changes how it&rsquo;s received.</p>
       <p><em>Available in linen, cloth, or leather. Ribbon closures, lined interiors, custom sizing.</em></p>
       <div class="price"><em>Starting from 1,300 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
       <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Portfolio%20inquiry" aria-label="Inquire about Portfolios">Inquire about this</a>
@@ -1102,7 +1102,7 @@ body = f"""
     <div class="text-col">
       <h2>Clamshell Boxes</h2>
       <p class="kicker">Museum-quality preservation. For things that need to last.</p>
-      <p>The clamshell is the standard of serious preservation &mdash; used by archives, collectors, and institutions. Fully hinged, archival construction, cloth or leather exterior. Options for decorative linings, compartments, foil stamping, and fitted supports.</p>
+      <p>The clamshell is the standard of serious preservation, used by archives, collectors, and institutions. Fully hinged, archival construction, cloth or leather exterior. Options for decorative linings, compartments, foil stamping, and fitted supports.</p>
       <p><em>For rare books, family documents, photographic prints, and collections built over a lifetime.</em></p>
       <div class="price"><em>Starting from 2,500 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
       <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Clamshell%20Box%20inquiry" aria-label="Inquire about Clamshell Boxes">Inquire about this</a>
@@ -1116,7 +1116,7 @@ body = f"""
 <section class="alt" style="text-align:center;">
   <div class="wrap">
     <h2>How to order</h2>
-    <p>Tell me what you&rsquo;re protecting and why it matters &mdash; that&rsquo;s the best starting point.<br>Reach me with a description, your rough budget, and your timeframe.</p>
+    <p>Tell me what you&rsquo;re protecting and why it matters. That&rsquo;s the best starting point.<br>Reach me with a description, your rough budget, and your timeframe.</p>
     <p style="color:var(--muted);">Most bespoke boxes and portfolios take 6&ndash;8 weeks.</p>
     <a class="btn" href="mailto:info@enperfeitas.com?subject=Bespoke%20Box%20project">info@enperfeitas.com</a>
   </div>
@@ -1138,7 +1138,7 @@ page("bespoke-boxes.html", "Bespoke Boxes | Enperfeitas Studio",
 body = f"""
 <section class="page-header wrap">
   <h1>Made for the moments that deserve more than ordinary</h1>
-  <p>Every piece is handbound, one of a kind, and designed to last generations. Not a product &mdash; a decision to treat something as the heirloom it already is.</p>
+  <p>Every piece is handbound, one of a kind, and designed to last generations. Not a product, a decision to treat something as the heirloom it already is.</p>
 </section>
 
 <section>
@@ -1147,7 +1147,7 @@ body = f"""
       {img_block("Close-up of a hand holding two watercolor-designed personalised notebooks, with options for blank, dotted, or lined pages", "work-09-notebooks-flatlay.webp", "Collectibles", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1681115714668-LEMN4KP4RUSKI0CHAQ6H/Colors+-78.jpg?format=1000w")}
       <div class="shop-card-body">
         <h3>Artisan Edition</h3>
-        <p class="desc">A handbound notebook, journal, or sketchbook &mdash; made to your specifications. For those who want a beautiful object for their own daily practice, or a gift that will actually be kept.</p>
+        <p class="desc">A handbound notebook, journal, or sketchbook, made to your specifications. For those who want a beautiful object for their own daily practice, or a gift that will actually be kept.</p>
         <a class="btn secondary" href="design-your-book.html" aria-label="Design your own handbound book">Design your own book</a>
       </div>
     </div>
@@ -1155,7 +1155,7 @@ body = f"""
       {img_block("A stack of four notebooks tied with a black ribbon", "binding-heritage.webp", "Collectibles", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/a41b2357-0279-45a1-96ab-2a25614263f9/IMG_8988.jpg?format=1000w")}
       <div class="shop-card-body">
         <h3>Bespoke Binding</h3>
-        <p class="desc">Wedding guest books, family albums, cherished volumes rebound. For life&rsquo;s milestones &mdash; designed together, bound by hand, built to outlast everything else from that day.</p>
+        <p class="desc">Wedding guest books, family albums, cherished volumes rebound. For life&rsquo;s milestones, designed together, bound by hand, built to outlast everything else from that day.</p>
         <a class="btn secondary" href="bespoke-binding.html" aria-label="Start your bespoke binding project">Start your bespoke project</a>
       </div>
     </div>
@@ -1226,7 +1226,7 @@ inspiration_gallery = "".join([
 
 body = f"""
 {hero_cover("work-09-notebooks-flatlay.webp", "Design Your Own Book",
-            "A handbound notebook, journal, or sketchbook, built around your choices &mdash; not picked off a shelf.",
+            "A handbound notebook, journal, or sketchbook, built around your choices, not picked off a shelf.",
             "Close-up of a hand holding two watercolor-designed personalised notebooks, with options for blank, dotted, or lined pages",
             "Design Your Own Book",
             source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1681115714668-LEMN4KP4RUSKI0CHAQ6H/Colors+-78.jpg?format=1000w")}
@@ -1234,7 +1234,7 @@ body = f"""
 <section>
   <div class="wrap">
     <ol class="steps" style="max-width:640px;margin:0 auto;">
-      <li><strong>Build your design.</strong> Pick a size, paper, and cover colour below &mdash; add any extra requests in the notes.</li>
+      <li><strong>Build your design.</strong> Pick a size, paper, and cover colour below. Add any extra requests in the notes.</li>
       <li><strong>Send it to the studio.</strong> One button turns your choices into an email, already written for you.</li>
       <li><strong>Get your quote.</strong> Suzete confirms materials, price, and timeline before anything is cut.</li>
     </ol>
@@ -1280,13 +1280,13 @@ body = f"""
 
         <div class="option-group">
           <h3>Cover colour</h3>
-          <p class="option-hint">Shown as a guide &mdash; the exact leather, bookcloth, or paper is confirmed with you before anything is cut.</p>
+          <p class="option-hint">Shown as a guide. The exact leather, bookcloth, or paper is confirmed with you before anything is cut.</p>
           <div class="swatch-row" role="radiogroup" aria-label="Cover colour">{swatch_inputs}
           </div>
         </div>
 
         <div class="option-group">
-          <label for="design-notes" class="option-hint" style="display:block;margin-bottom:8px;">Anything else? <span style="color:var(--muted);">Embossing, ribbons, a closure, a special occasion &mdash; optional.</span></label>
+          <label for="design-notes" class="option-hint" style="display:block;margin-bottom:8px;">Anything else? <span style="color:var(--muted);">Embossing, ribbons, a closure, a special occasion. All optional.</span></label>
           <textarea id="design-notes" class="design-notes" rows="3" placeholder="e.g. add my initials embossed on the cover, a red ribbon marker, it's a wedding gift..."></textarea>
         </div>
 
@@ -1301,7 +1301,7 @@ body = f"""
         </dl>
         <p class="price"><em>Every book is quoted individually, based on size, materials, and any personalisation.</em><br><em>You'll see the full price before anything is made.</em></p>
         <a class="btn disabled" id="request-design-btn" href="mailto:info@enperfeitas.com?subject=Artisan%20Edition%20-%20Custom%20Book%20Design" aria-label="Request this design">Choose a size and paper first</a>
-        <p class="form-note">This sends your choices to the studio by email &mdash; nothing is booked or charged yet.</p>
+        <p class="form-note">This sends your choices to the studio by email. Nothing is booked or charged yet.</p>
       </aside>
     </div>
   </div>
@@ -1310,7 +1310,7 @@ body = f"""
 <section>
   <div class="wrap">
     <h2 style="text-align:center;">For inspiration</h2>
-    <p style="text-align:center;color:var(--muted);margin-top:-8px;">A few recent pieces from the studio &mdash; see more on <a href="latest-work.html">Latest Work</a>.</p>
+    <p style="text-align:center;color:var(--muted);margin-top:-8px;">A few recent pieces from the studio. See more on <a href="latest-work.html">Latest Work</a>.</p>
     <div class="grid-3" style="margin-top:24px;">
       {inspiration_gallery}
     </div>
@@ -1323,11 +1323,11 @@ body = f"""
     <div class="faq-list">
       {accordion([
           ("How is pricing worked out?",
-           "<p>Every book is quoted individually, based on size, materials, and any personalisation you've asked for &mdash; there's no fixed price list. You'll always see the full price before any work begins.</p>"),
+           "<p>Every book is quoted individually, based on size, materials, and any personalisation you've asked for. There's no fixed price list. You'll always see the full price before any work begins.</p>"),
           ("How long does it take?",
            "<p>Custom orders typically take 3 weeks to 2 months for creation and shipment, depending on complexity and the studio's schedule at the time.</p>"),
           ("What if I'm not sure about everything yet?",
-           "<p>That's completely fine &mdash; choose what you know and describe the rest in the notes. Suzete will talk it through with you before anything is finalised.</p>"),
+           "<p>That's completely fine. Choose what you know and describe the rest in the notes. Suzete will talk it through with you before anything is finalised.</p>"),
           ("Can I see more examples first?",
            '<p>Browse recent pieces on <a href="latest-work.html">Latest Work</a>, or just <a href="mailto:info@enperfeitas.com">get in touch</a> and describe what you have in mind.</p>'),
       ])}
@@ -1496,7 +1496,7 @@ gallery_items = "".join(img_block(label, fname, "Latest Work", small=True, sourc
 body = f"""
 <section class="page-header wrap">
   <h1>Latest Work</h1>
-  <p>Recent pieces from the studio &mdash; notebooks and journals, marbled papers, boxes, and one-of-a-kind editions.</p>
+  <p>Recent pieces from the studio: notebooks and journals, marbled papers, boxes, and one-of-a-kind editions.</p>
 </section>
 
 <section>
@@ -1513,7 +1513,7 @@ page("latest-work.html", "Latest Work | Enperfeitas Studio",
 # ---------------------------------------------------------------- SHOP
 #
 # Each product's "stripe_link" starts empty. Buy buttons fall back to a
-# pre-filled mailto until a real Stripe Payment Link is pasted in here —
+# pre-filled mailto until a real Stripe Payment Link is pasted in here, 
 # same self-healing pattern as the placeholder images. See
 # STRIPE-SHOP-SETUP.md (written alongside IMAGE-MANIFEST.md below) for the
 # step-by-step on creating each link and activating/deactivating a "sale day"
@@ -1530,7 +1530,7 @@ PRODUCTS = [
         "name": "Punching Cradle",
         "price": "550 kr",
         "digital": False,
-        "desc": "A precision punching cradle for flawless, aligned holes across your signatures &mdash; built from durable, high-quality MDF.",
+        "desc": "A precision punching cradle for flawless, aligned holes across your signatures, built from durable, high-quality MDF.",
         "image": "shop-punching-cradle.webp",
         "source": "http://static1.squarespace.com/static/6287cba0410c800d0ff1f2b2/6288d8c4ef40836604a51764/65f6b142547e01097c172ce2/1787880550863/Enperfeitas+Punching+Cradle+v1+02.png?format=1500w",
         "stripe_link": "https://buy.stripe.com/3cI5kDfoqfMefDmdXj14400",
@@ -1591,7 +1591,7 @@ PRODUCTS = [
         "name": "Bookcloth Tutorial (DIY)",
         "price": "90 kr",
         "digital": True,
-        "desc": "Turn leftover fabric into your own bookcloth, with clear, illustrated steps &mdash; an easy, sustainable way to personalize a cover.",
+        "desc": "Turn leftover fabric into your own bookcloth, with clear, illustrated steps, an easy, sustainable way to personalize a cover.",
         "image": "shop-tutorial-bookcloth.webp",
         "source": "http://static1.squarespace.com/static/6287cba0410c800d0ff1f2b2/6288d8c4ef40836604a51764/666ffb1092879a0ec2ae596b/1787894394543/__Product+thumbnail+cradle+bookcloth.jpg?format=1500w",
         "stripe_link": "https://buy.stripe.com/8x24gzekm43w4YI06t1440c",
@@ -1602,7 +1602,7 @@ PRODUCTS = [
         "name": "Concertina (Accordion) Bookbinding Tutorial",
         "price": "90 kr",
         "digital": True,
-        "desc": "Clear, illustrated steps for assembling your own concertina book &mdash; a versatile structure for displaying art, photos, or sketches.",
+        "desc": "Clear, illustrated steps for assembling your own concertina book, a versatile structure for displaying art, photos, or sketches.",
         "image": "shop-tutorial-concertina.webp",
         "source": "http://static1.squarespace.com/static/6287cba0410c800d0ff1f2b2/6288d8c4ef40836604a51764/666ffd4c49eb5143d0589811/1787894395279/__Product+thumbnail+cradle+concertina.jpg?format=1500w",
         "stripe_link": "https://buy.stripe.com/fZuaEX3FIdE6gHq5qN1440d",
@@ -1698,7 +1698,7 @@ tutorial_cards = "".join(shop_card(p) for p in PRODUCTS if p["digital"])
 _shop_paused_notice = """
 <section class="wrap">
   <div class="embed-note" style="margin-top:-8px;">
-    Online payment is briefly paused while we sort out a billing hiccup &mdash; every "Buy now"
+    Online payment is briefly paused while we sort out a billing hiccup, every "Buy now"
     below opens a pre-filled email instead for now. Message <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a>
     and we'll get you sorted directly.
   </div>
@@ -1708,7 +1708,7 @@ _shop_paused_notice = """
 body = f"""
 <section class="page-header wrap">
   <h1>Shop</h1>
-  <p>Tools and digital tutorials from the studio. Availability comes and goes with the studio's schedule &mdash; join the <a href="newsletter.html">newsletter</a> to hear about the next drop.</p>
+  <p>Tools and digital tutorials from the studio. Availability comes and goes with the studio's schedule. Join the <a href="newsletter.html">newsletter</a> to hear about the next drop.</p>
 </section>
 {_shop_paused_notice}
 <section>
@@ -1724,7 +1724,7 @@ body = f"""
 <section class="alt">
   <div class="wrap">
     <h2>Digital tutorials</h2>
-    <p style="color:var(--muted);margin-top:-8px;">Instant PDF/video guides &mdash; sent by email after purchase.</p>
+    <p style="color:var(--muted);margin-top:-8px;">Instant PDF/video guides, sent by email after purchase.</p>
     <div class="grid-4" style="margin-top:24px;">
       {tutorial_cards}
     </div>
@@ -1738,7 +1738,7 @@ body = f"""
 </section>
 """
 page("shop.html", "Shop | Enperfeitas Studio",
-     "Bookbinding tools and digital tutorials from Enperfeitas Studio &mdash; punching cradle, spacers, corner jig, and step-by-step guides.",
+     "Bookbinding tools and digital tutorials from Enperfeitas Studio: punching cradle, spacers, corner jig, and step-by-step guides.",
      body, active="shop.html")
 
 # ---------------------------------------------------------------- ORDER CONFIRMED
@@ -1791,14 +1791,14 @@ def download_page(p):
     body = f"""
 <section class="page-header wrap">
   <h1>Thank you for your purchase!</h1>
-  <p>Here's your {html.escape(p["name"])} &mdash; a {kind}. Save it somewhere you'll find it again; this link works any time you come back to it.</p>
+  <p>Here's your {html.escape(p["name"])}, a {kind}. Save it somewhere you'll find it again; this link works any time you come back to it.</p>
 </section>
 
 <section>
   <div class="wrap" style="max-width:520px;">
     <div class="download-status">
       <a class="btn" id="dl-btn-{slug}" href="{file_path}" download hidden>Download {html.escape(p["name"])}</a>
-      <span class="download-pending" id="dl-pending-{slug}">This file is still being added &mdash; check back soon, or email <a href="mailto:info@enperfeitas.com?subject={mail_subject}">info@enperfeitas.com</a> and Suzete will send it straight to you.</span>
+      <span class="download-pending" id="dl-pending-{slug}">This file is still being added. Check back soon, or email <a href="mailto:info@enperfeitas.com?subject={mail_subject}">info@enperfeitas.com</a> and Suzete will send it straight to you.</span>
     </div>
     <p style="margin-top:28px;color:var(--muted);font-size:0.9rem;">Questions about your order? <a href="mailto:info@enperfeitas.com">Get in touch</a>.</p>
   </div>
@@ -1828,7 +1828,7 @@ for _p in PRODUCTS:
 body = f"""
 <section class="page-header wrap">
   <h1>Dear client,</h1>
-  <p>Here's what to expect when you commission a custom, handcrafted book from Enperfeitas &mdash; traditional craftsmanship, with modern touches.</p>
+  <p>Here's what to expect when you commission a custom, handcrafted book from Enperfeitas: traditional craftsmanship, with modern touches.</p>
 </section>
 
 <section>
@@ -1838,15 +1838,15 @@ body = f"""
       <li><h3>Crafting Contracts</h3><p>A design proposal, followed by a formal agreement with payment terms and a deposit requirement.</p></li>
       <li><h3>Production Orbit</h3><p>Your book is handcrafted with close attention to detail and quality.</p></li>
       <li><h3>Sharing is Caring</h3><p>Ongoing communication, with progress photos and status updates along the way.</p></li>
-      <li><h3>Final Touches and Delivery</h3><p>Your approval, final payment, and delivery arrangements &mdash; you'll choose your preferred delivery option, and additional fees may apply.</p></li>
+      <li><h3>Final Touches and Delivery</h3><p>Your approval, final payment, and delivery arrangements. You'll choose your preferred delivery option, and additional fees may apply.</p></li>
     </ol>
   </div>
 </section>
 
 <section class="alt" style="text-align:center;">
   <div class="wrap">
-    <p>Client satisfaction matters just as much after delivery as before it &mdash; questions are always welcome.</p>
-    <p><em>Making things that last.</em><br>&mdash; Suzete Pihl</p>
+    <p>Client satisfaction matters just as much after delivery as before it. Questions are always welcome.</p>
+    <p><em>Making things that last.</em><br>Suzete Pihl</p>
     <a class="btn" href="contact.html">Start a conversation</a>
   </div>
 </section>
@@ -1869,7 +1869,7 @@ page("onboarding.html", "How a Commission Works | Enperfeitas Studio",
 body = f"""
 <section class="page-header wrap">
   <h1>Join the community</h1>
-  <p>Studio news, slow process, and the occasional surprise &mdash; straight to your inbox.</p>
+  <p>Studio news, slow process, and the occasional surprise, straight to your inbox.</p>
 </section>
 
 <section style="text-align:center;">
@@ -1905,7 +1905,7 @@ body = f"""
     <div>
       <h2>Get in touch</h2>
       <p>Email: <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a></p>
-      <p><strong>Enperfeitas Studio address:</strong><br>Gudmundr&aring;gatan 10<br>V&auml;llingby &mdash; Stockholm, Sweden</p>
+      <p><strong>Enperfeitas Studio address:</strong><br>Gudmundr&aring;gatan 10<br>V&auml;llingby, Stockholm, Sweden</p>
       <p class="form-intro">Prefer to write directly? Use the email above. Or tell us more about what you have in mind with the quick form below:</p>
 
       <form class="contact-form" id="contact-form">
@@ -1961,7 +1961,7 @@ body = f"""
 </script>
 """
 page("contact.html", "Contact | Enperfeitas Studio",
-     "Get in touch with Enperfeitas Studio in Vällingby, Stockholm — send an inquiry, or reach us by email, Instagram, or Facebook.",
+     "Get in touch with Enperfeitas Studio in Vällingby, Stockholm. Send an inquiry, or reach us by email, Instagram, or Facebook.",
      body, active="contact.html")
 
 # Pay-what-you-like support section shown at the bottom of each free tool
@@ -1969,7 +1969,7 @@ page("contact.html", "Contact | Enperfeitas Studio",
 SUPPORT_SECTION = """<section class="section-tight" id="support">
   <div class="wrap">
     <h2 style="text-align:center;">Free to use. Pay if you like.</h2>
-    <p style="text-align:left;max-width:620px;margin:0 auto 32px;color:var(--muted);">This tool is free, and it stays free. If it saved you {intro_task}, feel free to throw a coin in the jar &mdash; entirely up to you. Thank you!</p>
+    <p style="text-align:left;max-width:620px;margin:0 auto 32px;color:var(--muted);">This tool is free, and it stays free. If it saved you {intro_task}, feel free to throw a coin in the jar, entirely up to you. Thank you!</p>
     <div class="grid-3">
       <div class="accordion-card" style="display:flex;flex-direction:column;">
         <h3>&#9749; Coffee</h3>
@@ -2034,7 +2034,7 @@ page("booklet-imposition.html", "Booklet Imposition | Enperfeitas Studio",
 body = """
 <section class="page-header wrap">
   <h1>Free Tools for Bookbinders</h1>
-  <p>Little helpers I built for my own bench, now yours to use. Free, right in your browser &mdash; and if one saves you time, pay what you like.</p>
+  <p>Little helpers I built for my own bench, now yours to use. Free, right in your browser, and if one saves you time, pay what you like.</p>
 </section>
 <section>
   <div class="wrap grid-2" style="max-width:900px;align-items:stretch;">
@@ -2092,7 +2092,7 @@ body = f"""
 </section>
 """
 page("links.html", "Links | Enperfeitas",
-     "All Enperfeitas links in one place — studio, collectibles, workshops, newsletter, and contact.",
+     "All Enperfeitas links in one place: studio, collectibles, workshops, newsletter, and contact.",
      body, active=None)
 
 # ---------------------------------------------------------------- PRIVACY POLICY
@@ -2115,13 +2115,13 @@ privacy_sections = accordion([
      "religious beliefs), and we do not collect information about you from third parties.</p>"
      "<p><strong>Payment data:</strong> if you make a purchase, data such as your payment "
      "instrument number is collected to process the transaction. All payment data is "
-     "handled and stored by Stripe &mdash; see "
+     "handled and stored by Stripe. See "
      "<a href=\"https://stripe.com/se/privacy\" target=\"_blank\" rel=\"noopener\">Stripe&rsquo;s "
      "privacy notice</a>.</p>"
      "<p><strong>Automatically collected data:</strong> when you visit our Services, we "
      "automatically collect information such as your IP address, browser and device "
      "characteristics, operating system, language preferences, referring URLs, and "
-     "approximate location &mdash; primarily to keep the Services secure and working, and "
+     "approximate location, primarily to keep the Services secure and working, and "
      "for internal analytics and reporting.</p>"),
     ("2. How do we process your information?",
      "<p>We process your information to: facilitate account creation and manage user "
@@ -2142,13 +2142,13 @@ privacy_sections = accordion([
      "statement, or a court order) we may process information without consent, as "
      "allowed under Canadian law.</p>"),
     ("4. When and with whom do we share your information?",
-     "<p>We may share your information during a business transfer &mdash; for example, in "
+     "<p>We may share your information during a business transfer, for example, in "
      "connection with a merger, sale of company assets, financing, or acquisition of "
      "all or part of the business.</p>"),
     ("5. Do we use cookies and other tracking technologies?",
      "<p>We may use cookies and similar technologies to keep our Services secure, "
      "remember your preferences, and support basic site functions. We also use "
-     "<strong>Google Analytics</strong> to understand how the Services are used &mdash; you "
+     "<strong>Google Analytics</strong> to understand how the Services are used. You "
      "can opt out at <a href=\"https://tools.google.com/dlpage/gaoptout\" target=\"_blank\" "
      "rel=\"noopener\">Google&rsquo;s opt-out page</a>. Third parties and service providers "
      "may also use tracking technologies on our Services for analytics and "
@@ -2157,8 +2157,8 @@ privacy_sections = accordion([
      "<p>We keep your personal information only for as long as necessary for the "
      "purposes set out in this notice, unless a longer period is required by law (for "
      "example, tax or accounting requirements). Once there is no ongoing need to "
-     "process it, we delete or anonymise it, or &mdash; where that isn&rsquo;t possible, such "
-     "as information held in backup archives &mdash; we securely store it and restrict any "
+     "process it, we delete or anonymise it, or, where that isn&rsquo;t possible, such "
+     "as information held in backup archives. We securely store it and restrict any "
      "further use until deletion is possible.</p>"),
     ("7. Do we collect information from minors?",
      "<p>We do not knowingly collect data from, or market to, children under 18 years "
@@ -2179,14 +2179,14 @@ privacy_sections = accordion([
      "authority; in Switzerland, to the Federal Data Protection and Information "
      "Commissioner.</p>"
      "<p>You can unsubscribe from marketing emails at any time using the unsubscribe "
-     "link in those emails, or by contacting us &mdash; we may still send non-marketing, "
+     "link in those emails, or by contacting us. We may still send non-marketing, "
      "service-related messages, such as those necessary to fulfil an order.</p>"),
     ("9. Do-Not-Track signals",
      "<p>No uniform standard for Do-Not-Track (DNT) browser signals currently exists, "
      "so we do not respond to them. If a standard is adopted that we&rsquo;re required to "
      "follow, we will update this notice to reflect that.</p>"),
     ("10. Do we make updates to this notice?",
-     "<p>Yes &mdash; we may update this Privacy Notice from time to time to stay compliant "
+     "<p>Yes. We may update this Privacy Notice from time to time to stay compliant "
      "with relevant laws. The &ldquo;Last updated&rdquo; date at the top reflects the most "
      "recent revision, and we&rsquo;ll note any material changes.</p>"),
     ("11. How can you contact us about this notice?",
@@ -2206,7 +2206,7 @@ body = f"""
 </section>
 <section>
   <div class="wrap" style="max-width:720px;">
-    <p>This Privacy Notice for Enperfeitas (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) describes how and why we might access, collect, store, use, and/or share your personal information when you use our Services &mdash; including when you visit enperfeitas.com, or engage with us in other related ways, such as marketing or events.</p>
+    <p>This Privacy Notice for Enperfeitas (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) describes how and why we might access, collect, store, use, and/or share your personal information when you use our Services, including when you visit enperfeitas.com, or engage with us in other related ways, such as marketing or events.</p>
     <p>Reading this notice will help you understand your privacy rights and choices. If you do not agree with our policies and practices, please do not use our Services. If you have any questions or concerns, please contact us at <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a>.</p>
     <div class="faq-list">
       {privacy_sections}
@@ -2214,7 +2214,7 @@ body = f"""
   </div>
 </section>
 """
-page("privacy-policy.html", "Privacy Policy | Enperfeitas Studio", "Enperfeitas Studio privacy policy — what information we collect, how it's used, and your rights.", body)
+page("privacy-policy.html", "Privacy Policy | Enperfeitas Studio", "Enperfeitas Studio privacy policy: what information we collect, how it's used, and your rights.", body)
 
 # ---------------------------------------------------------------- REFUND POLICY
 body = f"""
@@ -2250,7 +2250,7 @@ body = f"""
     <h2>Notifications</h2>
     <p>You'll receive an email confirmation when your order is placed, and another when it ships.</p>
     <h2>Shipping costs</h2>
-    <p>Shipping costs are calculated based on the total weight of your purchase, at the same rate PostNord charges the studio &mdash; no additional packaging fees. Alternative carriers require contacting the studio beforehand.</p>
+    <p>Shipping costs are calculated based on the total weight of your purchase, at the same rate PostNord charges the studio, no additional packaging fees. Alternative carriers require contacting the studio beforehand.</p>
     <h2>International fees</h2>
     <p>Customs duties may apply depending on your location relative to Sweden. The recipient is responsible for these charges.</p>
   </div>
@@ -2289,7 +2289,7 @@ body = f"""
   <p style="margin-top:24px;"><a class="btn" href="index.html">Bind me back to the homepage!</a></p>
 </section>
 """
-page("404.html", "Page Not Found | Enperfeitas Studio", "Oops! This page is Unbound — but we've got plenty of threads and glue to fix things up.", body)
+page("404.html", "Page Not Found | Enperfeitas Studio", "Oops! This page is Unbound, but we've got plenty of threads and glue to fix things up.", body)
 
 print("legal / 404 pages done")
 
@@ -2300,16 +2300,16 @@ _still_missing = [
 ]
 with open(os.path.join(os.path.dirname(DIST), "IMAGE-MANIFEST.md"), "w", encoding="utf-8") as f:
     f.write("# Image manifest\n\n")
-    f.write(f"{len(IMAGE_MANIFEST) - len(_still_missing)} of {len(IMAGE_MANIFEST)} photo slots are already filled in. The table below lists only what's still a placeholder. I pulled the real image URLs straight from your live site, so filling one in is just: click the link, save the file, rename it to match, drop it in `website/images/`. The placeholder disappears automatically — no code changes needed.\n\n")
+    f.write(f"{len(IMAGE_MANIFEST) - len(_still_missing)} of {len(IMAGE_MANIFEST)} photo slots are already filled in. The table below lists only what's still a placeholder. I pulled the real image URLs straight from your live site, so filling one in is just: click the link, save the file, rename it to match, drop it in `website/images/`. The placeholder disappears automatically, no code changes needed.\n\n")
     f.write("| Page | What the photo shows | Save as | Download |\n|---|---|---|---|\n")
     for filename, label, pg, source in _still_missing:
-        clean_label = label.replace("&mdash;", "-").replace("&rsquo;", "'")
-        link = f"[Original]({source})" if source else "_(not found — see note below)_"
+        clean_label = label.replace(", ", "-").replace("&rsquo;", "'")
+        link = f"[Original]({source})" if source else "_(not found. See note below)_"
         f.write(f"| {pg} | {clean_label} | `images/{filename}` | {link} |\n")
     f.write(
         "\nTip: right-click each \"Original\" link and choose **Save Link As…**, saving it with the exact "
         "filename from the **Save as** column. A couple of the source files are `.png`/`.webp` rather than "
-        "`.jpg` — that's fine, just keep the filename from this table exactly as written and the browser will "
+        "`.jpg`. That's fine, just keep the filename from this table exactly as written and the browser will "
         "save it correctly regardless of the source format.\n"
     )
 print(f"image manifest: {len(IMAGE_MANIFEST)} entries, {len(_still_missing)} still missing, {sum(1 for *_, s in _still_missing if s)} with direct links")
@@ -2321,7 +2321,7 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
         f.write(
             "## The shop is paused\n\n"
             "Every \"Buy now\" button currently falls back to a pre-filled email instead of "
-            "taking a real payment — all 18 Payment Links (7 products + 11 size variants) were "
+            "taking a real payment, all 18 Payment Links (7 products + 11 size variants) were "
             "created on the wrong Stripe account, so checkout is paused until they're recreated "
             "on the right one.\n\n"
             "**To fix it:** in the *correct* Stripe account, recreate each Payment Link below "
@@ -2333,7 +2333,7 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
         for p in PRODUCTS:
             if p.get("variant_options"):
                 for v in p["variant_options"]:
-                    f.write(f"| {p['name']} — {v['label']} | (set in the correct account) |\n")
+                    f.write(f"| {p['name']}, {v['label']} | (set in the correct account) |\n")
             else:
                 f.write(f"| {p['name']} | {p['price']} |\n")
         f.write("\n")
@@ -2350,7 +2350,7 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
         "buyer the moment they pay. To connect it: in the Stripe Dashboard, go to **Payment "
         "links**, open that product's link, click **Edit**, scroll to **After payment**, choose "
         "**Don't show confirmation page**, and paste in that product's URL below. Repeat for "
-        "all four — once set, buyers land straight on their download page after paying, no "
+        "all four, once set, buyers land straight on their download page after paying, no "
         "action needed from you per sale.\n\n"
         "| Product | Redirect this Payment Link to |\n|---|---|\n"
     )
@@ -2364,7 +2364,7 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
     if _missing_downloads:
         f.write(
             "\n## Files still needed\n\n"
-            "Each download page is built but empty until the real file is in place — until then, "
+            "Each download page is built but empty until the real file is in place, until then, "
             "buyers see a \"still being added, email us\" message instead of a broken link, so "
             "nothing is broken in the meantime. Send these to me (or drop them yourself into "
             "`website/downloads/`, named exactly as below) and I'll wire them in:\n\n"
@@ -2375,7 +2375,7 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
             f.write(f"| {name} | `downloads/{slug}.{ext}` | {kind} |\n")
         f.write(
             "\nIf one of these is actually a video already hosted somewhere (YouTube, Vimeo, "
-            "Google Drive), send me that link instead of the file itself — large video files "
+            "Google Drive), send me that link instead of the file itself, large video files "
             "aren't a great fit for the GitHub repo, and the download page can point straight at "
             "it instead.\n"
         )
@@ -2383,13 +2383,13 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
         f.write("\n## Files\n\nAll four tutorial files are in place. Nothing more to do here.\n")
     f.write(
         "\n**Note on privacy:** these download pages aren't password-protected or checked against "
-        "an actual Stripe payment — anyone with the direct link could open one. For 90 kr "
+        "an actual Stripe payment, anyone with the direct link could open one. For 90 kr "
         "tutorials this is a common, low-risk trade-off among small shops; if that ever matters "
         "more, a paid delivery tool (like SendOwl) can add real access control later.\n\n"
     )
     if SHOP_PAUSED:
         f.write(
-            "## Size variants\n\nCovered above — the size picker on Spacers and Corner Cutting "
+            "## Size variants\n\nCovered above. The size picker on Spacers and Corner Cutting "
             "Jig needs a fresh Payment Link per size on the correct account, same as every other "
             "product right now.\n\n"
         )
@@ -2402,13 +2402,13 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
         if _missing_variants:
             f.write(
                 "## Size variants still needed\n\n"
-                "A single Payment Link can only charge one fixed price — it can't show a dropdown "
+                "A single Payment Link can only charge one fixed price. It can't show a dropdown "
                 "that changes the price per size. The Shop page has a size picker for both variant "
                 "products, but each size below still needs its own Payment Link before it charges "
                 "automatically; until then, picking that size falls back to a pre-filled email "
                 "instead.\n\n"
                 "For each size: **Payment links → +New → +Add a new product**, name it so you can "
-                "tell it apart later (e.g. \"Bookbinding Spacers — 10mm\"), set its price, **Create "
+                "tell it apart later (e.g. \"Bookbinding Spacers, 10mm\"), set its price, **Create "
                 "link**, then send me the size and its link so I can wire it in.\n\n"
                 "| Product | Sizes still needing their own link |\n|---|---|\n"
             )
@@ -2418,12 +2418,12 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
         else:
             f.write(
                 "## Size variants\n\nEvery size of Spacers and Corner Cutting Jig has its own "
-                "Payment Link — the dropdown on the Shop page charges the right price automatically "
+                "Payment Link. The dropdown on the Shop page charges the right price automatically "
                 "for every option. Nothing more to do here.\n\n"
             )
     f.write(
         "## Photos still needed\n\n"
-        "The product photos are the same self-healing placeholders as the rest of the site — see "
+        "The product photos are the same self-healing placeholders as the rest of the site. See "
         "`IMAGE-MANIFEST.md` for the filenames and direct links to the originals.\n"
     )
 print("wrote STRIPE-SHOP-SETUP.md")

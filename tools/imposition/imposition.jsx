@@ -230,7 +230,7 @@ function Header() {
         Booklet Imposition
       </div>
       <div style={{ fontSize: 13, color: C.inkSoft, marginTop: 4, maxWidth: 640, lineHeight: 1.5 }}>
-        Upload a page-sequence PDF and lay it out for saddle-stitch printing — a single signature, or
+        Upload a page-sequence PDF and lay it out for saddle-stitch printing: a single signature, or
         several sewn sections nested and sewn together, with creep compensation if you want it.
       </div>
     </div>
@@ -283,7 +283,7 @@ function PdfUpload({ file, info, onFileSelect, error, disabled }) {
         {!file && (
           <div style={{ fontSize: 13, color: C.inkSoft }}>
             <div style={{ fontWeight: 600, color: C.ink, marginBottom: 4 }}>Drop a PDF here, or click to choose one</div>
-            One page per book page, in reading order — this tool handles the reordering.
+            One page per book page, in reading order. This tool handles the reordering.
           </div>
         )}
         {file && (
@@ -309,7 +309,7 @@ function PdfUpload({ file, info, onFileSelect, error, disabled }) {
       {info && info.mixedSizes && (
         <div style={{ marginTop: 10, background: C.warnBg, color: C.warn, borderRadius: 4, padding: "10px 12px", fontSize: 12.5, lineHeight: 1.5 }}>
           This PDF's pages aren't all the same size. Imposition assumes one uniform page size (taken from
-          page 1) — any page a different size will be stretched or squeezed to fit. Standardise the page
+          page 1). Any page a different size will be stretched or squeezed to fit. Standardise the page
           size in your source document first if that's not what you want.
         </div>
       )}
@@ -445,7 +445,7 @@ function SheetPreview({ imposition, currentIndex, onNavigate, pageCount, trim, p
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
         <div style={{ fontSize: 12.5, color: C.inkSoft }}>
-          Signature <strong style={{ color: C.ink }}>{sheet.signatureIndex + 1}</strong> of {imposition.numSignatures} — sheet{" "}
+          Signature <strong style={{ color: C.ink }}>{sheet.signatureIndex + 1}</strong> of {imposition.numSignatures}, sheet{" "}
           <strong style={{ color: C.ink }}>{sheet.indexInSignature + 1}</strong> of {sheet.sheetsInSignature}
           {sheet.isOutermost && " (outermost / cover)"}
           {sheet.isInnermost && sheet.sheetsInSignature > 1 && " (innermost / centrefold)"}
@@ -485,7 +485,7 @@ function SheetPreview({ imposition, currentIndex, onNavigate, pageCount, trim, p
             else and barely moves.
           </>
         ) : (
-          <>Creep compensation is off — pages print at their exact position, no shift.</>
+          <>Creep compensation is off. Pages print at their exact position, no shift.</>
         )}
       </div>
 
@@ -497,7 +497,7 @@ function SheetPreview({ imposition, currentIndex, onNavigate, pageCount, trim, p
 
       {trimPct && (trimPct.top > 0 || trimPct.bottom > 0 || trimPct.outer > 0) && pageWmm && pageHmm && (
         <div style={{ marginTop: 6, fontSize: 11.5, color: C.inkSoft }}>
-          The dashed green line is where the head/feet/fore-edge trim lands — trim to it and each page
+          The dashed green line is where the head/feet/fore-edge trim lands. Trim to it and each page
           comes out at your original {Math.round(pageWmm)} × {Math.round(pageHmm)} mm, full content intact.
           It's extra sheet space, not a shrink of your pages.
         </div>
@@ -550,7 +550,7 @@ function SignatureControls({
       </FieldRow>
 
       <SectionLabel>Paper</SectionLabel>
-      <FieldRow label="Sheet size" hint="Auto fits the sheet exactly to 2× your page width — no printer margin. Pick a fixed size if you need to match a specific tray.">
+      <FieldRow label="Sheet size" hint="Auto fits the sheet exactly to 2× your page width, no printer margin. Pick a fixed size if you need to match a specific tray.">
         <Select
           value={paperKey}
           onChange={onPaperKeyChange}
@@ -561,7 +561,7 @@ function SignatureControls({
       <SectionLabel>Trim allowance</SectionLabel>
       <div style={{ fontSize: 11.5, color: C.inkSoft, lineHeight: 1.5, marginBottom: 10 }}>
         How much you'll trim off the head, feet, and fore-edge once the book is bound. The tool adds
-        this as blank space around each page, so the cut comes out of that space — not your text.
+        this as blank space around each page, so the cut comes out of that space, not your text.
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 6 }}>
         <FieldRow label="Head (top)">
@@ -573,7 +573,7 @@ function SignatureControls({
       </div>
       <FieldRow
         label="Fore-edge (outer side)"
-        hint="Set any of these to 0 if your pages already have their own margin baked in and you're only ever trimming a hairline off. These apply to every page — the spine side is never trimmed, so it has no allowance here."
+        hint="Set any of these to 0 if your pages already have their own margin baked in and you're only ever trimming a hairline off. These apply to every page. The spine side is never trimmed, so it has no allowance here."
       >
         <NumInput value={marginEdgeMm} onChange={onMarginEdgeMmChange} step={0.5} min={0} max={30} suffix="mm" />
       </FieldRow>
@@ -585,7 +585,7 @@ function SignatureControls({
       {creepEnabled && (
         <FieldRow
           label="Total creep to compensate"
-          hint="Fold a real test signature of this paper and thickness, then measure how much further the innermost sheet's open edge sticks out past the outermost (cover) sheet's. That number goes here. Leave at 0 if you're not sure — better to trim by eye than guess."
+          hint="Fold a real test signature of this paper and thickness, then measure how much further the innermost sheet's open edge sticks out past the outermost (cover) sheet's. That number goes here. Leave at 0 if you're not sure. Better to trim by eye than guess."
         >
           <NumInput value={creepTotalMm} onChange={onCreepTotalMmChange} step={0.1} min={0} max={20} suffix="mm" />
         </FieldRow>
@@ -594,7 +594,7 @@ function SignatureControls({
       <SectionLabel>Assembly label</SectionLabel>
       <FieldRow
         label=""
-        hint={'Prints a tiny note in the corner of each sheet, like "Sig 1 · sheet 2/3 · front" — handy for keeping sheets in the right order while you fold and sew, especially with more than one signature. It sits in the margin and gets trimmed off (or just leave it off if you don\'t need it).'}
+        hint={'Prints a tiny note in the corner of each sheet, like "Sig 1 · sheet 2/3 · front". Handy for keeping sheets in the right order while you fold and sew, especially with more than one signature. It sits in the margin and gets trimmed off (or just leave it off if you don\'t need it).'}
       >
         <Toggle
           checked={includeInstructions}
@@ -673,7 +673,7 @@ function BookbindingTips() {
 
       <Tip title="Duplex flip: test before you commit paper">
         These sheets print landscape (wide). On most drivers that means "Flip on Short Edge" duplex, not
-        "Long Edge" — but drivers vary. Print sheet 1 of a short test file first, both sides, and check the
+        "Long Edge", but drivers vary. Print sheet 1 of a short test file first, both sides, and check the
         back reads right-way-up and not mirrored before you print the real run.
       </Tip>
 
@@ -685,7 +685,7 @@ function BookbindingTips() {
 
       <Tip title="Sewing multiple signatures">
         Stack the finished signatures in order (signature 1 first) and sew through each one's own fold
-        line, then link the signatures together along the spine — a simple pamphlet stitch per signature,
+        line, then link the signatures together along the spine, a simple pamphlet stitch per signature,
         chained to the next with a kettle or chain stitch, works well for most sketchbook-weight paper.
       </Tip>
 
@@ -695,8 +695,8 @@ function BookbindingTips() {
       </Tip>
 
       <Tip title="Test-fold before a long run">
-        Print and fold just one real signature first. Check reading order, margins, and — if you're using
-        it — that the creep compensation is actually pulling the trim in the right direction, before
+        Print and fold just one real signature first. Check reading order, margins, and. If you're using
+        it. That the creep compensation is actually pulling the trim in the right direction, before
         committing the rest of the paper.
       </Tip>
 
@@ -715,7 +715,7 @@ function BookbindingTips() {
 function Footer() {
   return (
     <div style={{ marginTop: 28, paddingTop: 14, borderTop: `1px solid ${C.line}`, fontSize: 11.5, color: C.inkSoft, lineHeight: 1.6 }}>
-      Everything happens in your browser — the PDF is never uploaded anywhere. Pages are embedded as
+      Everything happens in your browser. The PDF is never uploaded anywhere. Pages are embedded as
       vector content, not rasterised, so print quality matches your source file exactly.
     </div>
   );
@@ -771,7 +771,7 @@ export default function ImpositionTool() {
         mixedSizes: meta.mixedSizes,
       });
     } catch (e) {
-      setError("Couldn't read that PDF — it may be corrupted, password-protected, or not a valid PDF. (" + (e && e.message ? e.message : "unknown error") + ")");
+      setError("Couldn't read that PDF. It may be corrupted, password-protected, or not a valid PDF. (" + (e && e.message ? e.message : "unknown error") + ")");
     }
   }, []);
 
