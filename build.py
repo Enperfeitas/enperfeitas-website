@@ -2037,11 +2037,28 @@ body = """
 <section>
   <div class="wrap grid-2" style="max-width:900px;align-items:stretch;">
     <div class="accordion-card" style="display:flex;flex-direction:column;">
+      <div style="text-align:center;margin-bottom:6px;" aria-hidden="true">
+        <svg viewBox="0 0 96 96" width="112" height="112" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="22" width="80" height="52" rx="2"/>
+          <line x1="48" y1="22" x2="48" y2="74" stroke="var(--accent)" stroke-dasharray="4 4"/>
+          <text x="28" y="56" text-anchor="middle" font-family="Roboto Slab, Georgia, serif" font-size="20" font-weight="700" fill="currentColor" stroke="none">8</text>
+          <text x="68" y="56" text-anchor="middle" font-family="Roboto Slab, Georgia, serif" font-size="20" font-weight="700" fill="currentColor" stroke="none">1</text>
+          <path d="M8 84h80" stroke="var(--accent)"/>
+        </svg>
+      </div>
       <h3>Booklet Imposition</h3>
       <p style="text-align:left;color:var(--muted);">Upload your book as a PDF and get it laid out as printable spreads, ready to fold, nest and sew. Download the whole book or one signature at a time.</p>
       <a class="btn" style="margin-top:auto;" href="booklet-imposition.html">Open Booklet Imposition</a>
     </div>
     <div class="accordion-card" style="display:flex;flex-direction:column;">
+      <div style="text-align:center;margin-bottom:6px;" aria-hidden="true">
+        <svg viewBox="0 0 96 96" width="112" height="112" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="16" y="50" width="64" height="26" rx="2"/>
+          <path d="M22 50 30 22H66L74 50"/>
+          <path d="M16 62h64"/>
+          <path d="M16 86h64M16 82v8M80 82v8M32 86v-3M48 86v-3M64 86v-3" stroke="var(--accent)"/>
+        </svg>
+      </div>
       <h3>Box Maker</h3>
       <p style="text-align:left;color:var(--muted);">Work out the piece dimensions for Solander and hinged boxes, with a cutting layout and a preview.</p>
       <a class="btn" style="margin-top:auto;" href="box-maker.html">Open Box Maker</a>
