@@ -2005,7 +2005,7 @@ body = """
   <div id="boxmaker-root"></div>
 </div>
 
-<script src="js/boxmaker.bundle.js"></script>
+<script src="js/boxmaker-v2.js"></script>
 """ + SUPPORT_SECTION.replace("{intro_task}", "an evening of measuring, cutting and recutting board")
 page("box-maker.html", "Box Maker | Enperfeitas Studio",
      "A private studio tool for working out Solander and hinged box piece dimensions, cutting layout, and a preview -- from Constructing and Covering Boxes.",
