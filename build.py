@@ -15,6 +15,7 @@ NAV = [
     ("bespoke-boxes.html", "Bespoke Boxes"),
     ("latest-work.html", "Latest Work"),
     ("shop.html", "Shop"),
+    ("tools.html", "Free Tools"),
     ("about.html", "About"),
     ("contact.html", "Contact"),
 ]
@@ -1963,6 +1964,32 @@ page("contact.html", "Contact | Enperfeitas Studio",
      "Get in touch with Enperfeitas Studio in Vällingby, Stockholm — send an inquiry, or reach us by email, Instagram, or Facebook.",
      body, active="contact.html")
 
+# Pay-what-you-like support section shown at the bottom of each free tool
+# (Stripe Payment Links). {intro_task} is filled in per tool.
+SUPPORT_SECTION = """<section class="section-tight" id="support">
+  <div class="wrap">
+    <h2 style="text-align:center;">Free to use. Pay if you like.</h2>
+    <p style="text-align:center;max-width:620px;margin:0 auto 32px;color:var(--muted);">This tool is free, and it stays free. If it saved you {intro_task}, feel free to throw a coin in the jar &mdash; entirely up to you. Thank you!</p>
+    <div class="grid-3">
+      <div class="accordion-card" style="display:flex;flex-direction:column;">
+        <h3>&#9749; Coffee</h3>
+        <p style="text-align:center;color:var(--muted);margin-bottom:22px;">Fuel for the next tool. A small thank-you that goes a long way.</p>
+        <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/7sYbJ1foqcA2fDm1ax1440g" target="_blank" rel="noopener" aria-label="Buy Suzete a coffee">Buy me a coffee</a>
+      </div>
+      <div class="accordion-card" style="display:flex;flex-direction:column;">
+        <h3>&#129525; Bookcloth for the studio</h3>
+        <p style="text-align:center;color:var(--muted);margin-bottom:22px;">Helps me stock the studio with lovely bookcloth for more books and workshops.</p>
+        <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/cNi7sL3FI1Vo9eYaL71440h" target="_blank" rel="noopener" aria-label="Contribute bookcloth for the studio">Add some bookcloth</a>
+      </div>
+      <div class="accordion-card" style="display:flex;flex-direction:column;">
+        <h3>&#10024; Hot foil machine jar</h3>
+        <p style="text-align:center;color:var(--muted);margin-bottom:22px;">Every coin gets the studio closer to gold-stamped covers.</p>
+        <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/00wdR92BE57A62M7yV1440i" target="_blank" rel="noopener" aria-label="Contribute to the hot foil machine saving jar">Fill the jar</a>
+      </div>
+    </div>
+  </div>
+</section>
+"""
 # ---------------------------------------------------------------- BOX MAKER
 # A private studio tool (Suzete's own React component, reviewed, two real
 # bugs fixed, and compiled to one self-contained JS file -- see
@@ -1979,10 +2006,10 @@ body = """
 </div>
 
 <script src="js/boxmaker.bundle.js"></script>
-"""
+""" + SUPPORT_SECTION.replace("{intro_task}", "an evening of measuring, cutting and recutting board")
 page("box-maker.html", "Box Maker | Enperfeitas Studio",
      "A private studio tool for working out Solander and hinged box piece dimensions, cutting layout, and a preview -- from Constructing and Covering Boxes.",
-     body, active=None, robots="noindex, nofollow")
+     body, active="tools.html")
 
 # ---------------------------------------------------------------- BOOKLET IMPOSITION
 # A private studio tool (built from scratch with Suzete, starting from a
@@ -1995,12 +2022,36 @@ body = """
   <div id="imposition-root"></div>
 </div>
 
-<script src="js/imposition.bundle.js"></script>
-"""
+<script src="js/imposition-v2.js"></script>
+""" + SUPPORT_SECTION.replace("{intro_task}", "an evening of folding and swearing")
 page("booklet-imposition.html", "Booklet Imposition | Enperfeitas Studio",
      "A private studio tool for imposing a page-sequence PDF into saddle-stitch signatures ready to fold, nest, and sew -- with optional creep compensation.",
-     body, active=None, robots="noindex, nofollow")
+     body, active="tools.html")
 
+# ---------------------------------------------------------------- FREE TOOLS
+body = """
+<section class="page-header wrap">
+  <h1>Free Tools for Bookbinders</h1>
+  <p>Little helpers I built for my own bench, now yours to use. Free, right in your browser &mdash; and if one saves you time, pay what you like.</p>
+</section>
+<section>
+  <div class="wrap grid-2" style="max-width:900px;align-items:stretch;">
+    <div class="accordion-card" style="display:flex;flex-direction:column;">
+      <h3>Booklet Imposition</h3>
+      <p style="text-align:center;color:var(--muted);">Upload your book as a PDF and get it laid out as printable spreads, ready to fold, nest and sew. Download the whole book or one signature at a time.</p>
+      <a class="btn" style="margin-top:auto;" href="booklet-imposition.html">Open Booklet Imposition</a>
+    </div>
+    <div class="accordion-card" style="display:flex;flex-direction:column;">
+      <h3>Box Maker</h3>
+      <p style="text-align:center;color:var(--muted);">Work out the piece dimensions for Solander and hinged boxes, with a cutting layout and a preview.</p>
+      <a class="btn" style="margin-top:auto;" href="box-maker.html">Open Box Maker</a>
+    </div>
+  </div>
+</section>
+"""
+page("tools.html", "Free Tools for Bookbinders | Enperfeitas Studio",
+     "Free online tools for bookbinders from Enperfeitas Studio: booklet imposition and a box maker. Pay what you like.",
+     body, active="tools.html")
 # ---------------------------------------------------------------- LINKS
 link_items = [
     ("studio.html", "The Studio"),
