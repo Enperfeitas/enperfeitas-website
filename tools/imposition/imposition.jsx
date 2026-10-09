@@ -1,13 +1,12 @@
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import * as PDFLib from "pdf-lib";
-import JSZip from "jszip";
 import {
   PAPER_PRESETS,
   computeImposition,
   flattenSheets,
   readPdfInfo,
+  generateImposedPdf,
   generateImposedPdfsBySignature,
-  generateSignatureSplitPdfs,
   mmToPt,
   ptToMm,
 } from "./impose-core.js";
@@ -624,40 +623,30 @@ function SignatureControls({
           </div>
         )}
         {generatedZip && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ fontSize: 11, color: C.inkSoft, marginTop: 2 }}>
-              {generatedZip.signatureCount > 1
-                ? `All ${generatedZip.signatureCount} imposed, ready-to-print signatures, zipped together — print, fold, and sew in order.`
-                : "Your imposed, ready-to-print file:"}
-            </div>
-            <Button onClick={() => generatedZip.download()} variant="secondary" full>
-              {generatedZip.signatureCount > 1
-                ? `Download all ${generatedZip.signatureCount} signatures (.zip, ${formatBytes(generatedZip.size)})`
-                : `Download imposed PDF (${formatBytes(generatedZip.size)})`}
-            </Button>
-          </div>
+          <Button onClick={() => generatedZip.download()} variant="secondary" full>
+            Download {generatedZip.filename} ({formatBytes(generatedZip.size)})
+          </Button>
         )}
       </div>
 
       <div style={{ marginTop: 22, paddingTop: 14, borderTop: `1px solid ${C.line}` }}>
         <div style={{ fontSize: 11.5, fontWeight: 700, color: C.ink, marginBottom: 6 }}>
-          Advanced: printer's own booklet mode
+          One PDF per signature
         </div>
         <div style={{ fontSize: 11.5, color: C.inkSoft, lineHeight: 1.5, marginBottom: 8 }}>
-          If your printer or copier has a built-in "Booklet" duplex mode, you don't need the 2-up files
-          above — this makes a plain (not 2-up) PDF per signature instead, in ordinary reading order, and
-          lets the printer reorder and merge pages itself.
+          Same imposed spreads as the complete PDF above, split into one ready-to-print file per signature
+          - handy for printing, folding and sewing one signature at a time.
         </div>
         <Button variant="secondary" onClick={onGenerateSplit} disabled={!canGenerate} full>
-          Split into one plain PDF per signature
+          Generate one imposed PDF per signature
         </Button>
-        {splitZip && (
+        {splitZip && splitZip.length > 0 && (
           <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
-            <Button variant="secondary" onClick={() => splitZip.download()} full>
-              {splitZip.signatureCount > 1
-                ? `Download all ${splitZip.signatureCount} plain signatures (.zip, ${formatBytes(splitZip.size)})`
-                : `Download plain PDF (${formatBytes(splitZip.size)})`}
-            </Button>
+            {splitZip.map((s) => (
+              <Button key={s.signatureIndex} variant="secondary" onClick={() => s.download()} full>
+                Download signature {s.signatureIndex + 1} ({s.paddedCount} pp, {formatBytes(s.size)})
+              </Button>
+            ))}
           </div>
         )}
       </div>
@@ -759,8 +748,8 @@ export default function ImpositionTool() {
   const [currentSheetIndex, setCurrentSheetIndex] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [generatedZip, setGeneratedZip] = useState(null); // {filename, size, signatureCount, download()}
-  const [splitZip, setSplitZip] = useState(null);
+  const [generatedZip, setGeneratedZip] = useState(null); // {filename, size, download()}
+  const [splitZip, setSplitZip] = useState(null); // [{signatureIndex, paddedCount, size, download()}]
 
   const handleFileSelect = useCallback(async (f) => {
     setError(null);
@@ -830,50 +819,33 @@ export default function ImpositionTool() {
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   };
 
-  // Bundle several named files into one .zip and trigger a single download
-  // -- so generating a multi-signature book gives one link, not one per
-  // signature.
-  const zipAndDownload = async (namedFiles, zipFilename) => {
-    const zip = new JSZip();
-    for (const { filename, bytes } of namedFiles) zip.file(filename, bytes);
-    const blob = await zip.generateAsync({ type: "blob" });
-    downloadBlobAs(blob, zipFilename);
-  };
+  const sheetOpts = () => ({
+    sheetWPt: sheetDims.sheetWPt,
+    sheetHPt: sheetDims.sheetHPt,
+    pageWPt: sheetDims.pageWPt,
+    pageHPt: sheetDims.pageHPt,
+    marginHeadPt: sheetDims.marginHeadPt,
+    marginFeetPt: sheetDims.marginFeetPt,
+    includeInstructions,
+  });
 
+  // Complete imposed PDF: every sheet of every signature in one file.
   const handleGenerate = useCallback(async () => {
     if (!canGenerate || !imposition || !sheetDims) return;
     setIsGenerating(true);
     setProgress(0);
     setGeneratedZip(null);
     try {
-      const results = await generateImposedPdfsBySignature(PDFLib, sourceBytes, imposition, {
-        sheetWPt: sheetDims.sheetWPt,
-        sheetHPt: sheetDims.sheetHPt,
-        pageWPt: sheetDims.pageWPt,
-        pageHPt: sheetDims.pageHPt,
-        marginHeadPt: sheetDims.marginHeadPt,
-        marginFeetPt: sheetDims.marginFeetPt,
-        includeInstructions,
+      const bytes = await generateImposedPdf(PDFLib, sourceBytes, imposition, {
+        ...sheetOpts(),
         onProgress: (p) => setProgress(p),
       });
       const base = file.name.replace(/\.pdf$/i, "");
-      const namedFiles =
-        results.length > 1
-          ? results.map((r) => ({
-              filename: `signature-${r.signatureIndex + 1}-of-${results.length}-imposed.pdf`,
-              bytes: r.bytes,
-            }))
-          : [{ filename: `${base}-imposed.pdf`, bytes: results[0].bytes }];
-      const zipFilename = `${base}-imposed.zip`;
-      const totalSize = namedFiles.reduce((a, f) => a + f.bytes.length, 0);
+      const filename = `${base}-imposed.pdf`;
       setGeneratedZip({
-        filename: results.length > 1 ? zipFilename : namedFiles[0].filename,
-        size: totalSize,
-        signatureCount: results.length,
-        download: () =>
-          results.length > 1
-            ? zipAndDownload(namedFiles, zipFilename)
-            : downloadBlobAs(new Blob([namedFiles[0].bytes], { type: "application/pdf" }), namedFiles[0].filename),
+        filename,
+        size: bytes.length,
+        download: () => downloadBlobAs(new Blob([bytes], { type: "application/pdf" }), filename),
       });
     } catch (e) {
       setError("Couldn't generate the imposed PDF. (" + (e && e.message ? e.message : "unknown error") + ")");
@@ -882,33 +854,29 @@ export default function ImpositionTool() {
     }
   }, [canGenerate, imposition, sheetDims, sourceBytes, includeInstructions, file]);
 
+  // One imposed PDF per signature: the same 2-up spreads as the complete
+  // PDF above, just split by signature.
   const handleGenerateSplit = useCallback(async () => {
-    if (!canGenerate || !imposition) return;
+    if (!canGenerate || !imposition || !sheetDims) return;
     try {
-      const results = await generateSignatureSplitPdfs(PDFLib, sourceBytes, imposition);
+      const results = await generateImposedPdfsBySignature(PDFLib, sourceBytes, imposition, sheetOpts());
       const base = file.name.replace(/\.pdf$/i, "");
-      const namedFiles =
-        results.length > 1
-          ? results.map((r) => ({
-              filename: `signature-${r.signatureIndex + 1}-of-${results.length}-plain.pdf`,
-              bytes: r.bytes,
-            }))
-          : [{ filename: `${base}-plain.pdf`, bytes: results[0].bytes }];
-      const zipFilename = `${base}-plain.zip`;
-      const totalSize = namedFiles.reduce((a, f) => a + f.bytes.length, 0);
-      setSplitZip({
-        filename: results.length > 1 ? zipFilename : namedFiles[0].filename,
-        size: totalSize,
-        signatureCount: results.length,
-        download: () =>
-          results.length > 1
-            ? zipAndDownload(namedFiles, zipFilename)
-            : downloadBlobAs(new Blob([namedFiles[0].bytes], { type: "application/pdf" }), namedFiles[0].filename),
-      });
+      setSplitZip(
+        results.map((r) => ({
+          signatureIndex: r.signatureIndex,
+          paddedCount: imposition.signatures[r.signatureIndex].paddedCount,
+          size: r.bytes.length,
+          download: () =>
+            downloadBlobAs(
+              new Blob([r.bytes], { type: "application/pdf" }),
+              `${base}-signature-${r.signatureIndex + 1}-imposed.pdf`
+            ),
+        }))
+      );
     } catch (e) {
-      setError("Couldn't split the PDF. (" + (e && e.message ? e.message : "unknown error") + ")");
+      setError("Couldn't generate the signature PDFs. (" + (e && e.message ? e.message : "unknown error") + ")");
     }
-  }, [canGenerate, imposition, sourceBytes, file]);
+  }, [canGenerate, imposition, sheetDims, sourceBytes, includeInstructions, file]);
 
   return (
     <div style={{ background: C.bg, minHeight: 600, fontFamily: SANS, color: C.ink, padding: 24 }}>
