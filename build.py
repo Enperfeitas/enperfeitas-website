@@ -2002,10 +2002,11 @@ SUPPORT_SECTION = """<section class="section-tight" id="support">
 # unlisted (not linked from anywhere, noindex), just no longer gated.
 body = """
 <div class="wrap" id="boxmaker-wrap">
+  <p class="tool-back"><a href="tools.html">&larr; All free tools</a></p>
   <div id="boxmaker-root"></div>
 </div>
 
-<script src="js/boxmaker-v2.js"></script>
+<script src="js/boxmaker-v3.js"></script>
 """ + SUPPORT_SECTION.replace("{intro_task}", "an evening of measuring, cutting and recutting board")
 page("box-maker.html", "Box Maker | Enperfeitas Studio",
      "A private studio tool for working out Solander and hinged box piece dimensions, cutting layout, and a preview -- from Constructing and Covering Boxes.",
@@ -2019,6 +2020,7 @@ page("box-maker.html", "Box Maker | Enperfeitas Studio",
 # password gate, reachable only by direct URL.
 body = """
 <div class="wrap" id="imposition-wrap">
+  <p class="tool-back"><a href="tools.html">&larr; All free tools</a></p>
   <div id="imposition-root"></div>
 </div>
 
