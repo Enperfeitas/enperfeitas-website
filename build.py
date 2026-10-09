@@ -2038,12 +2038,12 @@ body = """
   <div class="wrap grid-2" style="max-width:900px;align-items:stretch;">
     <div class="accordion-card" style="display:flex;flex-direction:column;">
       <h3>Booklet Imposition</h3>
-      <p style="text-align:center;color:var(--muted);">Upload your book as a PDF and get it laid out as printable spreads, ready to fold, nest and sew. Download the whole book or one signature at a time.</p>
+      <p style="text-align:left;color:var(--muted);">Upload your book as a PDF and get it laid out as printable spreads, ready to fold, nest and sew. Download the whole book or one signature at a time.</p>
       <a class="btn" style="margin-top:auto;" href="booklet-imposition.html">Open Booklet Imposition</a>
     </div>
     <div class="accordion-card" style="display:flex;flex-direction:column;">
       <h3>Box Maker</h3>
-      <p style="text-align:center;color:var(--muted);">Work out the piece dimensions for Solander and hinged boxes, with a cutting layout and a preview.</p>
+      <p style="text-align:left;color:var(--muted);">Work out the piece dimensions for Solander and hinged boxes, with a cutting layout and a preview.</p>
       <a class="btn" style="margin-top:auto;" href="box-maker.html">Open Box Maker</a>
     </div>
   </div>
