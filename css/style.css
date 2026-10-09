@@ -301,7 +301,8 @@ header.site.nav-open .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) 
 
 /* Page header (non-home pages) */
 .page-header {
-  padding: 70px 0 40px;
+  /* side padding keeps text off the screen edge on phones */
+  padding: 70px 32px 40px;
   text-align: center;
 }
 .page-header h1 {
@@ -1196,3 +1197,25 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
   }
 }
 
+/* ---------------------------------------------------------------------
+   Mobile polish for the free tools + their pay-what-you-like section.
+   - Buttons inside flex-column cards keep the full card width (the global
+     .btn margin:0 auto would otherwise shrink them into small pills).
+   - On phones, tool controls get a 44px minimum touch target, and inputs a
+     16px font so iOS Safari doesn't zoom the page when one is focused. */
+.accordion-card .btn { margin-left: 0; margin-right: 0; }
+@media (max-width: 760px) {
+  #imposition-root button, #boxmaker-root button { min-height: 44px; min-width: 44px; }
+  #imposition-root input[type="number"], #imposition-root input[type="text"], #imposition-root select,
+  #boxmaker-root input[type="number"], #boxmaker-root input[type="text"], #boxmaker-root select {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+  #support .accordion-card .btn { padding-top: 16px; padding-bottom: 16px; }
+}
+
+/* Tablet widths: three support cards get cramped (button text wraps unevenly),
+   so stack them in one centred column until there's room for three. */
+@media (max-width: 900px) {
+  #support .grid-3 { grid-template-columns: 1fr; max-width: 520px; margin-left: auto; margin-right: auto; }
+}
