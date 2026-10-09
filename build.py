@@ -263,85 +263,197 @@ def page(filename, title, description, body, active=None, robots=None):
 
 
 # ---------------------------------------------------------------- HOME
-body = f"""
-{hero_cover("hero-hands-tools.webp", "Some things<br>deserve to last",
-            "Handbound books, albums, and boxes made in Stockholm, for the moments, stories, and work that matter too much for anything ordinary.",
-            "Hands binding a book, surrounded by bookbinding tools", "Home",
-            source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1f0fa009-cffa-404f-8fa5-9d96459a6e65/Banner+custom+made+prodcuts.jpg?format=2500w")}
-
-<section id="paths">
-  <div class="wrap">
-    <h2 style="text-align:center;">There are two kinds of people who find their way here.</h2>
-    <div class="grid-2 two-paths">
-      <div>
-        <h3>I want to learn</h3>
-        <p><em>Your creative sanctuary in Stockholm.</em></p>
-        <p>Workshops, studio membership, tools, and space. A place in Stockholm where making things by hand is taken seriously.</p>
-        <a class="btn" href="studio.html">Explore the Studio</a>
-        <div class="path-image">
-          {img_block("Inside Enperfeitas Studio", "home-studio-interior.webp", "Home", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/581ca391-519a-4ce0-8f41-d8106c0796ce/IMG_1184.jpg?format=1500w")}
-        </div>
-      </div>
-      <div>
-        <h3>I need something made</h3>
-        <p><em>Crafted to last generations.</em></p>
-        <p>A wedding guest book. A family history finally bound. A portfolio that does justice to the work inside it. Something that will still exist, and still matter, in thirty years.</p>
-        <a class="btn" href="collectibles.html" aria-label="See what I can make for you">See what I can make</a>
-        <div class="path-image">
-          {img_block("A row of orange and patterned notebooks on a shelf", "home-books-portfolio.webp", "Home", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/60d2a1a0-3233-4204-9f1d-502c739571e4/Enperfeitas++Portfolio-17.jpg?format=1500w")}
-        </div>
-      </div>
+# Hand-written markup (hero actions, floating path cards, facts strip, recent work,
+# featured reviews, closing band). Styles live in css/style.css under 'Home page'.
+body = r"""
+<section class="hero-cover hero-home">
+  <img class="hero-cover-img" src="images/hero-hands-tools.webp" alt="Hands binding a book, surrounded by bookbinding tools"
+       onerror="this.style.display='none';this.closest('.hero-cover').classList.add('img-missing');">
+  <div class="hero-cover-scrim"></div>
+  <div class="wrap hero-cover-content">
+    <h1>Some things<br>deserve to last</h1>
+    <p class="sub">Handbound books, albums, and boxes made in Stockholm, for the moments, stories, and work that matter too much for anything ordinary.</p>
+    <div class="hero-actions">
+      <a class="btn hero-btn" href="studio.html">I want to learn</a>
+      <a class="btn hero-btn ghost" href="collectibles.html">I need something made</a>
     </div>
+  </div>
+</section>
+
+<section id="paths" class="path-float">
+  <div class="wrap">
+    <h2 class="sr-only">Two ways in: learn with us, or have something made</h2>
+    <div class="path-grid">
+      <article class="path-card">
+        <div class="path-photo">
+          <div class="img-wrap"><img src="images/home-studio-interior.webp" alt="Inside Enperfeitas Studio" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Inside Enperfeitas Studio</span></div>
+        </div>
+        <div class="path-body">
+          <span class="path-label">Learn</span>
+          <h3>I want to learn</h3>
+          <p class="path-tag"><em>Your creative sanctuary in Stockholm.</em></p>
+          <p>Workshops, studio membership, tools, and space. A place in Stockholm where making things by hand is taken seriously.</p>
+          <a class="btn path-btn" href="studio.html">Explore the Studio</a>
+        </div>
+      </article>
+      <article class="path-card">
+        <div class="path-photo">
+          <div class="img-wrap"><img src="images/home-books-portfolio.webp" alt="A row of orange and patterned notebooks on a shelf" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">A row of orange and patterned notebooks on a shelf</span></div>
+        </div>
+        <div class="path-body">
+          <span class="path-label">Commission</span>
+          <h3>I need something made</h3>
+          <p class="path-tag"><em>Crafted to last generations.</em></p>
+          <p>A wedding guest book. A family history finally bound. A portfolio that does justice to the work inside it. Something that will still exist, and still matter, in thirty years.</p>
+          <a class="btn path-btn" href="collectibles.html" aria-label="See what I can make for you">See what I can make</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="trust-strip">
+  <div class="wrap">
+    <ul class="trust-list">
+      <li><strong>30+</strong>workshop &amp; studio sessions every year</li>
+      <li><strong>By hand</strong>in the studio, in Stockholm</li>
+      <li><strong>3 languages</strong>Swedish, English or Portuguese</li>
+    </ul>
+  </div>
+</section>
+
+<section class="recent-work">
+  <div class="wrap">
+    <h2 style="text-align:center;">Recently on the bench</h2>
+    <div class="recent-grid">
+<a class="recent-tile" href="latest-work.html" aria-label="Marbled notebooks in yellow and red, see more on Latest Work"><div class="img-wrap"><img src="images/work-81-marbled-notebooks-yellow-red.webp" alt="Marbled notebooks in yellow and red" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Marbled notebooks in yellow and red</span></div></a>
+<a class="recent-tile" href="latest-work.html" aria-label="Thick book with a decorative cover, see more on Latest Work"><div class="img-wrap"><img src="images/work-54-thick-book-decorative-cover.webp" alt="Thick book with a decorative cover" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Thick book with a decorative cover</span></div></a>
+<a class="recent-tile" href="latest-work.html" aria-label="Red gift box with a matching book, see more on Latest Work"><div class="img-wrap"><img src="images/work-55-red-gift-box-matching.webp" alt="Red gift box with a matching book" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Red gift box with a matching book</span></div></a>
+<a class="recent-tile" href="latest-work.html" aria-label="Open book with marbled paper, see more on Latest Work"><div class="img-wrap"><img src="images/work-17-open-book-marbled-paper.webp" alt="Open book with marbled paper" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Open book with marbled paper</span></div></a>
+    </div>
+    <p style="text-align:center;margin-top:30px;"><a class="btn secondary" href="latest-work.html">See all latest work</a></p>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <p class="stat-line">30+ workshop &amp; studio sessions hosted every year</p>
     <h2 style="text-align:center;">What people say after holding it in their hands</h2>
-    <div class="testimonials">
-      {testimonial_card("Marbling Workshop",
-        "We absolutely loved our experience with Marble &amp; Sip and created so many beautiful marbled sheets. Absolutely recommend as a couple's event, a ladies' night, or for a special occasion.",
-        "Jonathan Ferland", "review-marbling.webp",
-        source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/f1317dff-6574-4b3c-b0dd-56abbb38d324/DSCF7991.jpg?format=500w")}
-      {testimonial_card("Marbled Notebooks, Swirls",
-        "Very high quality work! Price was very fair, and I love the hand made look and feel of the product. Delivery was fast and excellent. It recently made the perfect gift to a loved one.",
-        "Gustav Sj&ouml;", "review-notebooks.webp",
-        source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1701085614580-MES44X5GZNBCCN5HN5TC/09.png?format=500w")}
-      {testimonial_card("Bookbinding Workshop, Curved Spine",
-        "Otroligt mysigt hantverk med trevligt s&auml;llskap och en pedagogisk kursledare. Bra uppl&auml;gg och niv&aring;. Tiden bara rann iv&auml;g, och r&auml;ckte n&auml;stan inte till! Men vi gick alla d&auml;rifr&aring;n med riktigt fina b&ouml;cker.",
-        "Tobias Jensen", "review-curved-spine.webp",
-        source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/d68ae535-7f67-46a4-8eb8-4d2317f96f7a/Enperfeitas++Portfolio-12.jpg?format=500w")}
-      {testimonial_card("Bookbinding Workshop, Exposed Spine",
-        "I had a lot of fun making my first book ever, warmly encouraged and mentored by Suzete! I will come back!!!",
-        "Anna Pehrsson", "review-exposed-spine.webp",
-        source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/10bc6f08-57d2-4cd4-b02d-e9691d4b4f4a/Enperfeitas++Portfolio-30.jpg?format=500w")}
-      {testimonial_card("Bookbinding Tools",
-        "A lovely complete set of tools with great quality, just what you need to start your new bookbinding. Have fun, I did, I can't stop.",
-        "Malin Chapo", "review-tools.webp",
-        source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/e1f0df60-026a-4b1d-bf0f-fb9ba98c8dda/Enperfeitas+Starting+Kit-3.jpg?format=500w")}
-      {testimonial_card("Punching Cradle",
-        "Det ska bli sp&auml;nnande att anv&auml;nda &rdquo;vaggan&rdquo;.",
-        "Inger Larsson", "review-punching-cradle.webp",
-        source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1710671846005-9IIF0I2E02M24G2CUZ3H/Enperfeitas+Punching+Cradle+v1+02.png?format=500w")}
-      {testimonial_card("Free Undated Monthly Planner Template",
-        "Tack sn&auml;lla - det var super topp. Den var perfekt att ha i min jobb kalender f&ouml;r att snabbt f&aring; en &ouml;versikt hur m&aring;nadens projekt ser ut. Ser fram emot att forts&auml;tta f&ouml;lja ditt arbete. Skulle g&auml;rna komma till din atelj&eacute;.",
-        "G&ouml;rel Karlsson", None)}
-      {testimonial_card("Punching Cradle Tutorial (DIY)",
-        "S&aring; pedagogisk f&ouml;rklaring f&ouml;r att bygga en punching cradle &#10084;&#65039;",
-        "Ankie Glas", "review-cradle-tutorial.webp",
-        source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1716657900220-HAOHSMDVWXJLQAV5YPTG/Cradle+Tutorial_+Thumbnail.jpg")}
+    <div class="testimonials featured">
+<div class="testimonial">
+      <div class="testimonial-photo">
+        <img src="images/review-marbling.webp" alt="Marbling Workshop" style="opacity:0;"
+             loading="lazy" decoding="async"
+             onload="this.style.opacity='1';this.nextElementSibling.style.display='none';"
+             onerror="this.style.display='none';">
+        <span class="ph-label">Marbling Workshop</span>
+      </div>
+      <span class="who">Marbling Workshop</span>
+      <p>&ldquo;We absolutely loved our experience with Marble &amp; Sip and created so many beautiful marbled sheets. Absolutely recommend as a couple's event, a ladies' night, or for a special occasion.&rdquo;</p>
+      <cite>Jonathan Ferland</cite>
     </div>
-    <p style="text-align:center;margin-top:36px;">
-      <a href="https://www.google.com/search?q=Enperfeitas+Studio&amp;stick=H4sIAAAAAAAA_-NgU1I1qDAxM02zTDM0NDU0TTNPTUmyMqiwsDS2sEiySDYyNzRIS0pOXsQq5JpXkFqUlppZklisEFxSmpKZDwCmFu_ePgAAAA&amp;hl=en&amp;mat=CZg19H7WyqDHElYBa0lj_-eaT3FTM3GMIqpZ4xVDWW-wqfy8BgwB3WyDzeGebgLQc7ANSDsE4ZaJOOFNgZ7gHobG_EdZvpBdvITqd0u_928pPlVTBVGEw9U14deZfmeWYA&amp;authuser=1#mpd=~14384720232423110040/customers/reviews" target="_blank" rel="noopener">See more recent reviews on Google &rarr;</a>
+<div class="testimonial">
+      <div class="testimonial-photo">
+        <img src="images/review-notebooks.webp" alt="Marbled Notebooks: Swirls" style="opacity:0;"
+             loading="lazy" decoding="async"
+             onload="this.style.opacity='1';this.nextElementSibling.style.display='none';"
+             onerror="this.style.display='none';">
+        <span class="ph-label">Marbled Notebooks: Swirls</span>
+      </div>
+      <span class="who">Marbled Notebooks: Swirls</span>
+      <p>&ldquo;Very high quality work! Price was very fair, and I love the hand made look and feel of the product. Delivery was fast and excellent. It recently made the perfect gift to a loved one.&rdquo;</p>
+      <cite>Gustav Sj&ouml;</cite>
+    </div>
+<div class="testimonial">
+      <div class="testimonial-photo">
+        <img src="images/review-exposed-spine.webp" alt="Bookbinding Workshop: Exposed Spine" style="opacity:0;"
+             loading="lazy" decoding="async"
+             onload="this.style.opacity='1';this.nextElementSibling.style.display='none';"
+             onerror="this.style.display='none';">
+        <span class="ph-label">Bookbinding Workshop: Exposed Spine</span>
+      </div>
+      <span class="who">Bookbinding Workshop: Exposed Spine</span>
+      <p>&ldquo;I had a lot of fun making my first book ever, warmly encouraged and mentored by Suzete! I will come back!!!&rdquo;</p>
+      <cite>Anna Pehrsson</cite>
+    </div>
+    </div>
+    <details class="more-reviews">
+      <summary>More reviews</summary>
+      <div class="testimonials">
+<div class="testimonial">
+      <div class="testimonial-photo">
+        <img src="images/review-curved-spine.webp" alt="Bookbinding Workshop: Curved Spine" style="opacity:0;"
+             loading="lazy" decoding="async"
+             onload="this.style.opacity='1';this.nextElementSibling.style.display='none';"
+             onerror="this.style.display='none';">
+        <span class="ph-label">Bookbinding Workshop: Curved Spine</span>
+      </div>
+      <span class="who">Bookbinding Workshop: Curved Spine</span>
+      <p>&ldquo;Otroligt mysigt hantverk med trevligt s&auml;llskap och en pedagogisk kursledare. Bra uppl&auml;gg och niv&aring;. Tiden bara rann iv&auml;g, och r&auml;ckte n&auml;stan inte till! Men vi gick alla d&auml;rifr&aring;n med riktigt fina b&ouml;cker.&rdquo;</p>
+      <cite>Tobias Jensen</cite>
+    </div>
+<div class="testimonial">
+      <div class="testimonial-photo">
+        <img src="images/review-tools.webp" alt="Bookbinding Tools" style="opacity:0;"
+             loading="lazy" decoding="async"
+             onload="this.style.opacity='1';this.nextElementSibling.style.display='none';"
+             onerror="this.style.display='none';">
+        <span class="ph-label">Bookbinding Tools</span>
+      </div>
+      <span class="who">Bookbinding Tools</span>
+      <p>&ldquo;A lovely complete set of tools with great quality, just what you need to start your new bookbinding. Have fun, I did, I can't stop.&rdquo;</p>
+      <cite>Malin Chapo</cite>
+    </div>
+<div class="testimonial">
+      <div class="testimonial-photo">
+        <img src="images/review-punching-cradle.webp" alt="Punching Cradle" style="opacity:0;"
+             loading="lazy" decoding="async"
+             onload="this.style.opacity='1';this.nextElementSibling.style.display='none';"
+             onerror="this.style.display='none';">
+        <span class="ph-label">Punching Cradle</span>
+      </div>
+      <span class="who">Punching Cradle</span>
+      <p>&ldquo;Det ska bli sp&auml;nnande att anv&auml;nda &rdquo;vaggan&rdquo;.&rdquo;</p>
+      <cite>Inger Larsson</cite>
+    </div>
+<div class="testimonial">
+      <span class="who">Free Undated Monthly Planner Template</span>
+      <p>&ldquo;Tack sn&auml;lla - det var super topp. Den var perfekt att ha i min jobb kalender f&ouml;r att snabbt f&aring; en &ouml;versikt hur m&aring;nadens projekt ser ut. Ser fram emot att forts&auml;tta f&ouml;lja ditt arbete. Skulle g&auml;rna komma till din atelj&eacute;.&rdquo;</p>
+      <cite>G&ouml;rel Karlsson</cite>
+    </div>
+<div class="testimonial">
+      <div class="testimonial-photo">
+        <img src="images/review-cradle-tutorial.webp" alt="Punching Cradle Tutorial (DIY)" style="opacity:0;"
+             loading="lazy" decoding="async"
+             onload="this.style.opacity='1';this.nextElementSibling.style.display='none';"
+             onerror="this.style.display='none';">
+        <span class="ph-label">Punching Cradle Tutorial (DIY)</span>
+      </div>
+      <span class="who">Punching Cradle Tutorial (DIY)</span>
+      <p>&ldquo;S&aring; pedagogisk f&ouml;rklaring f&ouml;r att bygga en punching cradle &#10084;&#65039;&rdquo;</p>
+      <cite>Ankie Glas</cite>
+    </div>
+      </div>
+    </details>
+    <p style="text-align:center;margin-top:30px;">
+<a href="https://www.google.com/search?q=Enperfeitas+Studio&amp;stick=H4sIAAAAAAAA_-NgU1I1qDAxM02zTDM0NDU0TTNPTUmyMqiwsDS2sEiySDYyNzRIS0pOXsQq5JpXkFqUlppZklisEFxSmpKZDwCmFu_ePgAAAA&amp;hl=en&amp;mat=CZg19H7WyqDHElYBa0lj_-eaT3FTM3GMIqpZ4xVDWW-wqfy8BgwB3WyDzeGebgLQc7ANSDsE4ZaJOOFNgZ7gHobG_EdZvpBdvITqd0u_928pPlVTBVGEw9U14deZfmeWYA&amp;authuser=1#mpd=~14384720232423110040/customers/reviews" target="_blank" rel="noopener">See more recent reviews on Google &rarr;</a>
     </p>
   </div>
 </section>
 
 <section class="alt">
-  <div class="wrap" style="text-align:center;">
-    <a class="btn" href="studio.html">Join the Studio</a>
-    <a class="btn secondary" href="collectibles.html">Discover Collectibles</a>
+  <div class="wrap">
+    <div class="closing-grid">
+      <div class="soft-card">
+        <h3>Follow the work</h3>
+        <p>Studio news, slow process, and the occasional surprise, straight to your inbox.</p>
+        <a class="btn" href="newsletter.html">Sign up for the newsletter</a>
+      </div>
+      <div class="soft-card">
+        <h3>Free tools for bookbinders</h3>
+        <p>A booklet imposition tool and a box maker, built for my own bench and free for yours.</p>
+        <a class="btn secondary" href="tools.html">Explore the free tools</a>
+      </div>
+    </div>
   </div>
 </section>
 """

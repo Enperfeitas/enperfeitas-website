@@ -1260,3 +1260,91 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 
 /* Design rule: descriptive text is always left-aligned (headings may stay centred). */
 #support p, .tool-card p, .tools-note p { text-align: left; }
+
+/* ---------------------------------------------------------------------
+   Home page: hero actions, floating path cards, facts strip, recent work,
+   featured reviews and the closing band. */
+.hero-home .hero-cover-content { padding-bottom: 150px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
+.hero-actions .btn { background: #fff; color: var(--ink); border: 1px solid #fff; }
+.hero-actions .btn:hover { background: transparent; color: #fff; }
+.hero-actions .btn.ghost { background: transparent; color: #fff; }
+.hero-actions .btn.ghost:hover { background: #fff; color: var(--ink); }
+
+.path-float { padding: 0 0 40px; margin-top: -96px; position: relative; z-index: 3; }
+.path-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: stretch; }
+.path-card {
+  position: relative; display: flex; flex-direction: column; background: #fff;
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 28px 64px rgba(0,0,0,0.20), 0 6px 16px rgba(0,0,0,0.10);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.path-card:hover { transform: translateY(-6px); box-shadow: 0 36px 80px rgba(0,0,0,0.26), 0 8px 20px rgba(0,0,0,0.12); }
+.path-photo .img-wrap { aspect-ratio: 16 / 10; border-radius: 0; box-shadow: none; }
+.path-body { display: flex; flex-direction: column; flex: 1; padding: 26px 28px 30px; }
+.path-label {
+  align-self: flex-start; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 500; color: var(--accent); border: 1px solid var(--accent);
+  border-radius: 99px; padding: 4px 12px; margin-bottom: 12px;
+}
+.path-body h3 { margin: 0 0 6px; font-size: 1.5rem; }
+.path-body p { margin: 0 0 12px; text-align: left; }
+.path-body .path-tag { color: var(--muted); }
+.path-btn { margin-top: auto; text-align: center; }
+.path-btn:hover { transform: none; }
+.path-btn::after { content: ""; position: absolute; inset: 0; }
+
+.trust-strip { padding: 36px 0 8px; }
+.trust-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; text-align: center; }
+.trust-list li { color: var(--muted); font-size: 0.95rem; }
+.trust-list strong { display: block; font-family: "Roboto Slab", Georgia, serif; font-size: 1.5rem; color: var(--ink); margin-bottom: 2px; }
+
+.recent-work { padding-top: 48px; }
+.recent-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 28px; }
+.recent-tile { display: block; text-decoration: none; }
+.recent-tile .img-wrap { aspect-ratio: 1 / 1; }
+
+.testimonials.featured { grid-template-columns: repeat(3, 1fr); }
+.more-reviews { margin-top: 34px; text-align: center; }
+.more-reviews summary {
+  display: inline-block; cursor: pointer; list-style: none; padding: 14px 30px;
+  border: 1px solid var(--ink); border-radius: 300px;
+}
+.more-reviews summary::-webkit-details-marker { display: none; }
+.more-reviews summary:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.more-reviews[open] summary { margin-bottom: 14px; }
+.more-reviews .testimonials { text-align: left; }
+
+.closing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
+.soft-card {
+  display: flex; flex-direction: column; background: #fff; border-radius: 10px; padding: 30px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.07), 0 2px 6px rgba(0,0,0,0.05);
+}
+.soft-card h3 { margin: 0 0 8px; }
+.soft-card p { color: var(--muted); margin: 0 0 20px; text-align: left; }
+.soft-card .btn { margin-top: auto; align-self: flex-start; }
+
+@media (max-width: 760px) {
+  .hero-home { min-height: 560px; }
+  .hero-home .hero-cover-content { padding-bottom: 96px; }
+  .hero-actions { flex-direction: column; align-items: stretch; max-width: 320px; }
+  .hero-actions .btn { text-align: center; }
+  .path-float { margin-top: -56px; padding-bottom: 24px; }
+  .path-grid { grid-template-columns: 1fr; gap: 24px; }
+  .path-body { padding: 22px 22px 26px; }
+  .trust-list { grid-template-columns: 1fr; gap: 18px; }
+  .recent-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .testimonials.featured { grid-template-columns: 1fr; }
+  .closing-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .path-card { transition: none; }
+  .path-card:hover { transform: none; }
+}
+
+/* home: buttons inside flex cards must not inherit the global auto side margins */
+.hero-actions .btn, .soft-card .btn { margin-left: 0; margin-right: 0; }
+.path-btn { margin-left: 0; margin-right: 0; }
+@media (max-width: 760px) { .path-photo .img-wrap { aspect-ratio: 16 / 9; } }
+
+@media (max-width: 760px) { .soft-card .btn { align-self: stretch; text-align: center; } }
