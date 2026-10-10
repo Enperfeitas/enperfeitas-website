@@ -1076,7 +1076,7 @@ body = f"""
         <li>Hand-sewn binding using archival techniques.</li>
         <li>Optional clamshell box or slipcase for complete protection.</li>
       </ul>
-      <div class="price"><em>Starting from 2,600 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
+      <div class="price"><em>Starting from 3,300 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
       <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Heritage%20Editions%20inquiry" aria-label="Inquire about Heritage Editions">Inquire about this</a>
     </div>
     <div class="img-col">
@@ -1101,7 +1101,7 @@ body = f"""
         <li>Hand-sewn binding with archival materials and finishing by hand.</li>
         <li>Optional clamshell box or slipcase.</li>
       </ul>
-      <div class="price"><em>Starting from 3,100 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
+      <div class="price"><em>Starting from 4,300 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
       <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Fine%20Bindings%20inquiry" aria-label="Inquire about Fine Bindings">Inquire about this</a>
     </div>
   </div>
@@ -1119,7 +1119,7 @@ body = f"""
         <li>Optional foil stamping or embossed details.</li>
         <li>Finished by hand.</li>
       </ul>
-      <div class="price"><em>Starting from 1,200 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
+      <div class="price"><em>Starting from 3,000 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
       <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Contemporary%20Rebinding%20inquiry" aria-label="Inquire about Contemporary Rebinding">Inquire about this</a>
     </div>
     <div class="img-col">
@@ -1184,7 +1184,7 @@ body = f"""
       <p class="kicker">Your work, presented as seriously as it deserves.</p>
       <p>A handbound portfolio made for your body of work, not adapted from a generic format. Tailored sizing, material, and finish. For artists and photographers who understand that how work is presented changes how it&rsquo;s received.</p>
       <p><em>Available in linen, cloth, or leather. Ribbon closures, lined interiors, custom sizing.</em></p>
-      <div class="price"><em>Starting from 1,300 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
+      <div class="price"><em>Starting from 1,600 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
       <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Portfolio%20inquiry" aria-label="Inquire about Portfolios">Inquire about this</a>
     </div>
     <div class="img-col">
@@ -1203,7 +1203,7 @@ body = f"""
       <p class="kicker">Elegant protection. Immediate access.</p>
       <p>A slipcase keeps your book shielded from light, dust, and handling, without hiding it. Precisely fitted, finished in cloth or leather, with optional foil or embossed details.</p>
       <p><em>For books and editions that deserve more than a shelf.</em></p>
-      <div class="price"><em>Starting from 1,800 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
+      <div class="price"><em>Starting from 2,300 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
       <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Slipcase%20inquiry" aria-label="Inquire about Slipcases">Inquire about this</a>
     </div>
   </div>
@@ -1216,7 +1216,7 @@ body = f"""
       <p class="kicker">Museum-quality preservation. For things that need to last.</p>
       <p>The clamshell is the standard of serious preservation, used by archives, collectors, and institutions. Fully hinged, archival construction, cloth or leather exterior. Options for decorative linings, compartments, foil stamping, and fitted supports.</p>
       <p><em>For rare books, family documents, photographic prints, and collections built over a lifetime.</em></p>
-      <div class="price"><em>Starting from 2,500 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
+      <div class="price"><em>Starting from 2,800 kr.</em><br><em>Each project is quoted individually based on scope and materials.</em></div>
       <a class="btn secondary" href="mailto:info@enperfeitas.com?subject=Clamshell%20Box%20inquiry" aria-label="Inquire about Clamshell Boxes">Inquire about this</a>
     </div>
     <div class="img-col">
