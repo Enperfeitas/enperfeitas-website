@@ -641,7 +641,7 @@ function buildInvitationBody_(cfg, invitee) {
 //
 // Type scale, matching the website:
 //   body 18px / 1.6      small text 15px / 1.5      labels 13px, uppercase
-//   piece title 26px / 1.2     heading 20px / 1.25     main heading 32px / 1.12
+//   piece title 21px / 1.25    heading 20px / 1.25     main heading 32px / 1.12
 // Spacing: steps of 8px (8, 16, 24, 32, 48). A heading sits closer to the text
 // below it than to the text above it, so each block reads as one unit.
 function buildInvitationHtml_(cfg, invitee, testNote) {
@@ -676,7 +676,7 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
   h.push('<style>');
   h.push('.btn:hover{background-color:#954a1e !important;border-color:#954a1e !important;}');
   h.push('.btn:hover a{color:#ffffff !important;}');
-  h.push('@media only screen and (max-width:520px){.pad{padding-left:22px !important;padding-right:22px !important;}.h1{font-size:28px !important;}.ptitle{font-size:23px !important;}}');
+  h.push('@media only screen and (max-width:520px){.pad{padding-left:22px !important;padding-right:22px !important;}.h1{font-size:28px !important;}.ptitle{font-size:19px !important;}}');
   h.push('</style></head>');
   h.push('<body style="margin:0;padding:0;background-color:#fafafa;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">');
   // Preview line shown next to the subject in the inbox (not visible in the email).
@@ -694,20 +694,20 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
   }
 
   // Kicker, main heading, greeting, the piece
-  cell('<p style="margin:40px 0 8px;' + SANS + 'font-size:13px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">Invitation-only bidding</p>' +
-       '<h1 class="h1" style="' + SLAB + 'font-size:32px;line-height:1.12;margin:0 0 24px;color:#000000;">You are invited to bid</h1>' +
+  cell('<p style="margin:40px 0 8px;text-align:center;' + SANS + 'font-size:13px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">Invitation-only bidding</p>' +
+       '<h1 class="h1" style="' + SLAB + 'font-size:32px;line-height:1.12;margin:0 0 24px;text-align:center;color:#000000;">You are invited to bid</h1>' +
        '<p style="margin:0 0 8px;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">Hello ' + e(f.first) + ',</p>' +
        '<p style="margin:0 0 16px;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">Thank you for signing up. You are invited to place bids on one piece:</p>' +
-       '<p class="ptitle" style="' + SLAB + 'margin:0;font-size:26px;line-height:1.2;color:#000000;">' + e(f.title) + '</p>', '0 40px');
+       '<p class="ptitle" style="' + SLAB + 'margin:0;font-size:21px;line-height:1.25;color:#000000;">' + e(f.title) + '</p>', '0 40px');
 
   // The button: white, black outline, pill shape, as on the website
-  cell('<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>' +
+  cell('<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;"><tr>' +
        '<td class="btn" align="center" bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #000000;border-radius:300px;">' +
        '<a href="' + e(f.link) + '" style="display:inline-block;padding:17px 38px;' + SANS + 'font-size:17px;font-weight:500;line-height:1.2;color:#000000;text-decoration:none;border-radius:300px;">Open your bidding page</a>' +
        '</td></tr></table>' +
-       '<p style="margin:16px 0 0;' + SANS + 'font-size:15px;line-height:1.5;color:#5a5a5a;">' + e(INVITATION_LINK_NOTE) +
+       '<p style="margin:16px 0 0;text-align:center;' + SANS + 'font-size:15px;line-height:1.5;color:#5a5a5a;">' + e(INVITATION_LINK_NOTE) +
        (f.upcoming ? ' Until it opens, your link shows the piece but no bid form.' : '') + '</p>' +
-       '<p style="margin:8px 0 0;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(f.link) + '</p>',
+       '<p style="margin:8px 0 0;text-align:center;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(f.link) + '</p>',
        '32px 40px 0');
 
   // The facts, in the same style as the figures on the bidding page
@@ -718,7 +718,7 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
   var factRows = facts.map(function (x, i) {
     return '<tr><td style="padding:14px 0;' + (i < facts.length - 1 ? 'border-bottom:1px solid #e6e6e6;' : '') + 'text-align:left;">' +
       '<div style="' + SANS + 'font-size:13px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;margin:0 0 4px;">' + e(x[0]) + '</div>' +
-      '<div style="' + SLAB + 'font-size:19px;line-height:1.3;color:#000000;">' + e(x[1]) + '</div></td></tr>';
+      '<div style="' + SANS + 'font-size:18px;line-height:1.5;font-weight:400;color:#000000;">' + e(x[1]) + '</div></td></tr>';
   }).join('');
   cell('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;border-radius:10px;"><tr><td style="padding:6px 24px;">' +
        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + factRows + '</table></td></tr></table>', '40px 40px 0');
