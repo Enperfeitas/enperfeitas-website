@@ -13,7 +13,7 @@
   color: var(--muted);
 }
 .bid-page h1 {
-  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-size: clamp(1.45rem, 5vw, 2.8rem);
   line-height: 1.12;
   margin: 0 0 22px;
   text-align: left;
@@ -43,7 +43,9 @@
   border-radius: 10px;
   box-shadow: 0 16px 40px rgba(0,0,0,0.14), 0 3px 8px rgba(0,0,0,0.06);
   background: #f4f4f4;
+  opacity: 0;
 }
+.bid-photo img.is-loaded { opacity: 1; }
 /* Thumbnails under the main photo */
 .bid-thumbs { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; }
 .bid-thumbs button {
@@ -61,7 +63,7 @@
 .bid-thumbs button[aria-current="true"] { border: 2px solid var(--accent); }
 .bid-thumbs button:hover { border-color: var(--accent); }
 
-.bid-desc { margin: 0 0 18px; color: var(--muted); text-align: left; }
+.bid-desc { margin: 28px 0 18px; color: var(--muted); text-align: left; }
 .bid-desc p { margin: 0 0 10px; text-align: left; }
 
 /* Key facts about the piece (size, materials ...) */
@@ -213,8 +215,57 @@
   .bid-gallery { position: sticky; top: 24px; }
 }
 
-/* On phones the price and bid form come first, so nobody has to scroll past the text to bid. */
+/* ------------------------------------------------------------------ */
+/* Text size: descriptive text uses the same small size as the         */
+/* "Signed in as" line. Headings and the key figures keep their size.   */
+/* ------------------------------------------------------------------ */
+.bid-desc,
+.bid-desc p,
+.bid-details dd,
+.bid-rules li,
+.bid-readonly p,
+.bid-final p,
+.bid-message,
+.bid-confirm p,
+.bid-empty,
+.bid-history .h-name,
+.bid-history .h-amount,
+.bid-sub { font-size: 0.95rem; }
+.bid-hint { font-size: 0.9rem; }
+.bid-binding { margin: 10px 0 0; font-size: 0.85rem; color: var(--muted); text-align: left; }
+.bid-binding a { color: var(--muted); }
+.bid-binding a:hover { color: var(--accent); }
+
+/* ------------------------------------------------------------------ */
+/* First load: a calm placeholder instead of a large photo appearing    */
+/* before anything else.                                                */
+/* ------------------------------------------------------------------ */
+.bid-skeleton { display: none; grid-template-columns: 1fr; gap: 24px; margin-top: 4px; }
+.bid-page.is-loading .bid-skeleton { display: grid; }
+.bid-page.is-loading .bid-layout { display: none; }
+.sk { background: #f2f2f2; border-radius: 10px; }
+.sk-photo { aspect-ratio: 4 / 5; max-height: 60vh; width: 100%; }
+.sk-col { display: grid; gap: 14px; align-content: start; }
+.sk-panel { height: 230px; }
+.sk-line { height: 14px; border-radius: 7px; }
+.sk-short { width: 60%; }
+.bid-page.is-panel-loading .bid-panel { opacity: 0; pointer-events: none; }
+@media (min-width: 900px) {
+  .bid-skeleton { grid-template-columns: 5fr 6fr; gap: 48px; }
+  .sk-photo { max-height: 640px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bid-photo img { transition: opacity 0.3s ease; }
+  .bid-page.is-panel-loading .bid-panel { transition: opacity 0.2s ease; }
+  .bid-page:not(.is-loading) .bid-layout { animation: bid-appear 0.3s ease both; }
+  .sk { animation: bid-pulse 1.6s ease-in-out infinite; }
+  @keyframes bid-appear { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes bid-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+}
+
+/* On phones the photo is square and the title a little smaller, so the price
+   and the bid form start closer to the top of the screen. */
 @media (max-width: 899px) {
-  .bid-main { display: flex; flex-direction: column; }
-  .bid-panel { order: -1; margin-bottom: 22px; }
+  .bid-photo img { aspect-ratio: 1 / 1; }
+  .sk-photo { aspect-ratio: 1 / 1; }
 }

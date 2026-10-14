@@ -189,7 +189,7 @@ def hero_cover(filename, heading, subtext, label, page="", source="", cta_label=
 """
 
 
-def page(filename, title, description, body, active=None, robots=None, extra_css=None):
+def page(filename, title, description, body, active=None, robots=None, extra_css=None, extra_head=""):
     nav_items = ""
     for href, label in NAV:
         if href in HIDDEN_FROM_NAV:
@@ -212,7 +212,7 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-{extra_css_tag}</head>
+{extra_css_tag}{extra_head}</head>
 <body>
 <header class="site">
   <div class="wrap nav-row">
@@ -2189,7 +2189,7 @@ page("tools.html", "Free Tools for Bookbinders | Enperfeitas Studio",
 # Not in the menu, not indexed. Logic lives in apps-script/Code.gs; this page only displays it.
 # See apps-script/SETUP.md.
 body = r"""
-<main class="bid-page" id="main">
+<main class="bid-page is-loading" id="main">
   <div class="wrap">
     <p class="bid-kicker">Invitation-only bidding</p>
     <h1 id="bid-title">The piece</h1>
@@ -2197,18 +2197,25 @@ body = r"""
     <p class="bid-demo" id="bid-demo" hidden>Demo view. No server is connected yet, so nothing is sent and the figures are examples.</p>
     <p class="bid-banner" id="bid-banner" role="status" hidden>Connection lost, retrying.</p>
 
+    <p class="sr-only" role="status" id="bid-loading-note">Loading the bidding page</p>
+    <div class="bid-skeleton" id="bid-skeleton" aria-hidden="true">
+      <div class="sk sk-photo"></div>
+      <div class="sk-col">
+        <div class="sk sk-panel"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk sk-line sk-short"></div>
+      </div>
+    </div>
+
     <div class="bid-layout">
-      <div class="bid-gallery">
+      <div class="bid-gallery" hidden>
         <figure class="bid-photo">
-          <img id="bid-photo" src="images/bidding/beige-jeand-de-g-1.webp" alt="Photo of the piece" width="960" height="1200">
+          <img id="bid-photo" alt="" width="960" height="1200" decoding="async" fetchpriority="high">
         </figure>
         <ul class="bid-thumbs" id="bid-thumbs" hidden></ul>
       </div>
 
       <div class="bid-main">
-        <div class="bid-desc" id="bid-desc"></div>
-        <dl class="bid-details" id="bid-details" hidden></dl>
-
         <div class="bid-panel">
           <dl class="bid-figures">
             <div class="is-wide">
@@ -2236,6 +2243,7 @@ body = r"""
               <button type="submit" class="btn" id="bid-submit">Bid</button>
             </div>
             <p class="bid-hint" id="bid-hint"></p>
+            <p class="bid-binding">Every bid is binding and cannot be withdrawn while bidding is open. <a href="#bid-rules-title">Read the rules</a>.</p>
 
             <div class="bid-confirm" id="bid-confirm" role="group" aria-labelledby="bid-confirm-text" hidden>
               <p id="bid-confirm-text"></p>
@@ -2258,6 +2266,9 @@ body = r"""
           </div>
         </div>
 
+        <div class="bid-desc" id="bid-desc"></div>
+        <dl class="bid-details" id="bid-details" hidden></dl>
+
         <section class="bid-section" aria-labelledby="bid-history-title">
           <h2 id="bid-history-title">Bid history</h2>
           <ol class="bid-history" id="bid-history"></ol>
@@ -2267,13 +2278,17 @@ body = r"""
         <section class="bid-section bid-rules" aria-labelledby="bid-rules-title">
           <h2 id="bid-rules-title">Before you bid</h2>
           <ul>
-            <li>Every bid is binding and cannot be withdrawn.</li>
+            <li>Bidding is by invitation only.</li>
+            <li>A binding bid means you cannot take it back while bidding is open. Your right of withdrawal after purchase still applies.</li>
             <li>All amounts are whole Swedish kronor (SEK) and include moms.</li>
             <li>A bid must be at least the minimum shown: the opening bid, or the current high bid plus the step.</li>
             <li>If a bid arrives in the last <span id="bid-ext">5</span> minutes, the closing time moves to that many minutes after the bid, so everyone has time to answer.</li>
             <li>The winner is invoiced within 24 hours and pays within 48 hours. If payment does not arrive, the piece is offered to the next bidder.</li>
             <li>Only your first name is shown next to your bids.</li>
-            <li class="bid-todo">[Placeholder: full terms, including the 14-day right of withdrawal, to be confirmed before the real round.]</li>
+            <li>Shipping is calculated by location and added to the invoice after bidding closes. Buyers in Stockholm can collect the piece from the studio in Vällingby instead.</li>
+            <li>The piece is dispatched within 7 days of payment.</li>
+            <li>You have the right to withdraw from the purchase within 14 days of receiving the piece. Tell us by email at info@enperfeitas.com within that time. The piece must be returned in essentially the same condition it arrived in. Return shipping is paid by the buyer. The amount you paid is refunded within 14 days of your message.</li>
+            <li>Sold by Enperfeitas Studio, organisation number SE920423738301, Gudmundrågatan 10 - Vällingby.</li>
           </ul>
         </section>
       </div>
@@ -2285,7 +2300,8 @@ body = r"""
 """
 page("bidding.html", "Bidding | Enperfeitas Studio",
      "A quiet, invitation-only bidding page for one piece from Enperfeitas Studio.",
-     body, active=None, robots="noindex, nofollow", extra_css="bidding.css")
+     body, active=None, robots="noindex, nofollow", extra_css="bidding.css",
+     extra_head='<link rel="preconnect" href="https://script.google.com" crossorigin>\n<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>\n')
 
 # ---------------------------------------------------------------- LINKS
 link_items = [

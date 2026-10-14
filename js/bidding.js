@@ -32,6 +32,8 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
     lastHigh: null,
     closedHandled: false,
     lastStatus: '',
+    codeChecked: false, // the personal code has been checked (or there is none)
+    thumbsLoaded: false,
     pieceKey: '', // what the gallery and text were last built from
     photoIndex: 1
   };
@@ -122,7 +124,15 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
         return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
       })
       .join('&');
-    return fetch(WEB_APP_URL + '?' + q, { cache: 'no-store' }).then(function (r) {
+    var options = { cache: 'no-store' };
+    if (typeof AbortController !== 'undefined') {
+      var ctrl = new AbortController();
+      options.signal = ctrl.signal;
+      setTimeout(function () {
+        ctrl.abort();
+      }, 12000);
+    }
+    return fetch(WEB_APP_URL + '?' + q, options).then(function (r) {
       if (!r.ok) throw new Error('http ' + r.status);
       return r.json();
     });
@@ -138,6 +148,59 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
       if (!r.ok) throw new Error('http ' + r.status);
       return r.json();
     });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* First load: nothing is shown until real data is there               */
+  /* ------------------------------------------------------------------ */
+
+  var CACHE_KEY = 'enperfeitas_bid_piece_v1';
+  var CACHE_DAYS = 7;
+
+  // The facts about the piece (not the price) are remembered on this device,
+  // so a second visit can show the photo and text straight away.
+  function readCache() {
+    if (DEMO) return null;
+    try {
+      var o = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (!o || !o.piece || Date.now() - o.savedAt > CACHE_DAYS * 86400000) return null;
+      return o.piece;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveCache(s) {
+    if (DEMO) return;
+    try {
+      localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          savedAt: Date.now(),
+          piece: {
+            pieceTitle: s.pieceTitle,
+            photoPrefix: s.photoPrefix,
+            photoCount: s.photoCount,
+            photoAlt: s.photoAlt,
+            description: s.description,
+            details: s.details
+          }
+        })
+      );
+    } catch (e) {
+      /* storage may be full or blocked; the page works without it */
+    }
+  }
+
+  function finishLoading() {
+    ui.page.classList.remove('is-loading', 'is-panel-loading');
+    var note = $('bid-loading-note');
+    if (note) note.hidden = true;
+  }
+
+  // Show the page once the data and the code check are both done.
+  function maybeFinishLoading() {
+    if (app.state && app.codeChecked) finishLoading();
   }
 
   /* ------------------------------------------------------------------ */
@@ -283,9 +346,29 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
     });
   }
 
+  // Small photos load after the main photo, so they never compete with it.
+  function loadThumbs() {
+    if (app.thumbsLoaded) return;
+    app.thumbsLoaded = true;
+    var imgs = ui.thumbs.querySelectorAll('img[data-src]');
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].setAttribute('src', imgs[i].getAttribute('data-src'));
+      imgs[i].removeAttribute('data-src');
+    }
+  }
+
   function showPhoto(prefix, count, alt, index) {
     app.photoIndex = index;
+    ui.photo.classList.remove('is-loaded');
+    ui.photo.onload = function () {
+      ui.photo.classList.add('is-loaded');
+      loadThumbs();
+    };
     ui.photo.setAttribute('src', photoUrl(prefix, index));
+    if (ui.photo.complete && ui.photo.naturalWidth > 0) {
+      ui.photo.classList.add('is-loaded');
+      loadThumbs();
+    }
     ui.photo.setAttribute('alt', count > 1 ? alt + ' (photo ' + index + ' of ' + count + ')' : alt);
     var buttons = ui.thumbs.querySelectorAll('button');
     for (var i = 0; i < buttons.length; i++) {
@@ -296,6 +379,7 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
 
   function buildGallery(prefix, count, alt) {
     while (ui.thumbs.firstChild) ui.thumbs.removeChild(ui.thumbs.firstChild);
+    app.thumbsLoaded = false;
     if (!prefix || count < 1) {
       ui.gallery.hidden = true;
       ui.layout.classList.remove('has-photo');
@@ -311,8 +395,9 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
         btn.type = 'button';
         btn.setAttribute('aria-label', 'Show photo ' + n + ' of ' + count);
         var img = document.createElement('img');
-        img.setAttribute('src', photoUrl(prefix, n));
+        img.setAttribute('data-src', photoUrl(prefix, n));
         img.setAttribute('alt', '');
+        img.setAttribute('decoding', 'async');
         btn.appendChild(img);
         btn.addEventListener('click', function () {
           showPhoto(prefix, count, alt, n);
@@ -498,6 +583,8 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
         applyState(state, t0, Date.now());
         setLost(false);
         render();
+        saveCache(state);
+        maybeFinishLoading();
       })
       .catch(function () {
         setLost(true);
@@ -526,7 +613,10 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
   }
 
   function checkCode() {
-    if (!app.code) return Promise.resolve();
+    if (!app.code) {
+      app.codeChecked = true;
+      return Promise.resolve();
+    }
     var request = DEMO ? Promise.resolve(demoWhoami(app.code)) : apiGet({ action: 'whoami', code: app.code });
     return request
       .then(function (w) {
@@ -546,6 +636,10 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
       .catch(function () {
         // Could not check the code right now. Keep it and try again with the next poll.
         setLost(true);
+      })
+      .then(function () {
+        app.codeChecked = true;
+        maybeFinishLoading();
       });
   }
 
@@ -709,6 +803,7 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
 
   function init() {
     ui = {
+      page: document.querySelector('.bid-page'),
       title: $('bid-title'),
       layout: document.querySelector('.bid-layout'),
       gallery: document.querySelector('.bid-gallery'),
@@ -769,12 +864,20 @@ var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
 
     setInterval(renderCountdown, 1000);
 
-    checkCode()
-      .then(refresh)
-      .then(function () {
-        render();
-        schedule();
-      });
+    var cached = readCache();
+    if (cached) {
+      setText(ui.title, cached.pieceTitle || 'The piece');
+      renderPiece(cached);
+      ui.page.classList.remove('is-loading');
+      ui.page.classList.add('is-panel-loading');
+    }
+
+    // The price and the code check do not depend on each other, so they run together.
+    Promise.all([checkCode(), refresh()]).then(function () {
+      render();
+      maybeFinishLoading();
+      schedule();
+    });
   }
 
   if (document.readyState === 'loading') {
