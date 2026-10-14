@@ -38,15 +38,43 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
   border-radius: 10px;
   box-shadow: 0 16px 40px rgba(0,0,0,0.14), 0 3px 8px rgba(0,0,0,0.06);
   background: #f4f4f4;
 }
-.bid-photo figcaption { margin-top: 8px; font-size: 0.85rem; color: var(--muted); text-align: left; }
+/* Thumbnails under the main photo */
+.bid-thumbs { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; }
+.bid-thumbs button {
+  display: block;
+  width: 64px;
+  height: 80px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+.bid-thumbs button img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.bid-thumbs button[aria-current="true"] { border: 2px solid var(--accent); }
+.bid-thumbs button:hover { border-color: var(--accent); }
 
-.bid-desc { margin: 0 0 22px; color: var(--muted); text-align: left; }
+.bid-desc { margin: 0 0 18px; color: var(--muted); text-align: left; }
+.bid-desc p { margin: 0 0 10px; text-align: left; }
+
+/* Key facts about the piece (size, materials ...) */
+.bid-details { margin: 0 0 22px; }
+.bid-details div {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 4px 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.bid-details dt { font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.bid-details dd { margin: 0; text-align: left; }
 
 /* The main panel */
 .bid-panel {
@@ -158,6 +186,7 @@
 
 /* Focus states */
 .bid-page a:focus-visible,
+.bid-thumbs button:focus-visible,
 .bid-page button:focus-visible,
 .bid-page input:focus-visible {
   outline: 2px solid var(--accent);
@@ -180,7 +209,12 @@
 }
 
 @media (min-width: 900px) {
-  .bid-layout { grid-template-columns: 5fr 6fr; gap: 48px; align-items: start; }
-  .bid-photo { position: sticky; top: 24px; }
-  .bid-photo img { aspect-ratio: 4 / 5; }
+  .bid-layout.has-photo { grid-template-columns: 5fr 6fr; gap: 48px; align-items: start; }
+  .bid-gallery { position: sticky; top: 24px; }
+}
+
+/* On phones the price and bid form come first, so nobody has to scroll past the text to bid. */
+@media (max-width: 899px) {
+  .bid-main { display: flex; flex-direction: column; }
+  .bid-panel { order: -1; margin-bottom: 22px; }
 }

@@ -30,7 +30,9 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
     busy: false,
     pending: null, // amount waiting for confirmation
     lastHigh: null,
-    closedHandled: false
+    closedHandled: false,
+    pieceKey: '', // what the gallery and text were last built from
+    photoIndex: 1
   };
   var pollTimer = null;
   var polling = false;
@@ -166,6 +168,11 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
       closingMs: closing,
       extensionMinutes: 5,
       status: closed ? 'closed' : 'open',
+      photoPrefix: 'beige-jeand-de-g',
+      photoCount: 4,
+      photoAlt: 'Beige linen book with a mustard leather spine',
+      description: 'Demo text. In the real round this comes from the description row in the Config tab.\nA new line in that cell becomes a new paragraph here.',
+      details: 'Size: 20 x 13 cm (example)\nMaterials: Example linen and leather\nMade: Example year',
       serverTime: iso(now),
       serverTimeMs: now
     };
@@ -237,9 +244,139 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
     setText(ui.countdown, fmtCountdown(remaining));
   }
 
+  /* ------------------------------------------------------------------ */
+  /* The piece: photos, description and details (from the Config tab)    */
+  /* ------------------------------------------------------------------ */
+
+  var MAX_PHOTOS = 12;
+  var PROBE_PHOTOS = 8;
+
+  function photoUrl(prefix, n) {
+    return 'images/bidding/' + prefix + '-' + n + '.webp';
+  }
+
+  // When no photo count is set, look for photo-1, photo-2 ... until one is missing.
+  function probePhotos(prefix) {
+    return new Promise(function (resolve) {
+      var n = 0;
+      function next() {
+        if (n >= PROBE_PHOTOS) return resolve(n);
+        var img = new Image();
+        img.onload = function () {
+          n++;
+          next();
+        };
+        img.onerror = function () {
+          resolve(n);
+        };
+        img.src = photoUrl(prefix, n + 1);
+      }
+      next();
+    });
+  }
+
+  function showPhoto(prefix, count, alt, index) {
+    app.photoIndex = index;
+    ui.photo.setAttribute('src', photoUrl(prefix, index));
+    ui.photo.setAttribute('alt', count > 1 ? alt + ' (photo ' + index + ' of ' + count + ')' : alt);
+    var buttons = ui.thumbs.querySelectorAll('button');
+    for (var i = 0; i < buttons.length; i++) {
+      if (i + 1 === index) buttons[i].setAttribute('aria-current', 'true');
+      else buttons[i].removeAttribute('aria-current');
+    }
+  }
+
+  function buildGallery(prefix, count, alt) {
+    while (ui.thumbs.firstChild) ui.thumbs.removeChild(ui.thumbs.firstChild);
+    if (!prefix || count < 1) {
+      ui.gallery.hidden = true;
+      ui.layout.classList.remove('has-photo');
+      return;
+    }
+    ui.gallery.hidden = false;
+    ui.layout.classList.add('has-photo');
+    ui.thumbs.hidden = count < 2;
+    for (var i = 1; i <= count; i++) {
+      (function (n) {
+        var li = document.createElement('li');
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Show photo ' + n + ' of ' + count);
+        var img = document.createElement('img');
+        img.setAttribute('src', photoUrl(prefix, n));
+        img.setAttribute('alt', '');
+        btn.appendChild(img);
+        btn.addEventListener('click', function () {
+          showPhoto(prefix, count, alt, n);
+        });
+        li.appendChild(btn);
+        ui.thumbs.appendChild(li);
+      })(i);
+    }
+    showPhoto(prefix, count, alt, 1);
+  }
+
+  function renderText(s) {
+    var i;
+    while (ui.desc.firstChild) ui.desc.removeChild(ui.desc.firstChild);
+    var paragraphs = String(s.description || '')
+      .split(/\n+/)
+      .map(function (x) {
+        return x.trim();
+      })
+      .filter(Boolean);
+    paragraphs.forEach(function (text) {
+      var p = document.createElement('p');
+      setText(p, text);
+      ui.desc.appendChild(p);
+    });
+    ui.desc.hidden = paragraphs.length === 0;
+
+    while (ui.details.firstChild) ui.details.removeChild(ui.details.firstChild);
+    var lines = String(s.details || '').split(/\n+/);
+    var shown = 0;
+    for (i = 0; i < lines.length; i++) {
+      var at = lines[i].indexOf(':');
+      if (at < 1) continue;
+      var label = lines[i].slice(0, at).trim();
+      var value = lines[i].slice(at + 1).trim();
+      if (!label || !value) continue;
+      var row = document.createElement('div');
+      var dt = document.createElement('dt');
+      var dd = document.createElement('dd');
+      setText(dt, label);
+      setText(dd, value);
+      row.appendChild(dt);
+      row.appendChild(dd);
+      ui.details.appendChild(row);
+      shown++;
+    }
+    ui.details.hidden = shown === 0;
+  }
+
+  function renderPiece(s) {
+    var prefix = /^[a-z0-9-]{1,80}$/.test(s.photoPrefix || '') ? s.photoPrefix : '';
+    var count = typeof s.photoCount === 'number' ? Math.min(MAX_PHOTOS, s.photoCount) : null;
+    var alt = s.photoAlt || s.pieceTitle || 'Photo of the piece';
+    var key = [prefix, count, alt, s.description, s.details].join('|');
+    if (key === app.pieceKey) return;
+    app.pieceKey = key;
+    renderText(s);
+    if (!prefix) {
+      buildGallery('', 0, alt);
+    } else if (count !== null) {
+      buildGallery(prefix, count, alt);
+    } else {
+      probePhotos(prefix).then(function (found) {
+        if (app.pieceKey === key) buildGallery(prefix, found, alt);
+      });
+    }
+  }
+
   function render() {
     var s = app.state;
     if (!s) return;
+    renderPiece(s);
     var closed = s.status === 'closed';
 
     setText(ui.title, s.pieceTitle || 'The piece');
@@ -553,6 +690,12 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
   function init() {
     ui = {
       title: $('bid-title'),
+      layout: document.querySelector('.bid-layout'),
+      gallery: document.querySelector('.bid-gallery'),
+      photo: $('bid-photo'),
+      thumbs: $('bid-thumbs'),
+      desc: $('bid-desc'),
+      details: $('bid-details'),
       banner: $('bid-banner'),
       demo: $('bid-demo'),
       high: $('bid-high'),
@@ -582,6 +725,10 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
     };
 
     ui.signup.setAttribute('href', SIGNUP_FORM_URL);
+    ui.photo.addEventListener('error', function () {
+      ui.gallery.hidden = true;
+      ui.layout.classList.remove('has-photo');
+    });
     ui.demo.hidden = !DEMO;
     app.code = readCode();
 

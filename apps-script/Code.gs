@@ -109,6 +109,17 @@ function str_(v) {
   return v === null || v === undefined ? '' : String(v).trim();
 }
 
+// Photo names: lowercase letters, numbers and hyphens only. Spaces become hyphens.
+// This keeps the value safe: it can only ever name a file in images/bidding.
+function cleanPrefix_(v) {
+  return str_(v).toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 80);
+}
+
+// Text that may contain several lines (description, details).
+function strMulti_(v) {
+  return v === null || v === undefined ? '' : String(v).replace(/\r\n?/g, '\n').trim();
+}
+
 function toInt_(v, fallback) {
   if (typeof v === 'number' && isFinite(v)) return Math.floor(v);
   var s = str_(v).replace(/\s/g, '');
@@ -153,7 +164,12 @@ function readConfig_() {
     status: str_(cfg.status).toLowerCase() || 'open',
     testMode: isTrue_(cfg.test_mode),
     baseUrl: str_(cfg.page_base_url),
-    replyBy: str_(cfg.reply_by)
+    replyBy: str_(cfg.reply_by),
+    photoPrefix: cleanPrefix_(cfg.photo_prefix),
+    photoCount: toInt_(cfg.photo_count, null),
+    photoAlt: str_(cfg.photo_alt),
+    description: strMulti_(cfg.description),
+    details: strMulti_(cfg.details)
   };
 }
 
@@ -313,7 +329,12 @@ function buildPublicState_() {
     closingTime: iso_(cfg.closingMs),
     closingMs: cfg.closingMs,
     extensionMinutes: cfg.extensionMinutes,
-    status: closed ? 'closed' : 'open'
+    status: closed ? 'closed' : 'open',
+    photoPrefix: cfg.photoPrefix,
+    photoCount: cfg.photoCount === null ? null : Math.max(0, Math.min(12, cfg.photoCount)),
+    photoAlt: cfg.photoAlt.slice(0, 300),
+    description: cfg.description.slice(0, 3000),
+    details: cfg.details.slice(0, 1500)
   };
 }
 
@@ -651,31 +672,55 @@ function createTabs() {
     made.push(SHEET_BIDS);
   }
 
-  if (!ss.getSheetByName(SHEET_CONFIG)) {
+  var configDefaults = [
+    ['piece_title', 'Title of the piece'],
+    ['opening_bid', 1000],
+    ['min_step', 100],
+    ['closing_time', '2026-11-01T20:00:00+01:00'],
+    ['extension_minutes', 5],
+    ['status', 'open'],
+    ['test_mode', 'TRUE'],
+    ['page_base_url', 'https://enperfeitas.com/bidding.html'],
+    ['reply_by', ''],
+    ['photo_prefix', 'beige-jeand-de-g'],
+    ['photo_count', 4],
+    ['photo_alt', 'Beige linen book with a mustard leather spine'],
+    ['description', 'Write two or three plain sentences about the piece here.'],
+    ['details', 'Size: \nMaterials: \nMade: ']
+  ];
+  var existingConfig = ss.getSheetByName(SHEET_CONFIG);
+  if (!existingConfig) {
     var cfg = ss.insertSheet(SHEET_CONFIG);
-    var rows = [
-      ['piece_title', 'Title of the piece'],
-      ['opening_bid', 1000],
-      ['min_step', 100],
-      ['closing_time', '2026-11-01T20:00:00+01:00'],
-      ['extension_minutes', 5],
-      ['status', 'open'],
-      ['test_mode', 'TRUE'],
-      ['page_base_url', 'https://enperfeitas.com/bidding.html'],
-      ['reply_by', '']
-    ];
-    cfg.getRange(1, 1, rows.length, 1).setValues(rows.map(function (r) { return [r[0]]; }));
-    cfg.getRange(1, 2, rows.length, 1).setNumberFormat('@');
-    cfg.getRange(1, 2, rows.length, 1).setValues(rows.map(function (r) { return [r[1]]; }));
-    cfg.getRange(1, 1, rows.length, 1).setFontWeight('bold');
+    cfg.getRange(1, 1, configDefaults.length, 1).setValues(configDefaults.map(function (r) { return [r[0]]; }));
+    cfg.getRange(1, 2, configDefaults.length, 1).setNumberFormat('@');
+    cfg.getRange(1, 2, configDefaults.length, 1).setValues(configDefaults.map(function (r) { return [r[1]]; }));
+    cfg.getRange(1, 1, configDefaults.length, 1).setFontWeight('bold');
     cfg.setColumnWidth(1, 180);
     cfg.setColumnWidth(2, 340);
     made.push(SHEET_CONFIG);
+  } else {
+    // The tab already exists: only add rows that are missing, never change existing values.
+    var have = {};
+    existingConfig.getDataRange().getValues().forEach(function (row) {
+      var k = normKey_(row[0]);
+      if (k) have[k] = true;
+    });
+    var added = [];
+    configDefaults.forEach(function (r) {
+      if (!have[r[0]]) {
+        var rowNo = existingConfig.getLastRow() + 1;
+        existingConfig.getRange(rowNo, 1).setValue(r[0]).setFontWeight('bold');
+        var cell = existingConfig.getRange(rowNo, 2);
+        cell.setNumberFormat('@');
+        cell.setValue(r[1]);
+        added.push(r[0]);
+      }
+    });
+    if (added.length) made.push('new Config rows (' + added.join(', ') + ')');
   }
-
   ui.alert(
     'Create tabs',
-    made.length ? 'Created: ' + made.join(', ') + '. Now fill in the Config values.' : 'Both tabs already exist. Nothing was changed.',
+    made.length ? 'Created or added: ' + made.join(', ') + '. Now fill in the Config values.' : 'Both tabs already exist and are complete. Nothing was changed.',
     ui.ButtonSet.OK
   );
 }

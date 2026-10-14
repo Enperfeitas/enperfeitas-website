@@ -14,7 +14,7 @@ All amounts are whole Swedish kronor (SEK) and include moms.
 
 Fill these in before the real round. The test round can be done without them.
 
-- [ ] Piece details: title, photo, a short description (replace the placeholders in bidding.html).
+- [ ] Piece details: title, photos in the images/bidding folder, a short description, and the size and materials (see "Adding a piece" below). These now live in the Config tab, so you do not edit the page.
 - [ ] Opening bid (your floor price) and the minimum step. The step starts at 100 SEK.
 - [ ] Terms wording on the page and in the invitation email, including the 14 day right of withdrawal. Please check with Konsumentverket what applies to a bid on a made-to-order or one-off piece, and what the page and your invoice must say. The page currently has a placeholder line about this.
 - [ ] Sign-up form link: put the real Google Form link in js/bidding.js (SIGNUP_FORM_URL).
@@ -66,9 +66,28 @@ Column A holds the name of each setting. Column B holds the value. Do not rename
 | status | `open` while bidding runs. The menu item "Close auction" changes it to `closed`. |
 | test_mode | `TRUE` while you test. `FALSE` for the real round. |
 | page_base_url | The address of the bidding page, for example `https://enperfeitas.com/bidding.html`. |
+| photo_prefix | The start of your photo file names, for example `beige-jeand-de-g`. The page looks in the images/bidding folder for `beige-jeand-de-g-1.webp`, `beige-jeand-de-g-2.webp` and so on. Lowercase letters, numbers and hyphens only. Spaces become hyphens. |
+| photo_count | How many photos there are, for example 4. If you leave this empty, the page counts them by itself (up to 8). The most it will show is 12. |
+| photo_alt | One plain sentence describing the photos, for example "Beige linen book with a mustard leather spine". It is read aloud for people who use a screen reader. |
+| description | Two or three plain sentences about the piece. Press Alt+Enter (Windows) or Option+Enter (Mac) inside the cell to start a new paragraph. Leave empty to show no description. |
+| details | One fact per line, written as `Label: value`, for example `Size: 20 x 13 cm`. Press Alt+Enter between lines. Lines without a value are left out, so you can keep the labels and fill them in later. |
 | reply_by | Optional. If you write a time here, the invitation email adds the line "If you have not received this by [that time], reply to this email." Leave it empty to leave the line out. |
 
 Tip: if the closing_time cell turns into a date by itself, select the cell, choose Format > Number > Plain text, and type it again. The script handles both, but plain text is the safest.
+
+## Adding a piece: photos, description and details
+
+Everything about the piece is set in the Config tab. You do not edit the page.
+
+1. **Prepare the photos.** Save each as `.webp` (or ask Claude to convert them), about 1200 pixels on the long side, and under 300 KB. Portrait photos in a 4 to 5 shape look best.
+2. **Name them** with the piece name first, then a number, for example `beige-jeand-de-g-1.webp`, `beige-jeand-de-g-2.webp`. Number 1 is the main photo. Use lowercase letters, numbers and hyphens only.
+3. **Put them in the folder `images/bidding`** in the website folder, and publish them (commit, push, merge) like any other change.
+4. **In the Config tab,** write the name part (`beige-jeand-de-g`) in `photo_prefix`, the number of photos in `photo_count`, a plain sentence in `photo_alt`, and fill in `description` and `details`.
+5. Reload the bidding page. The main photo, a row of small photos to click, the text and the facts appear. Changes in the Config tab show up within a few seconds, with no need to change the website.
+
+For the next piece, add its photos to the same folder with a different name, then change the Config values. If a photo cannot be found, the page simply hides the photo area. It does not show an error.
+
+If your Config tab was created before this feature existed, choose **Invitations > Create Bids and Config tabs (first time only)** once. It adds the missing rows and does not change anything you already wrote.
 
 ## Step 5: Publish the script as a web app
 
