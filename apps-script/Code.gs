@@ -633,21 +633,28 @@ function buildInvitationBody_(cfg, invitee) {
   return lines.join('\n');
 }
 
-// Designed version. It follows the website: Roboto Slab headings and Roboto text
-// (with Georgia and Arial as fallbacks), black on white, thin #e6e6e6 lines,
-// the white pill button with a black outline, and the same spacing rhythm.
-// It is built with tables and inline styles because that is what mail apps
-// (Gmail, Outlook, Apple Mail) display reliably.
+// Shown only in the test banner, so you can tell which layout your Sheet is running.
+var INVITATION_DESIGN_VERSION = '4';
+
+// Designed version. It follows the website as closely as an email can: Roboto
+// Slab headings and Roboto text, black on white, thin #e6e6e6 lines, the white
+// pill button with a black outline, and the same spacing rhythm.
 //
-// Type scale, matching the website:
-//   body 18px / 1.6      small text 15px / 1.5      labels 13px, uppercase
-//   piece title 21px / 1.25    heading 20px / 1.25     main heading 32px / 1.12
-// Spacing: steps of 8px (8, 16, 24, 32, 48). A heading sits closer to the text
+// About fonts: mail apps only show fonts they can load. Apple Mail and iOS Mail
+// load Roboto Slab from Google Fonts. Gmail and Outlook cannot, so they use the
+// next font in each list that exists on the reader's device (Rockwell, a
+// similar slab serif, then Georgia for headings; Arial for text). That is a
+// limit of email, not of this design.
+//
+// Type scale (px), kept smaller than the website because an inbox is narrow:
+//   text 16 / 1.6      small 14 / 1.5      labels 12, uppercase
+//   piece name 18 / 1.3     section heading 18 / 1.3     main heading 26 / 1.15
+// Spacing: steps of 8px (8, 16, 24, 32). A heading sits closer to the text
 // below it than to the text above it, so each block reads as one unit.
 function buildInvitationHtml_(cfg, invitee, testNote) {
   var f = invitationFacts_(cfg, invitee);
   var e = escapeHtml_;
-  var SLAB = "font-family:'Roboto Slab',Georgia,'Times New Roman',serif;font-weight:700;letter-spacing:-0.01em;";
+  var SLAB = "font-family:'Roboto Slab',Rockwell,Georgia,'Times New Roman',serif;font-weight:700;letter-spacing:-0.01em;";
   var SANS = "font-family:'Roboto',Arial,Helvetica,sans-serif;";
   var origin = cfg.baseUrl.replace(/^(https?:\/\/[^\/]+).*$/, '$1');
   if (!/^https?:\/\//.test(origin)) origin = 'https://enperfeitas.com';
@@ -655,15 +662,15 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
   var h = [];
 
   function cell(content, style) {
-    h.push('<tr><td class="pad" style="padding:' + (style || '0 40px') + ';text-align:left;">' + content + '</td></tr>');
+    h.push('<tr><td class="pad" style="padding:' + (style || '0 32px') + ';text-align:left;">' + content + '</td></tr>');
   }
   function h3(text) {
-    return '<h3 style="' + SLAB + 'font-size:20px;line-height:1.25;margin:0 0 12px;color:#000000;">' + e(text) + '</h3>';
+    return '<h3 style="' + SLAB + 'font-size:18px;line-height:1.3;margin:0 0 10px;color:#000000;">' + e(text) + '</h3>';
   }
   function list(tag, items) {
-    return '<' + tag + ' style="margin:0;padding-left:24px;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">' +
+    return '<' + tag + ' style="margin:0;padding-left:22px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' +
       items.map(function (s) {
-        return '<li style="margin:0 0 10px;padding-left:4px;">' + e(s) + '</li>';
+        return '<li style="margin:0 0 8px;padding-left:4px;">' + e(s) + '</li>';
       }).join('') + '</' + tag + '>';
   }
 
@@ -676,69 +683,69 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
   h.push('<style>');
   h.push('.btn:hover{background-color:#954a1e !important;border-color:#954a1e !important;}');
   h.push('.btn:hover a{color:#ffffff !important;}');
-  h.push('@media only screen and (max-width:520px){.pad{padding-left:22px !important;padding-right:22px !important;}.h1{font-size:28px !important;}.ptitle{font-size:19px !important;}}');
+  h.push('@media only screen and (max-width:520px){.pad{padding-left:20px !important;padding-right:20px !important;}.h1{font-size:24px !important;}.ptitle{font-size:17px !important;}}');
   h.push('</style></head>');
-  h.push('<body style="margin:0;padding:0;background-color:#fafafa;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">');
+  h.push('<body style="margin:0;padding:0;background-color:#fafafa;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">');
   // Preview line shown next to the subject in the inbox (not visible in the email).
   h.push('<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#fafafa;">Your personal link to bid on ' + e(f.title) + '.</div>');
-  h.push('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;"><tr><td align="center" style="padding:32px 12px;">');
-  h.push('<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #e6e6e6;border-radius:10px;">');
+  h.push('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;"><tr><td align="center" style="padding:24px 12px;">');
+  h.push('<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#ffffff;border:1px solid #e6e6e6;border-radius:10px;">');
 
   // Logo, centred like the website header, with a thin line under it
-  h.push('<tr><td align="center" style="padding:32px 40px 24px;border-bottom:1px solid #e6e6e6;">' +
-         '<img src="' + e(logoUrl) + '" width="200" alt="Enperfeitas" style="display:block;width:200px;max-width:100%;height:auto;border:0;' + SLAB + 'font-size:28px;color:#000000;">' +
+  h.push('<tr><td align="center" style="padding:24px 32px 20px;border-bottom:1px solid #e6e6e6;">' +
+         '<img src="' + e(logoUrl) + '" width="170" alt="Enperfeitas" style="display:block;width:170px;max-width:100%;height:auto;border:0;' + SLAB + 'font-size:24px;color:#000000;">' +
          '</td></tr>');
 
   if (testNote) {
-    cell('<div style="margin:24px 0 0;padding:10px 16px;border-left:3px solid #954a1e;background-color:#fafafa;' + SANS + 'font-size:15px;line-height:1.5;color:#5a5a5a;">' + e(testNote) + '</div>', '0 40px');
+    cell('<div style="margin:24px 0 0;padding:10px 16px;border-left:3px solid #954a1e;background-color:#fafafa;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(testNote) + ' Layout version ' + e(INVITATION_DESIGN_VERSION) + '.</div>', '0 32px');
   }
 
-  // Kicker, main heading, greeting, the piece
-  cell('<p style="margin:40px 0 8px;text-align:center;' + SANS + 'font-size:13px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">Invitation-only bidding</p>' +
-       '<h1 class="h1" style="' + SLAB + 'font-size:32px;line-height:1.12;margin:0 0 24px;text-align:center;color:#000000;">You are invited to bid</h1>' +
-       '<p style="margin:0 0 8px;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">Hello ' + e(f.first) + ',</p>' +
-       '<p style="margin:0 0 16px;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">Thank you for signing up. You are invited to place bids on one piece:</p>' +
-       '<p class="ptitle" style="' + SLAB + 'margin:0;font-size:21px;line-height:1.25;color:#000000;">' + e(f.title) + '</p>', '0 40px');
+  // Label, main heading (centred), greeting, the piece
+  cell('<p style="margin:32px 0 8px;text-align:center;' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">Invitation-only bidding</p>' +
+       '<h1 class="h1" style="' + SLAB + 'font-size:26px;line-height:1.15;margin:0 0 24px;text-align:center;color:#000000;">You are invited to bid</h1>' +
+       '<p style="margin:0 0 8px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Hello ' + e(f.first) + ',</p>' +
+       '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Thank you for signing up. You are invited to place bids on one piece:</p>' +
+       '<p class="ptitle" style="' + SLAB + 'margin:0;font-size:18px;line-height:1.3;color:#000000;">' + e(f.title) + '</p>', '0 32px');
 
-  // The button: white, black outline, pill shape, as on the website
+  // The button (centred): white, black outline, pill shape, as on the website
   cell('<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;"><tr>' +
        '<td class="btn" align="center" bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #000000;border-radius:300px;">' +
-       '<a href="' + e(f.link) + '" style="display:inline-block;padding:17px 38px;' + SANS + 'font-size:17px;font-weight:500;line-height:1.2;color:#000000;text-decoration:none;border-radius:300px;">Open your bidding page</a>' +
+       '<a href="' + e(f.link) + '" style="display:inline-block;padding:15px 34px;' + SANS + 'font-size:16px;font-weight:500;line-height:1.2;color:#000000;text-decoration:none;border-radius:300px;">Open your bidding page</a>' +
        '</td></tr></table>' +
-       '<p style="margin:16px 0 0;' + SANS + 'font-size:15px;line-height:1.5;color:#5a5a5a;">' + e(INVITATION_LINK_NOTE) +
+       '<p style="margin:16px 0 0;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(INVITATION_LINK_NOTE) +
        (f.upcoming ? ' Until it opens, your link shows the piece but no bid form.' : '') + '</p>' +
-       '<p style="margin:8px 0 0;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(f.link) + '</p>',
-       '32px 40px 0');
+       '<p style="margin:8px 0 0;' + SANS + 'font-size:13px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(f.link) + '</p>',
+       '24px 32px 0');
 
-  // The facts, in the same style as the figures on the bidding page
+  // The facts, in the style of the figures on the bidding page
   var facts = [];
   if (f.upcoming) facts.push(['Opens', f.opens]);
   facts.push(['Closes', f.closes]);
   facts.push(['Opening bid', f.openingBid]);
   var factRows = facts.map(function (x, i) {
-    return '<tr><td style="padding:14px 0;' + (i < facts.length - 1 ? 'border-bottom:1px solid #e6e6e6;' : '') + 'text-align:left;">' +
-      '<div style="' + SANS + 'font-size:13px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;margin:0 0 4px;">' + e(x[0]) + '</div>' +
-      '<div style="' + SANS + 'font-size:18px;line-height:1.5;font-weight:400;color:#000000;">' + e(x[1]) + '</div></td></tr>';
+    return '<tr><td style="padding:12px 0;' + (i < facts.length - 1 ? 'border-bottom:1px solid #e6e6e6;' : '') + 'text-align:left;">' +
+      '<div style="' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;margin:0 0 4px;">' + e(x[0]) + '</div>' +
+      '<div style="' + SANS + 'font-size:16px;line-height:1.5;font-weight:400;color:#000000;">' + e(x[1]) + '</div></td></tr>';
   }).join('');
-  cell('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;border-radius:10px;"><tr><td style="padding:6px 24px;">' +
-       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + factRows + '</table></td></tr></table>', '40px 40px 0');
+  cell('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;border-radius:10px;"><tr><td style="padding:4px 20px;">' +
+       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + factRows + '</table></td></tr></table>', '32px 32px 0');
 
   // How bidding works, and what happens if you win
-  cell(h3('How bidding works') + list('ol', f.steps), '48px 40px 0');
-  cell(h3('If you win') + list('ul', f.afterWinning), '32px 40px 0');
+  cell(h3('How bidding works') + list('ol', f.steps), '32px 32px 0');
+  cell(h3('If you win') + list('ul', f.afterWinning), '24px 32px 0');
 
   // Reply line and sign-off
   var closing = '';
   if (f.replyBy) {
-    closing += '<p style="margin:0 0 24px;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">If you have not received this by ' + e(f.replyBy) + ', reply to this email.</p>';
+    closing += '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">If you have not received this by ' + e(f.replyBy) + ', reply to this email.</p>';
   }
-  closing += '<p style="margin:0;' + SANS + 'font-size:18px;line-height:1.6;color:#000000;">Warmly,<br>' +
-             '<span style="' + SLAB + 'font-size:20px;">Suzete</span><br>' +
-             '<span style="font-size:16px;color:#5a5a5a;">Enperfeitas Studio</span></p>';
-  cell(closing, '48px 40px 48px');
+  closing += '<p style="margin:0;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Warmly,<br>' +
+             '<span style="' + SLAB + 'font-size:18px;">Suzete</span><br>' +
+             '<span style="font-size:15px;color:#5a5a5a;">Enperfeitas Studio</span></p>';
+  cell(closing, '32px 32px 32px');
 
   // Footer
-  h.push('<tr><td class="pad" style="padding:24px 40px 28px;border-top:1px solid #e6e6e6;text-align:left;' + SANS + 'font-size:13px;line-height:1.6;color:#5a5a5a;">' +
+  h.push('<tr><td class="pad" style="padding:20px 32px 24px;border-top:1px solid #e6e6e6;text-align:left;' + SANS + 'font-size:12px;line-height:1.6;color:#5a5a5a;">' +
          'You are receiving this because you signed up for the bidding round at enperfeitas.com. If it reached you by mistake, please reply and let me know.</td></tr>');
 
   h.push('</table></td></tr></table></body></html>');

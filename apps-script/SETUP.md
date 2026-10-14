@@ -160,7 +160,7 @@ The wording is kept in three short places in `Code.gs`, near the function `build
 - `invitationAfterWinning_`: the points under "If you win" (invoice, payment, shipping, withdrawal).
 - `INVITATION_LINK_NOTE`: the sentence under the button.
 
-The email uses the Enperfeitas logo from `images/email/logo.png` on the website, and the site fonts (Roboto Slab and Roboto) where the mail app can load them. Other mail apps show Georgia and Arial instead, which is normal for email. The logo appears once the image is published on the website.
+The email uses the Enperfeitas logo from `images/email/logo.png` on the website, and the site fonts (Roboto Slab and Roboto) where the mail app can load them. Gmail and Outlook cannot load web fonts, so they show the closest font on the reader's device instead (Rockwell or Georgia for headings, Arial for text). That is a limit of email, not of the design. Apple Mail and the iPhone mail app show the exact fonts. In test mode the grey banner at the top of the email ends with "Layout version 4". If your test email does not say that, your Sheet is still running an older copy of the script: paste the latest Code.gs and publish a new version. The logo appears once the image is published on the website.
 
 Keep each sentence between the quotation marks, and keep the commas at the end of each line. After a change, publish a new version of the web app (Step 5), then run a test send to yourself.
 
