@@ -6,7 +6,7 @@
 
 // Paste the web app URL from Google Apps Script here (it ends in /exec).
 // While this is empty the page runs in demo mode and sends nothing.
-var WEB_APP_URL = '';
+var WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxAsMpgPnNCepmEUy3UHtQkAo2kCpjjAMDaWb7FXJW-FMqQx3jBr3toSEqLSkGmaJY/exec';
 
 // Link to the sign-up Google Form (placeholder).
 var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
