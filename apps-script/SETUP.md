@@ -160,6 +160,8 @@ The wording is kept in three short places in `Code.gs`, near the function `build
 - `invitationAfterWinning_`: the points under "If you win" (invoice, payment, shipping, withdrawal).
 - `INVITATION_LINK_NOTE`: the sentence under the button.
 
+The email uses the Enperfeitas logo from `images/email/logo.png` on the website, and the site fonts (Roboto Slab and Roboto) where the mail app can load them. Other mail apps show Georgia and Arial instead, which is normal for email. The logo appears once the image is published on the website.
+
 Keep each sentence between the quotation marks, and keep the commas at the end of each line. After a change, publish a new version of the web app (Step 5), then run a test send to yourself.
 
 ## Step 8: The real round
