@@ -553,9 +553,12 @@ function buildInvitationBody_(cfg, invitee) {
   lines.push('');
   lines.push(
     'How bidding works: open your link, look at the minimum bid shown, and enter a whole number of Swedish kronor. ' +
-      'Amounts include moms. Every bid is binding and cannot be withdrawn. ' +
-      'If a bid arrives in the last ' + ext + ' minutes, the closing time moves to ' + ext + ' minutes after that bid, ' +
-      'so that everyone has a calm moment to answer. The link is personal, so please keep it to yourself.'
+'Amounts include moms. Every bid is binding and cannot be withdrawn while bidding is open. ' +
+'If a bid arrives in the last ' + ext + ' minutes, the closing time moves to ' + ext + ' minutes after that bid, ' +
+'so that everyone has a calm moment to answer. ' +
+'The winner is invoiced within 24 hours and pays within 48. Shipping is added by location, or the piece can be collected at the studio in Stockholm. ' +
+'It is dispatched within 7 days of payment, and you have 14 days from delivery to withdraw from the purchase. ' +
+'The link is personal, so please keep it to yourself.'
   );
   if (cfg.replyBy) {
     lines.push('');
