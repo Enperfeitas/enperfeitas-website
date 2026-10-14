@@ -9,7 +9,7 @@
 var WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxAsMpgPnNCepmEUy3UHtQkAo2kCpjjAMDaWb7FXJW-FMqQx3jBr3toSEqLSkGmaJY/exec';
 
 // Link to the sign-up Google Form (placeholder).
-var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
+var SIGNUP_FORM_URL = 'https://forms.gle/M8LoSd8ixQLTDtif8';
 
 (function () {
   'use strict';
