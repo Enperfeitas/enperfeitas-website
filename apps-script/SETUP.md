@@ -61,6 +61,7 @@ Column A holds the name of each setting. Column B holds the value. Do not rename
 | piece_title | The name of the piece, for example "The Blue Book". |
 | opening_bid | The first bid must be at least this many SEK. This is your floor price. |
 | min_step | How much higher each new bid must be than the last one. 100 is the default. |
+| start_time | Optional. When bidding opens, written the same way as closing_time, for example `2026-10-30T18:00:00+01:00`. Before this moment the page shows the piece and a countdown to the opening, with no bid form, and the script refuses bids. At the moment it passes, bidding opens by itself, with nothing for you to switch on. Leave it empty to open bidding at once. If it is by mistake later than closing_time, it is ignored. |
 | closing_time | When bidding ends, written like `2026-11-01T20:00:00+01:00`. The part after the plus sign is the Swedish time offset: `+01:00` in winter and `+02:00` in summer. Swedish clocks change on the last Sunday of March and of October, so check which applies on your closing day. |
 | extension_minutes | 5 by default. A bid in the last 5 minutes moves the closing time to 5 minutes after that bid. |
 | status | `open` while bidding runs. The menu item "Close auction" changes it to `closed`. |
@@ -139,6 +140,7 @@ Tick each one.
 - [ ] **Own-bid block:** after you place a bid, try to bid again as the same person. The form is disabled and the page says you hold the highest bid. A different person can bid, and then you can bid again.
 - [ ] **Minimum step:** with a high bid of 1000, a bid of 1050 is refused and a bid of 1100 is accepted.
 - [ ] **Confirmation:** the page asks you to confirm before a bid is sent, and "Change amount" takes you back.
+- [ ] **Start time:** set start_time to about 3 minutes from now, with test_mode on. The page shows "Opens in" with a countdown and no bid form, and a bid sent early is refused. When the countdown reaches zero, the form appears on its own within a few seconds and a short note says bidding is now open. Clear start_time afterwards if you want bidding open at once.
 - [ ] **Closing extension:** set closing_time to about 3 minutes from now. Place a bid. In the Config tab, closing_time moves to 5 minutes after your bid, and the page says the closing time moved.
 - [ ] **Closed state:** set closing_time to a moment in the past (or use Invitations > Close auction). The page shows the final result and no form. A bid sent by other means is refused.
 - [ ] **Revoked code:** change one person's status to `revoked`. Their link now shows the read-only view with a note that the invitation is no longer active, and any bid is refused.
@@ -152,7 +154,7 @@ After testing: choose **Invitations > Reset test bids**, then set closing_time a
 
 ## Step 8: The real round
 
-1. Check Config: piece_title, opening_bid, min_step, a real closing_time, extension_minutes, status `open`, and page_base_url.
+1. Check Config: piece_title, opening_bid, min_step, start_time (optional) and a real closing_time, extension_minutes, status `open`, and page_base_url. Keep status on `open`, even before the start time: the start time does the waiting.
 2. Choose **Invitations > Reset test bids** one last time so the Bids tab is empty. This only works while test_mode is still TRUE.
 3. Change **test_mode to FALSE**. From now on, emails go to the invitees.
 4. In the Invitees tab, type `approved` for each person you want to invite.

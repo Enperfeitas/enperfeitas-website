@@ -31,6 +31,7 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
     pending: null, // amount waiting for confirmation
     lastHigh: null,
     closedHandled: false,
+    lastStatus: '',
     pieceKey: '', // what the gallery and text were last built from
     photoIndex: 1
   };
@@ -146,7 +147,9 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
   function demoState() {
     var now = Date.now();
     var closed = /[?&]demo=closed/.test(location.search);
-    var closing = closed ? now - 3600000 : now + 2 * 3600000 + 14 * 60000;
+    var upcoming = /[?&]demo=upcoming/.test(location.search);
+    var closing = closed ? now - 3600000 : now + (upcoming ? 3 * 86400000 : 2 * 3600000 + 14 * 60000);
+    var start = upcoming ? now + 2 * 3600000 + 30 * 60000 : null;
     function iso(ms) {
       return new Date(ms).toISOString();
     }
@@ -155,19 +158,23 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
       pieceTitle: 'Demo piece (not a real auction)',
       openingBid: 1000,
       minStep: 100,
-      minNextBid: 1900,
-      highBid: 1800,
-      highBidder: 'Mira',
-      bidCount: 3,
-      history: [
-        { name: 'Mira', amount: 1800, time: iso(now - 12 * 60000) },
-        { name: 'Jonas', amount: 1500, time: iso(now - 55 * 60000) },
-        { name: 'Mira', amount: 1000, time: iso(now - 3 * 3600000) }
-      ],
+      minNextBid: upcoming ? 1000 : 1900,
+      highBid: upcoming ? null : 1800,
+      highBidder: upcoming ? null : 'Mira',
+      bidCount: upcoming ? 0 : 3,
+      history: upcoming
+        ? []
+        : [
+            { name: 'Mira', amount: 1800, time: iso(now - 12 * 60000) },
+            { name: 'Jonas', amount: 1500, time: iso(now - 55 * 60000) },
+            { name: 'Mira', amount: 1000, time: iso(now - 3 * 3600000) }
+          ],
       closingTime: iso(closing),
       closingMs: closing,
       extensionMinutes: 5,
-      status: closed ? 'closed' : 'open',
+      status: closed ? 'closed' : upcoming ? 'upcoming' : 'open',
+      startTime: start ? iso(start) : null,
+      startMs: start,
       photoPrefix: 'beige-jeand-de-g',
       photoCount: 4,
       photoAlt: 'Beige linen book with a mustard leather spine',
@@ -231,9 +238,10 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
       setText(ui.countdown, 'Closed');
       return;
     }
-    var remaining = s.closingMs - nowServerMs();
+    var upcoming = s.status === 'upcoming' && typeof s.startMs === 'number';
+    var remaining = (upcoming ? s.startMs : s.closingMs) - nowServerMs();
     if (remaining <= 0) {
-      setText(ui.countdown, 'Closing now');
+      setText(ui.countdown, upcoming ? 'Opening now' : 'Closing now');
       if (!app.closedHandled) {
         app.closedHandled = true;
         refresh();
@@ -378,6 +386,9 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
     if (!s) return;
     renderPiece(s);
     var closed = s.status === 'closed';
+    var upcoming = s.status === 'upcoming';
+    var justOpened = app.lastStatus === 'upcoming' && s.status === 'open';
+    app.lastStatus = s.status;
 
     setText(ui.title, s.pieceTitle || 'The piece');
     document.title = (s.pieceTitle ? s.pieceTitle + ' | ' : '') + 'Bidding | Enperfeitas Studio';
@@ -396,15 +407,20 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
     }
     app.lastHigh = s.highBid;
 
-    setText(ui.timeLabel, closed ? 'Bidding' : 'Time left');
-    setText(ui.closing, (closed ? 'Closed ' : 'Closes ') + fmtDateLong(s.closingMs) + ' (Swedish time)');
+    setText(ui.timeLabel, closed ? 'Bidding' : upcoming ? 'Opens in' : 'Time left');
+    setText(
+      ui.closing,
+      upcoming
+        ? 'Opens ' + fmtDateLong(s.startMs) + '. Closes ' + fmtDateLong(s.closingMs) + ' (Swedish time)'
+        : (closed ? 'Closed ' : 'Closes ') + fmtDateLong(s.closingMs) + ' (Swedish time)'
+    );
     setText(ui.min, closed ? '-' : fmtAmount(s.minNextBid));
     setText(ui.ext, s.extensionMinutes || 5);
     renderCountdown();
     renderHistory(s.history);
 
     // Who is looking, and what can they do
-    var canBid = !!app.me && !closed;
+    var canBid = !!app.me && s.status === 'open';
     ui.form.hidden = !canBid;
     ui.readonly.hidden = !!app.me || closed;
     ui.final.hidden = !closed;
@@ -412,8 +428,10 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
 
     if (app.me) {
       var youText = 'Signed in as ' + app.me.firstName + '.';
-      if (!closed && isHighBidder()) youText += ' You hold the highest bid.';
+      if (!closed && !upcoming && isHighBidder()) youText += ' You hold the highest bid.';
+      if (upcoming) youText += ' Bidding has not opened yet. The bid form will appear here at the opening time.';
       setText(ui.you, youText);
+      if (justOpened) showMessage('Bidding is now open.', 'info');
     }
 
     if (closed) {
@@ -543,6 +561,8 @@ var SIGNUP_FORM_URL = 'https://forms.gle/REPLACE-WITH-YOUR-FORM-LINK';
         return 'You already hold the highest bid. You can bid again once someone else has bid.';
       case 'closed':
         return 'Bidding has closed.';
+      case 'not_open_yet':
+        return 'Bidding has not opened yet.';
       case 'invalid_code':
         return 'This code was not recognised.';
       case 'revoked':

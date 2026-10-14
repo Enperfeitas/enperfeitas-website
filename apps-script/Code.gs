@@ -148,6 +148,14 @@ function iso_(ms) {
   return ms === null || ms === undefined ? null : Utilities.formatDate(new Date(ms), TZ, "yyyy-MM-dd'T'HH:mm:ssXXX");
 }
 
+// The start time only counts when it is set and comes before the closing time.
+// If it is blank (or by mistake after the closing time), bidding is open from the start.
+function effectiveStart_(cfg) {
+  if (cfg.startMs === null) return null;
+  if (cfg.closingMs !== null && cfg.startMs >= cfg.closingMs) return null;
+  return cfg.startMs;
+}
+
 function readConfig_() {
   var values = getSheet_(SHEET_CONFIG).getDataRange().getValues();
   var cfg = {};
@@ -159,6 +167,7 @@ function readConfig_() {
     pieceTitle: str_(cfg.piece_title),
     openingBid: toInt_(cfg.opening_bid, 0),
     minStep: toInt_(cfg.min_step, 100),
+    startMs: toMs_(cfg.start_time),
     closingMs: toMs_(cfg.closing_time),
     extensionMinutes: toInt_(cfg.extension_minutes, 5),
     status: str_(cfg.status).toLowerCase() || 'open',
@@ -310,6 +319,8 @@ function buildPublicState_() {
   var now = Date.now();
   var high = highestBid_(bids);
   var closed = cfg.status === 'closed' || cfg.closingMs === null || now >= cfg.closingMs;
+  var startMs = effectiveStart_(cfg);
+  var status = closed ? 'closed' : startMs !== null && now < startMs ? 'upcoming' : 'open';
   var history = bids
     .slice()
     .reverse()
@@ -329,7 +340,9 @@ function buildPublicState_() {
     closingTime: iso_(cfg.closingMs),
     closingMs: cfg.closingMs,
     extensionMinutes: cfg.extensionMinutes,
-    status: closed ? 'closed' : 'open',
+    status: status,
+    startTime: iso_(startMs),
+    startMs: startMs,
     photoPrefix: cfg.photoPrefix,
     photoCount: cfg.photoCount === null ? null : Math.max(0, Math.min(12, cfg.photoCount)),
     photoAlt: cfg.photoAlt.slice(0, 300),
@@ -358,6 +371,7 @@ function withServerTime_(state) {
   copy.serverTimeMs = now;
   // Status is recalculated so it is never a few seconds late near closing.
   if (copy.closingMs !== null && now >= copy.closingMs) copy.status = 'closed';
+  else if (copy.status === 'upcoming' && copy.startMs !== null && now >= copy.startMs) copy.status = 'open';
   return copy;
 }
 
@@ -418,6 +432,10 @@ function placeBid_(code, amountRaw) {
     var now = Date.now();
     if (cfg.status === 'closed' || cfg.closingMs === null || now >= cfg.closingMs) {
       return fail_('closed');
+    }
+    var startMs = effectiveStart_(cfg);
+    if (startMs !== null && now < startMs) {
+      return fail_('not_open_yet', { startTime: iso_(startMs) });
     }
 
     var s = String(amountRaw === null || amountRaw === undefined ? '' : amountRaw).replace(/\s/g, '');
@@ -524,7 +542,14 @@ function buildInvitationBody_(cfg, invitee) {
   lines.push('Your personal link:');
   lines.push(link);
   lines.push('');
-  lines.push('Bidding closes on ' + closing + '.');
+  var startMs = effectiveStart_(cfg);
+  if (startMs !== null && startMs > Date.now()) {
+    var opening = Utilities.formatDate(new Date(startMs), TZ, "EEEE d MMMM yyyy 'at' HH:mm") + ' Swedish time';
+    lines.push('Bidding opens on ' + opening + ' and closes on ' + closing + '.');
+    lines.push('Until it opens, your link shows the piece but no bid form.');
+  } else {
+    lines.push('Bidding closes on ' + closing + '.');
+  }
   lines.push('');
   lines.push(
     'How bidding works: open your link, look at the minimum bid shown, and enter a whole number of Swedish kronor. ' +
@@ -676,6 +701,7 @@ function createTabs() {
     ['piece_title', 'Title of the piece'],
     ['opening_bid', 1000],
     ['min_step', 100],
+    ['start_time', ''],
     ['closing_time', '2026-11-01T20:00:00+01:00'],
     ['extension_minutes', 5],
     ['status', 'open'],
