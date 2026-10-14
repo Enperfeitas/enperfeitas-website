@@ -1,0 +1,681 @@
+/**
+ * Enperfeitas invitation-only bidding tool
+ * Google Apps Script, bound to the Google Sheet (Extensions > Apps Script).
+ *
+ * This script is the only place where the bidding rules are enforced.
+ * The web page only displays what this script returns.
+ *
+ * Sheet tabs (see SETUP.md):
+ *   Invitees  the tab linked to the sign-up Google Form, plus three columns
+ *             on the right headed: status, code, sent
+ *   Bids      timestamp, code, display name, amount, void
+ *   Config    key in column A, value in column B
+ *
+ * All amounts are whole SEK, moms included.
+ */
+
+var TZ = 'Europe/Stockholm';
+var SHEET_INVITEES = 'Invitees';
+var SHEET_BIDS = 'Bids';
+var SHEET_CONFIG = 'Config';
+
+// No 0, O, 1, I or L, so codes are easy to read out and type.
+var CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+var CODE_LENGTH = 7;
+
+var MAX_BID = 10000000;
+var STATE_CACHE_SECONDS = 3;
+var CACHE_KEY = 'public_state_v1';
+
+/* ------------------------------------------------------------------ */
+/* Menu                                                                */
+/* ------------------------------------------------------------------ */
+
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('Invitations')
+    .addItem('Generate codes', 'generateCodes')
+    .addItem('Send invitations', 'sendInvitations')
+    .addSeparator()
+    .addItem('Close auction', 'closeAuction')
+    .addItem('Reset test bids', 'resetTestBids')
+    .addSeparator()
+    .addItem('Create Bids and Config tabs (first time only)', 'createTabs')
+    .addToUi();
+}
+
+/* ------------------------------------------------------------------ */
+/* Web app entry points                                                */
+/* ------------------------------------------------------------------ */
+
+function doGet(e) {
+  try {
+    var action = e && e.parameter ? String(e.parameter.action || '') : '';
+    if (action === 'state') {
+      return json_(withServerTime_(getPublicStateCached_()));
+    }
+    if (action === 'whoami') {
+      return json_(whoami_(e.parameter.code));
+    }
+    return json_({ ok: false, error: 'unknown_action' });
+  } catch (err) {
+    console.error(err && err.stack ? err.stack : err);
+    return json_({ ok: false, error: 'server_error' });
+  }
+}
+
+function doPost(e) {
+  try {
+    var body = {};
+    try {
+      body = JSON.parse(e.postData && e.postData.contents ? e.postData.contents : '{}');
+    } catch (parseErr) {
+      return json_({ ok: false, error: 'bad_request' });
+    }
+    if (body.action === 'bid') {
+      return json_(placeBid_(body.code, body.amount));
+    }
+    return json_({ ok: false, error: 'unknown_action' });
+  } catch (err) {
+    console.error(err && err.stack ? err.stack : err);
+    return json_({ ok: false, error: 'server_error' });
+  }
+}
+
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ------------------------------------------------------------------ */
+/* Reading the sheet                                                   */
+/* ------------------------------------------------------------------ */
+
+function getSheet_(name) {
+  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
+  if (!sh) {
+    throw new Error('The tab "' + name + '" is missing. See SETUP.md.');
+  }
+  return sh;
+}
+
+function normKey_(s) {
+  return String(s === null || s === undefined ? '' : s)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function str_(v) {
+  return v === null || v === undefined ? '' : String(v).trim();
+}
+
+function toInt_(v, fallback) {
+  if (typeof v === 'number' && isFinite(v)) return Math.floor(v);
+  var s = str_(v).replace(/\s/g, '');
+  if (/^\d+$/.test(s)) return parseInt(s, 10);
+  return fallback;
+}
+
+function toMs_(v) {
+  if (v instanceof Date) {
+    var t = v.getTime();
+    return isNaN(t) ? null : t;
+  }
+  var s = str_(v);
+  if (!s) return null;
+  var ms = Date.parse(s);
+  return isNaN(ms) ? null : ms;
+}
+
+function isTrue_(v) {
+  if (v === true) return true;
+  var s = str_(v).toLowerCase();
+  return s === 'true' || s === 'yes' || s === '1';
+}
+
+function iso_(ms) {
+  return ms === null || ms === undefined ? null : Utilities.formatDate(new Date(ms), TZ, "yyyy-MM-dd'T'HH:mm:ssXXX");
+}
+
+function readConfig_() {
+  var values = getSheet_(SHEET_CONFIG).getDataRange().getValues();
+  var cfg = {};
+  for (var i = 0; i < values.length; i++) {
+    var key = normKey_(values[i][0]);
+    if (key) cfg[key] = values[i][1];
+  }
+  return {
+    pieceTitle: str_(cfg.piece_title),
+    openingBid: toInt_(cfg.opening_bid, 0),
+    minStep: toInt_(cfg.min_step, 100),
+    closingMs: toMs_(cfg.closing_time),
+    extensionMinutes: toInt_(cfg.extension_minutes, 5),
+    status: str_(cfg.status).toLowerCase() || 'open',
+    testMode: isTrue_(cfg.test_mode),
+    baseUrl: str_(cfg.page_base_url),
+    replyBy: str_(cfg.reply_by)
+  };
+}
+
+function writeConfigValue_(key, value, asText) {
+  var sh = getSheet_(SHEET_CONFIG);
+  var values = sh.getDataRange().getValues();
+  for (var i = 0; i < values.length; i++) {
+    if (normKey_(values[i][0]) === key) {
+      var cell = sh.getRange(i + 1, 2);
+      if (asText) cell.setNumberFormat('@');
+      cell.setValue(value);
+      return;
+    }
+  }
+  var row = values.length + 1;
+  sh.getRange(row, 1).setValue(key);
+  var newCell = sh.getRange(row, 2);
+  if (asText) newCell.setNumberFormat('@');
+  newCell.setValue(value);
+}
+
+function findCol_(headers, exact, startsWith) {
+  var i;
+  for (i = 0; i < headers.length; i++) {
+    if (exact.indexOf(headers[i]) !== -1) return i;
+  }
+  for (i = 0; i < headers.length; i++) {
+    for (var j = 0; j < startsWith.length; j++) {
+      if (headers[i].indexOf(startsWith[j]) === 0) return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Reads the Invitees tab. Columns are found by their headings, so the order
+ * of the Form questions does not matter.
+ */
+function readInvitees_() {
+  var sh = getSheet_(SHEET_INVITEES);
+  var data = sh.getDataRange().getValues();
+  if (data.length < 1) throw new Error('The Invitees tab is empty.');
+  var headers = data[0].map(normKey_);
+  var cols = {
+    first: findCol_(headers, ['first_name', 'firstname', 'first', 'name', 'fornamn'], ['first_name', 'first', 'name']),
+    email: findCol_(headers, ['email', 'e_mail', 'email_address'], ['email', 'e_mail']),
+    status: findCol_(headers, ['status'], []),
+    code: findCol_(headers, ['code'], []),
+    sent: findCol_(headers, ['sent'], [])
+  };
+  var missing = [];
+  if (cols.first < 0) missing.push('first name');
+  if (cols.email < 0) missing.push('email');
+  if (cols.status < 0) missing.push('status');
+  if (cols.code < 0) missing.push('code');
+  if (cols.sent < 0) missing.push('sent');
+  if (missing.length) {
+    throw new Error('The Invitees tab needs columns headed: ' + missing.join(', ') + '.');
+  }
+  var rows = [];
+  for (var r = 1; r < data.length; r++) {
+    var row = data[r];
+    var first = str_(row[cols.first]).split(/\s+/)[0];
+    var status = str_(row[cols.status]).toLowerCase() || 'pending';
+    rows.push({
+      row: r + 1,
+      first: first,
+      email: str_(row[cols.email]),
+      status: status,
+      code: str_(row[cols.code]),
+      sent: str_(row[cols.sent])
+    });
+  }
+  return { sheet: sh, cols: cols, rows: rows };
+}
+
+function normCode_(s) {
+  return String(s === null || s === undefined ? '' : s).toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+/**
+ * First name only. If two different codes share a first name, a number is
+ * added to tell them apart (Anna 1, Anna 2), in sheet order.
+ */
+function buildDisplayNames_(inviteeRows) {
+  var byName = {};
+  inviteeRows.forEach(function (p) {
+    if (!p.code || !p.first) return;
+    var k = p.first.toLowerCase();
+    if (!byName[k]) byName[k] = [];
+    byName[k].push(p);
+  });
+  var map = {};
+  Object.keys(byName).forEach(function (k) {
+    var list = byName[k];
+    list.forEach(function (p, idx) {
+      map[normCode_(p.code)] = list.length > 1 ? p.first + ' ' + (idx + 1) : p.first;
+    });
+  });
+  return map;
+}
+
+function readBids_() {
+  var sh = getSheet_(SHEET_BIDS);
+  var last = sh.getLastRow();
+  if (last < 2) return [];
+  var data = sh.getRange(2, 1, last - 1, 5).getValues();
+  var bids = [];
+  data.forEach(function (row) {
+    var amount = toInt_(row[3], null);
+    if (amount === null) return;
+    if (isTrue_(row[4]) || str_(row[4]).toLowerCase() === 'void' || str_(row[4]).toLowerCase() === 'x') return;
+    bids.push({
+      ms: toMs_(row[0]),
+      code: normCode_(row[1]),
+      name: str_(row[2]),
+      amount: amount
+    });
+  });
+  return bids;
+}
+
+function highestBid_(bids) {
+  var high = null;
+  bids.forEach(function (b) {
+    if (!high || b.amount > high.amount) high = b;
+  });
+  return high;
+}
+
+/* ------------------------------------------------------------------ */
+/* Public state (never contains codes, emails or handles)              */
+/* ------------------------------------------------------------------ */
+
+function buildPublicState_() {
+  var cfg = readConfig_();
+  var bids = readBids_();
+  var now = Date.now();
+  var high = highestBid_(bids);
+  var closed = cfg.status === 'closed' || cfg.closingMs === null || now >= cfg.closingMs;
+  var history = bids
+    .slice()
+    .reverse()
+    .map(function (b) {
+      return { name: b.name, amount: b.amount, time: iso_(b.ms) };
+    });
+  return {
+    ok: true,
+    pieceTitle: cfg.pieceTitle,
+    openingBid: cfg.openingBid,
+    minStep: cfg.minStep,
+    minNextBid: high ? high.amount + cfg.minStep : cfg.openingBid,
+    highBid: high ? high.amount : null,
+    highBidder: high ? high.name : null,
+    bidCount: bids.length,
+    history: history,
+    closingTime: iso_(cfg.closingMs),
+    closingMs: cfg.closingMs,
+    extensionMinutes: cfg.extensionMinutes,
+    status: closed ? 'closed' : 'open'
+  };
+}
+
+function getPublicStateCached_() {
+  var cache = CacheService.getScriptCache();
+  var hit = cache.get(CACHE_KEY);
+  if (hit) return JSON.parse(hit);
+  var state = buildPublicState_();
+  cache.put(CACHE_KEY, JSON.stringify(state), STATE_CACHE_SECONDS);
+  return state;
+}
+
+function clearStateCache_() {
+  CacheService.getScriptCache().remove(CACHE_KEY);
+}
+
+function withServerTime_(state) {
+  var now = Date.now();
+  var copy = JSON.parse(JSON.stringify(state));
+  copy.serverTime = iso_(now);
+  copy.serverTimeMs = now;
+  // Status is recalculated so it is never a few seconds late near closing.
+  if (copy.closingMs !== null && now >= copy.closingMs) copy.status = 'closed';
+  return copy;
+}
+
+/* ------------------------------------------------------------------ */
+/* whoami                                                              */
+/* ------------------------------------------------------------------ */
+
+function findInvitee_(inviteeData, code) {
+  var c = normCode_(code);
+  if (!c) return null;
+  for (var i = 0; i < inviteeData.rows.length; i++) {
+    if (inviteeData.rows[i].code && normCode_(inviteeData.rows[i].code) === c) return inviteeData.rows[i];
+  }
+  return null;
+}
+
+function whoami_(code) {
+  var data = readInvitees_();
+  var me = findInvitee_(data, code);
+  if (!me) return { ok: true, valid: false, reason: 'invalid' };
+  if (me.status === 'revoked') return { ok: true, valid: false, reason: 'revoked' };
+  if (me.status !== 'approved') return { ok: true, valid: false, reason: 'invalid' };
+  var names = buildDisplayNames_(data.rows);
+  var displayName = names[normCode_(me.code)] || me.first;
+  var high = highestBid_(readBids_());
+  return {
+    ok: true,
+    valid: true,
+    firstName: me.first,
+    displayName: displayName,
+    isHighBidder: !!(high && high.code === normCode_(me.code))
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Placing a bid                                                       */
+/* ------------------------------------------------------------------ */
+
+function fail_(error, extra) {
+  var out = { ok: false, error: error };
+  if (extra) {
+    for (var k in extra) out[k] = extra[k];
+  }
+  return out;
+}
+
+function placeBid_(code, amountRaw) {
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(20000)) return fail_('busy');
+  try {
+    var cfg = readConfig_();
+    var data = readInvitees_();
+    var me = findInvitee_(data, code);
+    if (!me) return fail_('invalid_code');
+    if (me.status === 'revoked') return fail_('revoked');
+    if (me.status !== 'approved') return fail_('invalid_code');
+
+    var now = Date.now();
+    if (cfg.status === 'closed' || cfg.closingMs === null || now >= cfg.closingMs) {
+      return fail_('closed');
+    }
+
+    var s = String(amountRaw === null || amountRaw === undefined ? '' : amountRaw).replace(/\s/g, '');
+    if (!/^\d{1,9}$/.test(s)) return fail_('bad_amount');
+    var amount = parseInt(s, 10);
+    if (amount < 1 || amount > MAX_BID) return fail_('bad_amount');
+
+    var myCode = normCode_(me.code);
+    var bids = readBids_();
+    var high = highestBid_(bids);
+    if (high && high.code === myCode) return fail_('already_high');
+
+    var minimum = high ? high.amount + cfg.minStep : cfg.openingBid;
+    if (amount < minimum) return fail_('too_low', { minimum: minimum });
+
+    var names = buildDisplayNames_(data.rows);
+    var displayName = names[myCode] || me.first;
+
+    var sh = getSheet_(SHEET_BIDS);
+    var rowNumber = sh.getLastRow() + 1;
+    var range = sh.getRange(rowNumber, 1, 1, 5);
+    range.setNumberFormats([['yyyy-mm-dd hh:mm:ss', '@', '@', '0', '@']]);
+    range.setValues([[new Date(now), me.code, displayName, amount, '']]);
+
+    // Soft close: a bid in the last N minutes moves closing to bid time + N minutes.
+    var windowMs = Math.max(0, cfg.extensionMinutes) * 60000;
+    var extended = false;
+    if (windowMs > 0 && cfg.closingMs - now <= windowMs) {
+      writeConfigValue_('closing_time', iso_(now + windowMs), true);
+      extended = true;
+    }
+
+    SpreadsheetApp.flush();
+    clearStateCache_();
+    var state = withServerTime_(buildPublicState_());
+    return {
+      ok: true,
+      extended: extended,
+      state: state,
+      you: { displayName: displayName, isHighBidder: true }
+    };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Menu: Generate codes                                                */
+/* ------------------------------------------------------------------ */
+
+function randomCode_() {
+  var u = Utilities.getUuid().replace(/-/g, '');
+  var out = '';
+  for (var i = 0; i < CODE_LENGTH; i++) {
+    var n = parseInt(u.substr(i * 4, 4), 16);
+    out += CODE_ALPHABET.charAt(n % CODE_ALPHABET.length);
+  }
+  return out;
+}
+
+function generateCodes() {
+  var ui = SpreadsheetApp.getUi();
+  var data = readInvitees_();
+  var existing = {};
+  data.rows.forEach(function (r) {
+    if (r.code) existing[normCode_(r.code)] = true;
+  });
+  var made = 0;
+  var skipped = 0;
+  data.rows.forEach(function (r) {
+    if (r.status !== 'approved' || r.code) return;
+    if (!r.first || !r.email) {
+      skipped++;
+      return;
+    }
+    var c;
+    do {
+      c = randomCode_();
+    } while (existing[c]);
+    existing[c] = true;
+    var cell = data.sheet.getRange(r.row, data.cols.code + 1);
+    cell.setNumberFormat('@');
+    cell.setValue(c);
+    made++;
+  });
+  var msg = made + ' code(s) created.';
+  if (skipped) msg += ' ' + skipped + ' approved row(s) were skipped because the first name or email is empty.';
+  ui.alert('Generate codes', msg, ui.ButtonSet.OK);
+}
+
+/* ------------------------------------------------------------------ */
+/* Menu: Send invitations                                              */
+/* ------------------------------------------------------------------ */
+
+function buildInvitationBody_(cfg, invitee) {
+  var link = cfg.baseUrl + (cfg.baseUrl.indexOf('?') === -1 ? '?' : '&') + 'code=' + encodeURIComponent(invitee.code);
+  var closing = Utilities.formatDate(new Date(cfg.closingMs), TZ, "EEEE d MMMM yyyy 'at' HH:mm") + ' Swedish time';
+  var ext = cfg.extensionMinutes;
+  var lines = [];
+  lines.push('Hello ' + invitee.first + ',');
+  lines.push('');
+  lines.push('Thank you for signing up. You are invited to place bids on one piece: ' + cfg.pieceTitle + '.');
+  lines.push('');
+  lines.push('Your personal link:');
+  lines.push(link);
+  lines.push('');
+  lines.push('Bidding closes on ' + closing + '.');
+  lines.push('');
+  lines.push(
+    'How bidding works: open your link, look at the minimum bid shown, and enter a whole number of Swedish kronor. ' +
+      'Amounts include moms. Every bid is binding and cannot be withdrawn. ' +
+      'If a bid arrives in the last ' + ext + ' minutes, the closing time moves to ' + ext + ' minutes after that bid, ' +
+      'so that everyone has a calm moment to answer. The link is personal, so please keep it to yourself.'
+  );
+  if (cfg.replyBy) {
+    lines.push('');
+    lines.push('If you have not received this by ' + cfg.replyBy + ', reply to this email.');
+  }
+  lines.push('');
+  lines.push('Warmly,');
+  lines.push('Suzete');
+  lines.push('Enperfeitas Studio');
+  return lines.join('\n');
+}
+
+function sendInvitations() {
+  var ui = SpreadsheetApp.getUi();
+  var cfg = readConfig_();
+  var data = readInvitees_();
+
+  var problems = [];
+  if (!cfg.pieceTitle) problems.push('piece_title');
+  if (!cfg.baseUrl) problems.push('page_base_url');
+  if (cfg.closingMs === null) problems.push('closing_time');
+  if (problems.length) {
+    ui.alert('Send invitations', 'Please fill in these Config values first: ' + problems.join(', ') + '.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var todo = data.rows.filter(function (r) {
+    return r.status === 'approved' && r.code && !r.sent && r.email && r.first;
+  });
+  if (!todo.length) {
+    ui.alert('Send invitations', 'Nothing to send. Approved rows with a code and an empty "sent" cell are sent.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var quota = MailApp.getRemainingDailyQuota();
+  if (quota < todo.length) {
+    ui.alert(
+      'Send invitations',
+      'Only ' + quota + ' email(s) can be sent today, but ' + todo.length + ' are waiting. ' +
+        'Nothing was sent. Try again tomorrow, or send fewer by changing some rows to pending.',
+      ui.ButtonSet.OK
+    );
+    return;
+  }
+
+  var testAddress = Session.getEffectiveUser().getEmail() || Session.getActiveUser().getEmail();
+  if (cfg.testMode && !testAddress) {
+    ui.alert('Send invitations', 'Test mode is on, but your own email address could not be found. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var question = cfg.testMode
+    ? 'Test mode is ON. ' + todo.length + ' test email(s) will be sent to ' + testAddress + ' only. Nobody else receives anything. Continue?'
+    : todo.length + ' invitation(s) will be sent to the invitees. Continue?';
+  if (ui.alert('Send invitations', question, ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+
+  var sent = 0;
+  var stoppedForQuota = false;
+  for (var i = 0; i < todo.length; i++) {
+    if (MailApp.getRemainingDailyQuota() < 1) {
+      stoppedForQuota = true;
+      break;
+    }
+    var p = todo[i];
+    var subject = 'Your invitation to bid: ' + cfg.pieceTitle;
+    var body = buildInvitationBody_(cfg, p);
+    if (cfg.testMode) {
+      subject = '[TEST] ' + subject;
+      body = 'TEST MODE. In the real round this would go to: ' + p.email + '\n\n' + body;
+    }
+    MailApp.sendEmail({
+      to: cfg.testMode ? testAddress : p.email,
+      subject: subject,
+      body: body,
+      name: 'Enperfeitas Studio'
+    });
+    if (!cfg.testMode) {
+      var cell = data.sheet.getRange(p.row, data.cols.sent + 1);
+      cell.setNumberFormat('@');
+      cell.setValue(iso_(Date.now()));
+    }
+    sent++;
+  }
+
+  var msg = sent + ' email(s) sent' + (cfg.testMode ? ' to ' + testAddress + ' (test mode, "sent" cells left empty).' : '.');
+  if (stoppedForQuota) msg += ' Stopped early because the daily email limit was reached. Run it again tomorrow for the rest.';
+  ui.alert('Send invitations', msg, ui.ButtonSet.OK);
+}
+
+/* ------------------------------------------------------------------ */
+/* Menu: Close auction, Reset test bids                                */
+/* ------------------------------------------------------------------ */
+
+function closeAuction() {
+  var ui = SpreadsheetApp.getUi();
+  if (ui.alert('Close auction', 'Close the auction now? No more bids will be accepted.', ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+  writeConfigValue_('status', 'closed', true);
+  SpreadsheetApp.flush();
+  clearStateCache_();
+  ui.alert('Close auction', 'The auction is closed.', ui.ButtonSet.OK);
+}
+
+function resetTestBids() {
+  var ui = SpreadsheetApp.getUi();
+  var cfg = readConfig_();
+  if (!cfg.testMode) {
+    ui.alert('Reset test bids', 'This only works while test_mode is true in Config. Nothing was changed.', ui.ButtonSet.OK);
+    return;
+  }
+  if (ui.alert('Reset test bids', 'Delete every row in the Bids tab? This cannot be undone.', ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+  var sh = getSheet_(SHEET_BIDS);
+  var last = sh.getLastRow();
+  if (last > 1) sh.getRange(2, 1, last - 1, 5).clearContent();
+  SpreadsheetApp.flush();
+  clearStateCache_();
+  ui.alert(
+    'Reset test bids',
+    'The Bids tab is empty again. If the test moved the closing time or closed the auction, set closing_time and status in Config again.',
+    ui.ButtonSet.OK
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Menu: first-time setup of the Bids and Config tabs                  */
+/* ------------------------------------------------------------------ */
+
+function createTabs() {
+  var ui = SpreadsheetApp.getUi();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var made = [];
+
+  if (!ss.getSheetByName(SHEET_BIDS)) {
+    var bids = ss.insertSheet(SHEET_BIDS);
+    bids.getRange(1, 1, 1, 5).setValues([['timestamp', 'code', 'display name', 'amount', 'void']]);
+    bids.getRange(1, 1, 1, 5).setFontWeight('bold');
+    bids.getRange(2, 1, 998, 1).setNumberFormat('yyyy-mm-dd hh:mm:ss');
+    bids.getRange(2, 2, 998, 1).setNumberFormat('@');
+    bids.setFrozenRows(1);
+    made.push(SHEET_BIDS);
+  }
+
+  if (!ss.getSheetByName(SHEET_CONFIG)) {
+    var cfg = ss.insertSheet(SHEET_CONFIG);
+    var rows = [
+      ['piece_title', 'Title of the piece'],
+      ['opening_bid', 1000],
+      ['min_step', 100],
+      ['closing_time', '2026-11-01T20:00:00+01:00'],
+      ['extension_minutes', 5],
+      ['status', 'open'],
+      ['test_mode', 'TRUE'],
+      ['page_base_url', 'https://enperfeitas.com/bidding.html'],
+      ['reply_by', '']
+    ];
+    cfg.getRange(1, 1, rows.length, 1).setValues(rows.map(function (r) { return [r[0]]; }));
+    cfg.getRange(1, 2, rows.length, 1).setNumberFormat('@');
+    cfg.getRange(1, 2, rows.length, 1).setValues(rows.map(function (r) { return [r[1]]; }));
+    cfg.getRange(1, 1, rows.length, 1).setFontWeight('bold');
+    cfg.setColumnWidth(1, 180);
+    cfg.setColumnWidth(2, 340);
+    made.push(SHEET_CONFIG);
+  }
+
+  ui.alert(
+    'Create tabs',
+    made.length ? 'Created: ' + made.join(', ') + '. Now fill in the Config values.' : 'Both tabs already exist. Nothing was changed.',
+    ui.ButtonSet.OK
+  );
+}

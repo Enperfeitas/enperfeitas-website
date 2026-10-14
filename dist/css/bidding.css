@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Bidding page. Uses the site's own colours and fonts from style.css
+   (--ink, --muted, --line, --accent). Mobile first.
+   ========================================================================== */
+
+.bid-page { padding: 36px 0 72px; }
+
+.bid-kicker {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.bid-page h1 {
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  line-height: 1.12;
+  margin: 0 0 22px;
+  text-align: left;
+}
+
+/* Quiet notices */
+.bid-banner,
+.bid-demo {
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent);
+  background: #fafafa;
+  font-size: 0.92rem;
+  color: var(--muted);
+  text-align: left;
+}
+
+.bid-layout { display: grid; grid-template-columns: 1fr; gap: 28px; }
+
+.bid-photo { margin: 0; }
+.bid-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.14), 0 3px 8px rgba(0,0,0,0.06);
+  background: #f4f4f4;
+}
+.bid-photo figcaption { margin-top: 8px; font-size: 0.85rem; color: var(--muted); text-align: left; }
+
+.bid-desc { margin: 0 0 22px; color: var(--muted); text-align: left; }
+
+/* The main panel */
+.bid-panel {
+  background: #fff;
+  border-radius: 10px;
+  padding: 22px 20px 24px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.bid-figures { margin: 0; display: grid; grid-template-columns: 1fr; gap: 18px; }
+.bid-figures div { display: block; }
+.bid-figures dt {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 2px;
+}
+.bid-figures dd { margin: 0; }
+.bid-figure {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.9rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.bid-sub { font-size: 0.92rem; color: var(--muted); margin-top: 2px; text-align: left; }
+.bid-countdown { font-variant-numeric: tabular-nums; }
+
+.bid-you {
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+/* Form */
+.bid-form { margin: 18px 0 0; }
+.bid-form label { display: block; font-weight: 500; margin: 0 0 6px; text-align: left; }
+.bid-input-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+.bid-form input[type="text"] {
+  flex: 1 1 150px;
+  min-width: 0;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 1.1rem;
+  color: var(--ink);
+  background: #fafafa;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+}
+.bid-form input[type="text"]:disabled { opacity: 0.6; }
+.bid-form .btn { margin-top: 0; margin-left: 0; margin-right: 0; flex: 0 0 auto; cursor: pointer; font: inherit; }
+.bid-form .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.bid-hint { margin: 8px 0 0; font-size: 0.9rem; color: var(--muted); text-align: left; }
+
+.bid-confirm {
+  margin: 16px 0 0;
+  padding: 16px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  background: #fafafa;
+}
+.bid-confirm p { margin: 0 0 14px; text-align: left; }
+.bid-confirm-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.bid-confirm-actions .btn { margin: 0; cursor: pointer; font: inherit; }
+.bid-confirm-actions .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.bid-message { margin: 0; text-align: left; }
+.bid-message.is-visible {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--ink);
+  background: #fafafa;
+}
+.bid-message.is-error { border-left-color: var(--accent); }
+
+.bid-readonly, .bid-final {
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+.bid-readonly p, .bid-final p { margin: 0 0 10px; text-align: left; }
+.bid-final p { font-weight: 500; }
+
+/* History */
+.bid-section { margin: 30px 0 0; }
+.bid-section h2 { font-size: 1.25rem; margin: 0 0 12px; text-align: left; }
+.bid-history { list-style: none; margin: 0; padding: 0; }
+.bid-history li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+.bid-history .h-name { font-weight: 500; }
+.bid-history .h-amount { text-align: right; font-variant-numeric: tabular-nums; }
+.bid-history .h-time { grid-column: 1 / -1; font-size: 0.85rem; color: var(--muted); }
+.bid-history li.is-top .h-amount { font-weight: 700; }
+.bid-empty { margin: 0; color: var(--muted); text-align: left; }
+
+/* Rules */
+.bid-rules ul { margin: 0; padding-left: 20px; }
+.bid-rules li { margin: 0 0 8px; color: var(--muted); text-align: left; }
+.bid-rules .bid-todo { color: var(--ink); }
+
+/* Focus states */
+.bid-page a:focus-visible,
+.bid-page button:focus-visible,
+.bid-page input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* A short, optional highlight when the high bid changes */
+@media (prefers-reduced-motion: no-preference) {
+  .bid-flash { animation: bid-flash 1.4s ease-out; }
+  @keyframes bid-flash {
+    0% { background: rgba(149, 74, 30, 0.16); }
+    100% { background: transparent; }
+  }
+}
+
+@media (min-width: 640px) {
+  .bid-figures { grid-template-columns: 1fr 1fr; }
+  .bid-figures .is-wide { grid-column: 1 / -1; }
+  .bid-panel { padding: 28px 28px 30px; }
+}
+
+@media (min-width: 900px) {
+  .bid-layout { grid-template-columns: 5fr 6fr; gap: 48px; align-items: start; }
+  .bid-photo { position: sticky; top: 24px; }
+  .bid-photo img { aspect-ratio: 4 / 5; }
+}
