@@ -124,7 +124,7 @@ Keep test_mode on `TRUE` for all of this. In test mode, invitation emails go onl
 
 1. In the Invitees tab, add two or three test rows by hand: a first name, your own email address (you can reuse it), and `approved` in the status column. Give two of the rows the same first name, to see how the page tells them apart.
 2. Choose **Invitations > Generate codes**. Each approved row gets a code of 7 letters and numbers.
-3. Choose **Invitations > Send invitations**. You receive one test email per row, each marked [TEST], at your own address. Open one and read it through.
+3. Choose **Invitations > Send invitations**. You receive one test email per row, each marked [TEST], at your own address. Open one and read it through. The email is designed (a clear heading, a button to open your bidding page, the dates in a small box, and the steps as a short list). A plain text version is sent along for mail apps that do not show designed emails. Check it on your phone as well.
 4. Click the personal link in an email. The page opens with a bid form. The code disappears from the address bar and is kept for this browser visit.
 5. Use two different browsers, or a private window, to act as two different people. Place bids back and forth.
 6. When you are done, choose **Invitations > Reset test bids**. This empties the Bids tab. It only works while test_mode is TRUE.
@@ -152,7 +152,18 @@ Tick each one.
 
 After testing: choose **Invitations > Reset test bids**, then set closing_time and status in Config again, because a test may have moved the closing time or closed the auction.
 
+## Changing the wording of the invitation email
+
+The wording is kept in three short places in `Code.gs`, near the function `buildInvitationHtml_`. You can change a sentence without touching the design.
+
+- `invitationSteps_`: the numbered steps under "How bidding works".
+- `invitationAfterWinning_`: the points under "If you win" (invoice, payment, shipping, withdrawal).
+- `INVITATION_LINK_NOTE`: the sentence under the button.
+
+Keep each sentence between the quotation marks, and keep the commas at the end of each line. After a change, publish a new version of the web app (Step 5), then run a test send to yourself.
+
 ## Step 8: The real round
+
 
 1. Check Config: piece_title, opening_bid, min_step, start_time (optional) and a real closing_time, extension_minutes, status `open`, and page_base_url. Keep status on `open`, even before the start time: the start time does the waiting.
 2. Choose **Invitations > Reset test bids** one last time so the Bids tab is empty. This only works while test_mode is still TRUE.

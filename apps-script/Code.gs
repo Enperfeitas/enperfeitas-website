@@ -530,45 +530,195 @@ function generateCodes() {
 /* Menu: Send invitations                                              */
 /* ------------------------------------------------------------------ */
 
-function buildInvitationBody_(cfg, invitee) {
-  var link = cfg.baseUrl + (cfg.baseUrl.indexOf('?') === -1 ? '?' : '&') + 'code=' + encodeURIComponent(invitee.code);
-  var closing = Utilities.formatDate(new Date(cfg.closingMs), TZ, "EEEE d MMMM yyyy 'at' HH:mm") + ' Swedish time';
+/* ------------------------------------------------------------------ */
+/* Invitation email                                                    */
+/*                                                                     */
+/* Two versions are sent in one message: a designed HTML version and a */
+/* plain text version for mail apps that do not show HTML.             */
+/* The wording lives in the three small functions right below, so you  */
+/* can change a sentence without touching the layout code.             */
+/* ------------------------------------------------------------------ */
+
+// The steps shown under "How bidding works".
+function invitationSteps_(cfg) {
   var ext = cfg.extensionMinutes;
-  var lines = [];
-  lines.push('Hello ' + invitee.first + ',');
-  lines.push('');
-  lines.push('Thank you for signing up. You are invited to place bids on one piece: ' + cfg.pieceTitle + '.');
-  lines.push('');
-  lines.push('Your personal link:');
-  lines.push(link);
-  lines.push('');
+  return [
+    'Open your personal link.',
+    'Look at the minimum bid shown, and enter a whole number of Swedish kronor. Amounts include moms.',
+    'Check the amount and confirm. Every bid is binding and cannot be withdrawn while bidding is open.',
+    'If a bid arrives in the last ' + ext + ' minutes, the closing time moves to ' + ext + ' minutes after that bid, so that everyone has a calm moment to answer.'
+  ];
+}
+
+// The points shown under "If you win".
+function invitationAfterWinning_() {
+  return [
+    'The winner is invoiced within 24 hours and pays within 48 hours.',
+    'Shipping is added by location, or the piece can be collected at the studio in Stockholm.',
+    'It is dispatched within 7 days of payment, and you have 14 days from delivery to withdraw from the purchase.'
+  ];
+}
+
+// The sentence under the button.
+var INVITATION_LINK_NOTE = 'The link is personal, so please keep it to yourself.';
+
+function escapeHtml_(s) {
+  return String(s === null || s === undefined ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function fmtSek_(n) {
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' SEK';
+}
+
+// Everything both versions of the email need, worked out once.
+function invitationFacts_(cfg, invitee) {
+  var dateFormat = "EEEE d MMMM yyyy 'at' HH:mm";
   var startMs = effectiveStart_(cfg);
-  if (startMs !== null && startMs > Date.now()) {
-    var opening = Utilities.formatDate(new Date(startMs), TZ, "EEEE d MMMM yyyy 'at' HH:mm") + ' Swedish time';
-    lines.push('Bidding opens on ' + opening + ' and closes on ' + closing + '.');
-    lines.push('Until it opens, your link shows the piece but no bid form.');
-  } else {
-    lines.push('Bidding closes on ' + closing + '.');
-  }
+  var upcoming = startMs !== null && startMs > Date.now();
+  return {
+    first: invitee.first,
+    title: cfg.pieceTitle,
+    link: cfg.baseUrl + (cfg.baseUrl.indexOf('?') === -1 ? '?' : '&') + 'code=' + encodeURIComponent(invitee.code),
+    upcoming: upcoming,
+    opens: upcoming ? Utilities.formatDate(new Date(startMs), TZ, dateFormat) + ' Swedish time' : '',
+    closes: Utilities.formatDate(new Date(cfg.closingMs), TZ, dateFormat) + ' Swedish time',
+    openingBid: fmtSek_(cfg.openingBid) + ', moms included',
+    steps: invitationSteps_(cfg),
+    afterWinning: invitationAfterWinning_(),
+    replyBy: cfg.replyBy
+  };
+}
+
+// Plain text version. Short blocks with a blank line between them.
+function buildInvitationBody_(cfg, invitee) {
+  var f = invitationFacts_(cfg, invitee);
+  var lines = [];
+  lines.push('Hello ' + f.first + ',');
   lines.push('');
-  lines.push(
-    'How bidding works: open your link, look at the minimum bid shown, and enter a whole number of Swedish kronor. ' +
-'Amounts include moms. Every bid is binding and cannot be withdrawn while bidding is open. ' +
-'If a bid arrives in the last ' + ext + ' minutes, the closing time moves to ' + ext + ' minutes after that bid, ' +
-'so that everyone has a calm moment to answer. ' +
-'The winner is invoiced within 24 hours and pays within 48. Shipping is added by location, or the piece can be collected at the studio in Stockholm. ' +
-'It is dispatched within 7 days of payment, and you have 14 days from delivery to withdraw from the purchase. ' +
-'The link is personal, so please keep it to yourself.'
-  );
-  if (cfg.replyBy) {
+  lines.push('Thank you for signing up. You are invited to place bids on one piece:');
+  lines.push(f.title);
+  lines.push('');
+  lines.push('YOUR PERSONAL LINK');
+  lines.push(f.link);
+  lines.push(INVITATION_LINK_NOTE);
+  if (f.upcoming) lines.push('Until it opens, your link shows the piece but no bid form.');
+  lines.push('');
+  lines.push('THE DETAILS');
+  if (f.upcoming) lines.push('Opens: ' + f.opens);
+  lines.push('Closes: ' + f.closes);
+  lines.push('Opening bid: ' + f.openingBid);
+  lines.push('');
+  lines.push('HOW BIDDING WORKS');
+  f.steps.forEach(function (s, i) {
+    lines.push((i + 1) + '. ' + s);
+  });
+  lines.push('');
+  lines.push('IF YOU WIN');
+  f.afterWinning.forEach(function (s) {
+    lines.push('- ' + s);
+  });
+  if (f.replyBy) {
     lines.push('');
-    lines.push('If you have not received this by ' + cfg.replyBy + ', reply to this email.');
+    lines.push('If you have not received this by ' + f.replyBy + ', reply to this email.');
   }
   lines.push('');
   lines.push('Warmly,');
   lines.push('Suzete');
   lines.push('Enperfeitas Studio');
   return lines.join('\n');
+}
+
+// Designed version. Built with tables and inline styles because that is what
+// mail apps (Gmail, Outlook, Apple Mail) display reliably. Brand colours:
+// ink #000000, muted #5a5a5a, line #e6e6e6, soft #fafafa, accent #954a1e.
+function buildInvitationHtml_(cfg, invitee, testNote) {
+  var f = invitationFacts_(cfg, invitee);
+  var e = escapeHtml_;
+  var body = 'font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#000000;';
+  var serif = 'font-family:Georgia,\'Times New Roman\',serif;';
+  var pad = 'padding:0 32px;';
+  var h = [];
+
+  function row(content, extraStyle) {
+    h.push('<tr><td style="' + pad + (extraStyle || '') + 'text-align:left;">' + content + '</td></tr>');
+  }
+  function heading(text) {
+    return '<h2 style="' + serif + 'font-size:19px;line-height:1.3;font-weight:bold;margin:0 0 10px;color:#000000;">' + e(text) + '</h2>';
+  }
+
+  h.push('<!doctype html><html lang="en"><head><meta charset="utf-8">');
+  h.push('<meta name="viewport" content="width=device-width, initial-scale=1">');
+  h.push('<meta name="color-scheme" content="light only"><title>' + e('Your invitation to bid: ' + f.title) + '</title></head>');
+  h.push('<body style="margin:0;padding:0;background-color:#fafafa;' + body + '">');
+  // Hidden preview line shown next to the subject in the inbox.
+  h.push('<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#fafafa;">Your personal link to bid on ' + e(f.title) + '.</div>');
+  h.push('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;"><tr><td align="center" style="padding:24px 12px;">');
+  h.push('<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border-radius:10px;">');
+
+  // Brand line
+  h.push('<tr><td style="padding:26px 32px 18px;border-bottom:1px solid #e6e6e6;text-align:left;' + serif + 'font-size:20px;font-weight:bold;color:#000000;">Enperfeitas Studio</td></tr>');
+
+  // Test note
+  if (testNote) {
+    row('<div style="margin:22px 0 0;padding:10px 14px;border-left:3px solid #954a1e;background-color:#fafafa;font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(testNote) + '</div>');
+  }
+
+  // Greeting and the piece
+  row('<p style="margin:28px 0 8px;font-size:15px;color:#5a5a5a;">Hello ' + e(f.first) + ',</p>' +
+      '<h1 style="' + serif + 'font-size:27px;line-height:1.25;font-weight:bold;margin:0 0 14px;color:#000000;">You are invited to bid</h1>' +
+      '<p style="margin:0 0 8px;">Thank you for signing up. You are invited to place bids on one piece:</p>' +
+      '<p style="' + serif + 'margin:0 0 24px;font-size:21px;line-height:1.35;font-weight:bold;color:#000000;">' + e(f.title) + '</p>');
+
+  // Button and link note
+  row('<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" bgcolor="#954a1e" style="border-radius:300px;">' +
+      '<a href="' + e(f.link) + '" style="display:inline-block;padding:16px 34px;font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:bold;line-height:1.2;color:#ffffff;text-decoration:none;border-radius:300px;">Open your bidding page</a>' +
+      '</td></tr></table>' +
+      '<p style="margin:14px 0 0;font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(INVITATION_LINK_NOTE) +
+      (f.upcoming ? ' Until it opens, your link shows the piece but no bid form.' : '') + '</p>' +
+      '<p style="margin:8px 0 0;font-size:13px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(f.link) + '</p>');
+
+  // Key facts
+  var facts = [];
+  if (f.upcoming) facts.push(['Opens', f.opens]);
+  facts.push(['Closes', f.closes]);
+  facts.push(['Opening bid', f.openingBid]);
+  var factRows = facts.map(function (x) {
+    return '<tr><td style="padding:6px 16px 6px 0;width:110px;vertical-align:top;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:#5a5a5a;text-align:left;">' + e(x[0]) + '</td>' +
+           '<td style="padding:6px 0;vertical-align:top;font-size:16px;color:#000000;text-align:left;">' + e(x[1]) + '</td></tr>';
+  }).join('');
+  row('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;border-radius:8px;"><tr><td style="padding:14px 18px;">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + factRows + '</table></td></tr></table>', 'padding-top:28px;');
+
+  // How bidding works
+  row(heading('How bidding works') +
+      '<ol style="margin:0;padding-left:22px;">' +
+      f.steps.map(function (s) { return '<li style="margin:0 0 8px;padding-left:4px;">' + e(s) + '</li>'; }).join('') +
+      '</ol>', 'padding-top:30px;');
+
+  // If you win
+  row(heading('If you win') +
+      '<ul style="margin:0;padding-left:22px;">' +
+      f.afterWinning.map(function (s) { return '<li style="margin:0 0 8px;padding-left:4px;">' + e(s) + '</li>'; }).join('') +
+      '</ul>', 'padding-top:26px;');
+
+  // Reply line and sign-off
+  var closing = '';
+  if (f.replyBy) {
+    closing += '<p style="margin:0 0 18px;">If you have not received this by ' + e(f.replyBy) + ', reply to this email.</p>';
+  }
+  closing += '<p style="margin:0;">Warmly,<br><span style="' + serif + 'font-size:18px;font-weight:bold;">Suzete</span><br><span style="color:#5a5a5a;">Enperfeitas Studio</span></p>';
+  row(closing, 'padding-top:28px;padding-bottom:30px;');
+
+  // Footer
+  h.push('<tr><td style="padding:18px 32px 22px;border-top:1px solid #e6e6e6;text-align:left;font-size:12px;line-height:1.5;color:#5a5a5a;">You are receiving this because you signed up for the bidding round at enperfeitas.com. If it reached you by mistake, please reply and let me know.</td></tr>');
+
+  h.push('</table></td></tr></table></body></html>');
+  return h.join('');
 }
 
 function sendInvitations() {
@@ -625,14 +775,18 @@ function sendInvitations() {
     var p = todo[i];
     var subject = 'Your invitation to bid: ' + cfg.pieceTitle;
     var body = buildInvitationBody_(cfg, p);
+    var testNote = '';
     if (cfg.testMode) {
       subject = '[TEST] ' + subject;
-      body = 'TEST MODE. In the real round this would go to: ' + p.email + '\n\n' + body;
+      testNote = 'TEST MODE. In the real round this would go to: ' + p.email;
+      body = testNote + '\n\n' + body;
     }
+    var htmlBody = buildInvitationHtml_(cfg, p, testNote);
     MailApp.sendEmail({
       to: cfg.testMode ? testAddress : p.email,
       subject: subject,
       body: body,
+      htmlBody: htmlBody,
       name: 'Enperfeitas Studio'
     });
     if (!cfg.testMode) {
