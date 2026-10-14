@@ -189,7 +189,7 @@ def hero_cover(filename, heading, subtext, label, page="", source="", cta_label=
 """
 
 
-def page(filename, title, description, body, active=None, robots=None):
+def page(filename, title, description, body, active=None, robots=None, extra_css=None):
     nav_items = ""
     for href, label in NAV:
         if href in HIDDEN_FROM_NAV:
@@ -199,6 +199,7 @@ def page(filename, title, description, body, active=None, robots=None):
 
     legal = " &middot; ".join(f'<a href="{href}">{label}</a>' for href, label in LEGAL_LINKS)
     robots_tag = f'<meta name="robots" content="{robots}">\n' if robots else ""
+    extra_css_tag = f'<link rel="stylesheet" href="css/{extra_css}">\n' if extra_css else ""
 
     html = f"""<!doctype html>
 <html lang="en">
@@ -211,7 +212,7 @@ def page(filename, title, description, body, active=None, robots=None):
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-</head>
+{extra_css_tag}</head>
 <body>
 <header class="site">
   <div class="wrap nav-row">
@@ -2184,6 +2185,105 @@ body = """
 page("tools.html", "Free Tools for Bookbinders | Enperfeitas Studio",
      "Free online tools for bookbinders from Enperfeitas Studio: booklet imposition and a box maker. Pay what you like.",
      body, active="tools.html")
+# ---------------------------------------------------------------- BIDDING (invitation only)
+# Not in the menu, not indexed. Logic lives in apps-script/Code.gs; this page only displays it.
+# See apps-script/SETUP.md.
+body = r"""
+<main class="bid-page" id="main">
+  <div class="wrap">
+    <p class="bid-kicker">Invitation-only bidding</p>
+    <h1 id="bid-title">The piece</h1>
+
+    <p class="bid-demo" id="bid-demo" hidden>Demo view. No server is connected yet, so nothing is sent and the figures are examples.</p>
+    <p class="bid-banner" id="bid-banner" role="status" hidden>Connection lost, retrying.</p>
+
+    <div class="bid-layout">
+      <figure class="bid-photo">
+        <img src="images/work-54-thick-book-decorative-cover.webp" alt="Placeholder photo of the piece" width="800" height="1000">
+        <figcaption>[Placeholder photo. Replace with the real photo of the piece.]</figcaption>
+      </figure>
+
+      <div class="bid-main">
+        <p class="bid-desc">[Placeholder: two or three plain sentences about the piece, its size, materials and how it was made.]</p>
+
+        <div class="bid-panel">
+          <dl class="bid-figures">
+            <div class="is-wide">
+              <dt>Current high bid</dt>
+              <dd class="bid-figure" id="bid-high">Loading</dd>
+              <dd class="bid-sub" id="bid-bidder"></dd>
+            </div>
+            <div>
+              <dt id="bid-time-label">Time left</dt>
+              <dd class="bid-figure bid-countdown" id="bid-countdown">-</dd>
+              <dd class="bid-sub" id="bid-closing"></dd>
+            </div>
+            <div>
+              <dt>Minimum next bid</dt>
+              <dd class="bid-figure" id="bid-min">-</dd>
+            </div>
+          </dl>
+
+          <p class="bid-you" id="bid-you" hidden></p>
+
+          <form class="bid-form" id="bid-form" novalidate hidden>
+            <label for="bid-amount">Your bid in SEK</label>
+            <div class="bid-input-row">
+              <input type="text" id="bid-amount" name="amount" inputmode="numeric" autocomplete="off" aria-describedby="bid-hint bid-message">
+              <button type="submit" class="btn" id="bid-submit">Bid</button>
+            </div>
+            <p class="bid-hint" id="bid-hint"></p>
+
+            <div class="bid-confirm" id="bid-confirm" role="group" aria-labelledby="bid-confirm-text" hidden>
+              <p id="bid-confirm-text"></p>
+              <div class="bid-confirm-actions">
+                <button type="button" class="btn" id="bid-confirm-yes">Confirm bid</button>
+                <button type="button" class="btn secondary" id="bid-confirm-no">Change amount</button>
+              </div>
+            </div>
+          </form>
+
+          <p class="bid-message" id="bid-message" role="status" aria-live="polite"></p>
+
+          <div class="bid-readonly" id="bid-readonly" hidden>
+            <p id="bid-readonly-note"></p>
+            <p>If you would like to be invited, you can <a id="bid-signup" href="#">sign up here</a>.</p>
+          </div>
+
+          <div class="bid-final" id="bid-final" hidden>
+            <p id="bid-final-text"></p>
+          </div>
+        </div>
+
+        <section class="bid-section" aria-labelledby="bid-history-title">
+          <h2 id="bid-history-title">Bid history</h2>
+          <ol class="bid-history" id="bid-history"></ol>
+          <p class="bid-empty" id="bid-no-history">No bids yet.</p>
+        </section>
+
+        <section class="bid-section bid-rules" aria-labelledby="bid-rules-title">
+          <h2 id="bid-rules-title">Before you bid</h2>
+          <ul>
+            <li>Every bid is binding and cannot be withdrawn.</li>
+            <li>All amounts are whole Swedish kronor (SEK) and include moms.</li>
+            <li>A bid must be at least the minimum shown: the opening bid, or the current high bid plus the step.</li>
+            <li>If a bid arrives in the last <span id="bid-ext">5</span> minutes, the closing time moves to that many minutes after the bid, so everyone has time to answer.</li>
+            <li>The winner is invoiced within 24 hours and pays within 48 hours. If payment does not arrive, the piece is offered to the next bidder.</li>
+            <li>Only your first name is shown next to your bids.</li>
+            <li class="bid-todo">[Placeholder: full terms, including the 14-day right of withdrawal, to be confirmed before the real round.]</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/bidding.js" defer></script>
+"""
+page("bidding.html", "Bidding | Enperfeitas Studio",
+     "A quiet, invitation-only bidding page for one piece from Enperfeitas Studio.",
+     body, active=None, robots="noindex, nofollow", extra_css="bidding.css")
+
 # ---------------------------------------------------------------- LINKS
 link_items = [
     ("studio.html", "The Studio"),
