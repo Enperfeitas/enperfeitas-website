@@ -705,9 +705,9 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
        '<td class="btn" align="center" bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #000000;border-radius:300px;">' +
        '<a href="' + e(f.link) + '" style="display:inline-block;padding:17px 38px;' + SANS + 'font-size:17px;font-weight:500;line-height:1.2;color:#000000;text-decoration:none;border-radius:300px;">Open your bidding page</a>' +
        '</td></tr></table>' +
-       '<p style="margin:16px 0 0;text-align:center;' + SANS + 'font-size:15px;line-height:1.5;color:#5a5a5a;">' + e(INVITATION_LINK_NOTE) +
+       '<p style="margin:16px 0 0;' + SANS + 'font-size:15px;line-height:1.5;color:#5a5a5a;">' + e(INVITATION_LINK_NOTE) +
        (f.upcoming ? ' Until it opens, your link shows the piece but no bid form.' : '') + '</p>' +
-       '<p style="margin:8px 0 0;text-align:center;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(f.link) + '</p>',
+       '<p style="margin:8px 0 0;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(f.link) + '</p>',
        '32px 40px 0');
 
   // The facts, in the same style as the figures on the bidding page
