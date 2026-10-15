@@ -618,8 +618,8 @@ page("studio.html", "The Studio | Enperfeitas",
 # quotes. While a link is empty, that card's button falls back to an email
 # so nobody lands on a dead button.
 MEMBERSHIP_STRIPE = {
-    "single": "",
-    "pass": "",
+    "single": "https://buy.stripe.com/9B66oH7VYbvY4YI7yV1440k",
+    "pass": "https://buy.stripe.com/bJe3cvgsueIa3UEf1n1440l",
     "basic": "",
     "premium": "",
 }
@@ -637,7 +637,7 @@ def membership_card(key, title, price, per, photo_label, photo_filename, desc, f
     return f"""
     <div class="{cls}">
       {badge}
-      {img_block(photo_label, photo_filename, "Studio Membership")}
+      {doodle_icon(photo_label, photo_filename, "Studio Membership")}
       <h3>{title}</h3>
       <div class="price">{price}{per_html}</div>
       <p class="membership-desc">{desc}</p>
@@ -656,19 +656,19 @@ body = f"""
   <div class="wrap">
     <div class="grid-4 cards-row membership-cards">
       {membership_card("single", "Single session", "450 SEK", "",
-        "A bookbinding workbench with a yellow lamp, tools, and a paper cutter", "workshop-space-main-room-1.webp",
+        "A single folded sheet with a short sewn line", "membership-single.svg",
         "One evening in the studio, a gentle way to see if it suits you. If you decide to join within 48 hours, the 450 SEK is credited toward your pass or first month.",
         ["1 session", "Tuesday or Thursday"], "Book a session")}
       {membership_card("pass", "5-Session Pass", "2,100 SEK", "valid 2 months",
-        "The shared common area of the Enperfeitas studio", "workshop-space-common-area.webp",
+        "Five circles in a row, the first one filled", "membership-pass.svg",
         "Not ready for a monthly rhythm? Five sessions to use whenever suits you over two months.",
         ["5 sessions", "Tuesday or Thursday"], "Buy the pass")}
       {membership_card("basic", "Basic membership", "1,400 SEK", "/ month",
-        "A bookbinding workbench with tools laid out", "workshop-space-main-room-2.webp",
+        "A closed book with a sewn spine", "membership-basic.svg",
         "Regular, flexible access to the studio and its tools, billed monthly. Unused sessions do not carry over.",
         ["Up to 8 sessions per month", "Tuesday and Thursday"], "Join Basic", featured=True)}
       {membership_card("premium", "Premium membership", "2,400 SEK", "/ month",
-        "The living room corner of the Enperfeitas studio", "workshop-space-living-room.webp",
+        "A closed book with a ribbon and a small star", "membership-premium.svg",
         "Everything in Basic, with more sessions and up to two 1-on-1 sessions with Suzete each month, for feedback on what you are making.",
         ["Up to 12 sessions per month", "Tuesday, Wednesday and Thursday"], "Join Premium")}
     </div>
