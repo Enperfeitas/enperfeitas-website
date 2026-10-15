@@ -620,8 +620,8 @@ page("studio.html", "The Studio | Enperfeitas",
 MEMBERSHIP_STRIPE = {
     "single": "https://buy.stripe.com/9B66oH7VYbvY4YI7yV1440k",
     "pass": "https://buy.stripe.com/bJe3cvgsueIa3UEf1n1440l",
-    "basic": "",
-    "premium": "",
+    "basic": "https://buy.stripe.com/eVq14n902dE6dve06t1440m",
+    "premium": "https://buy.stripe.com/dRmbJ1cce0Rkezi9H31440n",
 }
 
 def membership_card(key, title, price, per, photo_label, photo_filename, desc, facts, cta, featured=False):
