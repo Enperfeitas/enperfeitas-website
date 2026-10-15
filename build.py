@@ -47,7 +47,6 @@ FOOTER_COLS = {
         ("bespoke-boxes.html", "Bespoke Boxes"),
         ("latest-work.html", "Latest Work"),
         ("collectibles.html", "Collectibles"),
-        ("design-your-book.html", "Design Your Own Book"),
         ("shop.html", "Shop"),
     ],
     "Studio Info": [
@@ -1268,7 +1267,7 @@ body = f"""
       <div class="shop-card-body">
         <h3>Artisan Edition</h3>
         <p class="desc">A handbound notebook, journal, or sketchbook, made to your specifications. For those who want a beautiful object for their own daily practice, or a gift that will actually be kept.</p>
-        <a class="btn secondary" href="design-your-book.html" aria-label="Design your own handbound book">Design your own book</a>
+        <span class="btn secondary disabled">Coming soon</span>
       </div>
     </div>
     <div class="card shop-card">
