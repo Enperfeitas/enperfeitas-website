@@ -514,13 +514,12 @@ page("about.html", "About | Enperfeitas Studio",
 
 # ---------------------------------------------------------------- THE STUDIO
 membership_accordion = accordion([
-    ("Description", "<p>You get access to the studio, bookbinding tools, and a flexible workspace. Support is available, but sessions are intended for independent work. Spaces are LIMITED.</p>"),
-    ("Pricing", "<p>Regular access to the studio on set days/times with two different packages:</p><ul><li>Basic: 1,200 SEK</li><li>Premium: 1,800 SEK</li></ul>"),
-    ("Members operating hours", "<p>The studio will be available for members 2 or 3 days a week (depending on the package you choose):</p><ul><li>Basic: Tuesdays and Thursdays, 17:00&ndash;20:00</li><li>Premium: Tuesdays, Wednesdays and Thursdays, 17:00&ndash;20:00</li></ul><p>The studio will be closed on public holidays and may occasionally close for special events. You will be notified as early as possible about any planned closures.</p>"),
-    ("Benefits", "<ul><li>Access to dedicated workspace and all bookbinding, printing, and finishing equipment</li><li>Complimentary introduction sessions to familiarize you with the equipment</li><li>15% discount on all workshops</li><li>15% discount on materials from the Enperfeitas shop</li><li>Invitations to all special events at Enperfeitas Studio</li></ul>"),
-    ("Who is this for?", "<p>From casual to serious hobbyists, busy creatives, mindful makers, aspiring pros and collectors/restoration enthusiasts. Those who value a laid-back environment over structured lessons, and people who want flexible access to a professional studio to create as a form of meditation or stress relief.</p><p>PS: to ensure a safe, efficient environment for everyone, new members must either have attended at least one Enperfeitas Studio workshop (or a comparable bookbinding course), or demonstrate prior knowledge of basic bookbinding techniques and tools usage. Unsure whether you meet the requirements? Get in touch. We're happy to guide you to the best next steps.</p>"),
+    ("What it is", "<p>Regular access to the studio, with bookbinding tools and a workspace of your own. Support is there when you need it, but sessions are built for independent work: you arrive, settle in, and make. Places are limited so the studio stays calm and unhurried.</p>"),
+    ("Options and pricing", "<ul><li>Single session: 450 SEK</li><li>5-Session Pass: 2,100 SEK, valid 2 months</li><li>Basic: 1,400 SEK / month, up to 8 sessions</li><li>Premium: 2,400 SEK / month, up to 12 sessions, plus up to two 1-on-1 sessions with Suzete each month</li></ul><p>If you book a single session and decide to join within 48 hours, the 450 SEK is credited toward your pass or first month.</p>"),
+    ("Hours", "<p>All sessions run 17:00 to 20:00.</p><ul><li>Basic, single sessions and passes: Tuesdays and Thursdays</li><li>Premium: Tuesdays, Thursdays and Wednesdays</li></ul><p>The studio is closed on public holidays and may occasionally close for special events.</p>"),
+    ("Benefits", "<ul><li>A dedicated workspace and all bookbinding, printing and finishing equipment</li><li>A complimentary introduction session</li><li>15% off all workshops</li><li>15% off materials from the Enperfeitas shop</li><li>Invitations to special events at the studio</li></ul>"),
+    ("Who is this for?", "<p>Casual and serious hobbyists, busy creatives, aspiring professionals, and collectors or restoration enthusiasts, anyone who prefers a quiet, flexible environment to structured lessons.</p><p>New members need to have attended at least one Enperfeitas workshop (or a comparable course), or show prior knowledge of basic bookbinding. Not sure? Get in touch and we will help you find the next step.</p>"),
 ])
-
 workshop_accordion = accordion([
     ("Description", "<p>Enperfeitas Studio offers a beautifully designed, fully-equipped workspace for like-minded creators to run their workshops. Our inspiring environment is ideal for small groups (up to 6&ndash;8 people), and offers everything you need to deliver a memorable experience, whether you're teaching bookbinding, art, or any other craft.</p>"),
     ("Pricing", "<ul><li>Half-day rental (4 hours): 1,500 SEK</li><li>Full-day rental (8 hours): 2,250 SEK</li></ul><p>Prices exclude VAT. Dates available can be checked in advance by reaching us via email.</p>"),
@@ -562,9 +561,9 @@ body = f"""
       <span class="badge">Most popular</span>
       {doodle_icon("A doodle illustrating a membership pass", "studio-workshop-space.webp", "The Studio", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/83395405-0582-4828-9297-49d68080f45a/Enperfeitas+doodles?format=1000w")}
       <h3>Membership Pass</h3>
-      <div class="price">From 1,200 SEK</div>
+      <div class="price">From 450 SEK</div>
       {membership_accordion}
-      <a class="btn" href="mailto:info@enperfeitas.com?subject=Studio%20Membership" aria-label="Become a member: send me an email about studio membership">Become a member</a>
+      <a class="btn" href="studio-membership.html" aria-label="See studio membership options and pricing">See membership options</a>
     </div>
     <div class="accordion-card">
       {doodle_icon("A doodle illustrating collaboration and brainstorming", "studio-creative-events.webp", "The Studio", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/42cb4145-027a-46fe-ad67-f4b778afd604/Enperfeitas+doodles?format=1000w")}
@@ -615,45 +614,65 @@ page("studio.html", "The Studio | Enperfeitas",
      body, active="studio.html")
 
 # ---------------------------------------------------------------- STUDIO MEMBERSHIP
+# Stripe payment links for the four options. Paste each link between the
+# quotes. While a link is empty, that card's button falls back to an email
+# so nobody lands on a dead button.
+MEMBERSHIP_STRIPE = {
+    "single": "",
+    "pass": "",
+    "basic": "",
+    "premium": "",
+}
+
+def membership_card(key, title, price, per, photo_label, photo_filename, desc, facts, cta, featured=False):
+    link = MEMBERSHIP_STRIPE.get(key, "")
+    if link:
+        href = f'href="{link}" target="_blank" rel="noopener"'
+    else:
+        href = f'href="mailto:info@enperfeitas.com?subject=Studio%20Membership%20-%20{title.replace(" ", "%20")}"'
+    cls = "accordion-card featured" if featured else "accordion-card"
+    badge = '<span class="badge">Most popular</span>' if featured else ""
+    per_html = f' <span class="price-per">{per}</span>' if per else ""
+    facts_html = "".join(f"<li>{f}</li>" for f in facts)
+    return f"""
+    <div class="{cls}">
+      {badge}
+      {img_block(photo_label, photo_filename, "Studio Membership")}
+      <h3>{title}</h3>
+      <div class="price">{price}{per_html}</div>
+      <p class="membership-desc">{desc}</p>
+      <ul class="offer-list">{facts_html}</ul>
+      <a class="btn" {href} aria-label="{cta} - {title}">{cta}</a>
+    </div>
+    """
+
 body = f"""
 <section class="page-header wrap">
-  <h1>Studio Memberships</h1>
-  <p>You get access to the studio, bookbinding tools, and a flexible workspace. Support is available, but sessions are intended for independent work. Spaces are limited.</p>
+  <h1>Studio Membership</h1>
+  <p>Regular access to the studio, with bookbinding tools and a workspace of your own. Support is there when you need it, but sessions are built for independent work. Places are limited so the studio stays calm and unhurried.</p>
 </section>
 
 <section>
-  <div class="wrap grid-2">
-    <div class="card shop-card">
-      {img_block("A bookbinding workbench with a yellow lamp, tools, and a paper cutter, part of the Enperfeitas studio", "workshop-space-main-room-1.webp", "Studio Membership", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/2285783b-a1c2-4ed8-8d70-360ba39c323f/IMG_1184.jpeg?format=750w")}
-      <div class="shop-card-body">
-        <h3>Basic</h3>
-        <div class="price">1,200 SEK <span style="color:var(--muted);font-weight:400;font-size:0.85rem;">/ month</span></div>
-        <ul class="offer-list">
-          <li>Flexible studio access, minimal instruction</li>
-          <li>Community vibe, low stress</li>
-          <li>Tuesdays &amp; Thursdays, 17:00&ndash;20:00</li>
-        </ul>
-        <span class="btn secondary disabled">Coming soon</span>
-        <p class="construction-note">Online sign-up for Basic membership is being set up. Want to join now? Email <a href="mailto:info@enperfeitas.com?subject=Studio%20Membership%20-%20Basic">info@enperfeitas.com</a> and we'll sort out payment directly.</p>
-      </div>
+  <div class="wrap">
+    <div class="grid-4 cards-row membership-cards">
+      {membership_card("single", "Single session", "450 SEK", "",
+        "A bookbinding workbench with a yellow lamp, tools, and a paper cutter", "workshop-space-main-room-1.webp",
+        "One evening in the studio, a gentle way to see if it suits you. If you decide to join within 48 hours, the 450 SEK is credited toward your pass or first month.",
+        ["1 session", "Tuesday or Thursday"], "Book a session")}
+      {membership_card("pass", "5-Session Pass", "2,100 SEK", "valid 2 months",
+        "The shared common area of the Enperfeitas studio", "workshop-space-common-area.webp",
+        "Not ready for a monthly rhythm? Five sessions to use whenever suits you over two months.",
+        ["5 sessions", "Tuesday or Thursday"], "Buy the pass")}
+      {membership_card("basic", "Basic membership", "1,400 SEK", "/ month",
+        "A bookbinding workbench with tools laid out", "workshop-space-main-room-2.webp",
+        "Regular, flexible access to the studio and its tools, billed monthly. Unused sessions do not carry over.",
+        ["Up to 8 sessions per month", "Tuesday and Thursday"], "Join Basic", featured=True)}
+      {membership_card("premium", "Premium membership", "2,400 SEK", "/ month",
+        "The living room corner of the Enperfeitas studio", "workshop-space-living-room.webp",
+        "Everything in Basic, with more sessions and up to two 1-on-1 sessions with Suzete each month, for feedback on what you are making.",
+        ["Up to 12 sessions per month", "Tuesday, Wednesday and Thursday"], "Join Premium")}
     </div>
-    <div class="card shop-card">
-      {img_block("A bookbinding workbench with tools laid out, part of the Enperfeitas studio", "workshop-space-main-room-2.webp", "Studio Membership", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/c12f7977-403f-4491-8d4c-aab380a14edd/IMG_1183.jpeg?format=750w")}
-      <div class="shop-card-body">
-        <h3>Premium</h3>
-        <div class="price">1,800 SEK <span style="color:var(--muted);font-weight:400;font-size:0.85rem;">/ month</span></div>
-        <ul class="offer-list">
-          <li>Everything in Basic, plus monthly 1-on-1 coaching</li>
-          <li>Community vibe, low stress</li>
-          <li>Tuesdays, Wednesdays &amp; Thursdays, 17:00&ndash;20:00</li>
-        </ul>
-        <span class="btn secondary disabled">Coming soon</span>
-        <p class="construction-note">Online sign-up for Premium membership is being set up. Want to join now? Email <a href="mailto:info@enperfeitas.com?subject=Studio%20Membership%20-%20Premium">info@enperfeitas.com</a> and we'll sort out payment directly.</p>
-      </div>
-    </div>
-  </div>
-  <div class="wrap embed-note" style="margin-top:28px;">
-    The studio will be closed on public holidays and may occasionally close for special events. You'll be notified as early as possible about any planned closures. Online sign-up is on its way. In the meantime, use the email link on either membership above to join directly.
+    <p class="membership-hours">All sessions run 17:00 to 20:00. The studio is closed on public holidays and may occasionally close for special events. You will be told about planned closures as early as possible.</p>
   </div>
 </section>
 
@@ -662,36 +681,24 @@ body = f"""
     <div>
       <h2>Benefits</h2>
       <ul>
-        <li>Access to dedicated workspace and all bookbinding, printing, and finishing equipment</li>
-        <li>Complimentary introduction sessions to familiarize you with the equipment</li>
-        <li>15% discount on all workshops</li>
-        <li>15% discount on materials from the Enperfeitas shop</li>
-        <li>Invitations to all special events at Enperfeitas Studio</li>
+        <li>A dedicated workspace and access to all bookbinding, printing and finishing equipment</li>
+        <li>A complimentary introduction session to get to know the equipment</li>
+        <li>15% off all workshops</li>
+        <li>15% off materials from the Enperfeitas shop</li>
+        <li>Invitations to special events at the studio</li>
+        <li><strong>Premium also includes</strong> up to two 1-on-1 sessions with Suzete each month, for feedback on what you are making, and the extra Wednesday session day</li>
       </ul>
     </div>
     <div>
-      <h2>Who is this for?</h2>
-      <p>From casual to serious hobbyists, busy creatives, mindful makers, aspiring pros and collectors/restoration enthusiasts. Those who value a laid-back environment over structured lessons, and people who want flexible access to a professional studio to create as a form of meditation or stress relief.</p>
-      <p style="color:var(--muted);font-size:0.92rem;">PS: to ensure a safe, efficient environment for everyone, new members must either have attended at least one Enperfeitas Studio workshop (or a comparable bookbinding course), or demonstrate prior knowledge of basic bookbinding techniques and tools usage. Unsure whether you meet the requirements? Get in touch. We're happy to guide you to the best next steps.</p>
+      <h2>Who this is for</h2>
+      <p>People who want a professional studio to make in, without a set lesson. Casual and serious hobbyists, busy creatives, aspiring professionals, and collectors or restoration enthusiasts. It suits anyone who prefers a quiet, flexible environment to structured teaching, and who uses making as a way to slow down.</p>
+      <p style="color:var(--muted);font-size:0.92rem;"><strong>Before you join.</strong> To keep the studio safe and efficient for everyone, new members need to have attended at least one Enperfeitas workshop (or a comparable bookbinding course), or show prior knowledge of basic bookbinding techniques and tool use. Not sure if you qualify? <a href="mailto:info@enperfeitas.com?subject=Studio%20Membership">Get in touch</a> and we will help you find the best next step.</p>
     </div>
   </div>
 </section>
-
-<section>
-  <div class="wrap" style="text-align:center;">
-    <h2>Want to give it a try first?</h2>
-    <ul style="max-width:640px;margin:0 auto 28px;text-align:left;">
-      <li><strong>Explore</strong> the space, use the tools and materials, and see how the calm, creative atmosphere works for you.</li>
-      <li><strong>Limited</strong> spots available each day to ensure comfort and focus. Book early to secure yours.</li>
-      <li>If you decide to <strong>join within 48 hours</strong>, your trial fee will be deducted from your first month&rsquo;s membership.</li>
-    </ul>
-    <span class="btn secondary disabled">Coming soon</span>
-    <p class="construction-note" style="margin-left:auto;margin-right:auto;">Trial-day booking is being set up. Curious now? Email <a href="mailto:info@enperfeitas.com?subject=Membership%20trial">info@enperfeitas.com</a> and ask about a trial.</p>
-  </div>
-</section>
 """
-page("studio-membership.html", "Studio Memberships | Enperfeitas",
-     "Basic and Premium studio membership passes at Enperfeitas Studio, Stockholm.",
+page("studio-membership.html", "Studio Membership | Enperfeitas",
+     "Single sessions, a 5-session pass, and Basic and Premium monthly studio membership at Enperfeitas Studio, Stockholm.",
      body, active="studio.html")
 
 # ---------------------------------------------------------------- BOOK WORKSHOP SPACE
