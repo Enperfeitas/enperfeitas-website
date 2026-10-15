@@ -1267,7 +1267,7 @@ body = f"""
       <div class="shop-card-body">
         <h3>Artisan Edition</h3>
         <p class="desc">A handbound notebook, journal, or sketchbook, made to your specifications. For those who want a beautiful object for their own daily practice, or a gift that will actually be kept.</p>
-        <span class="btn secondary disabled">Coming soon</span>
+        <a class="btn secondary" href="https://forms.gle/yuBu5Nujt8dvXUzZA" target="_blank" rel="noopener" aria-label="Request an invitation to the private bidding">Request an invitation</a>
       </div>
     </div>
     <div class="card shop-card">
