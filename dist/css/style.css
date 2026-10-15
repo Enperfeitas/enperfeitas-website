@@ -29,7 +29,7 @@ body {
   background: var(--white);
   color: var(--ink);
   font-family: "Roboto", Arial, Helvetica, sans-serif;
-  font-size: 18px;
+  font-size: 14.5px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -584,7 +584,7 @@ h3 { font-size: 1.25rem; margin: 28px 0 10px; color: var(--ink); }
 
 .btn {
   display: inline-block;
-  padding: 18px 38px;
+  padding: 13px 32px;
   background: #fff;
   color: var(--ink);
   border: 1px solid var(--ink);
@@ -1152,7 +1152,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 .summary-list dd { margin: 0; font-weight: 500; text-align: right; }
 .builder-summary .price { font-size: 0.88rem; margin: 0 0 20px; }
 .builder-summary .price em { font-style: normal; color: var(--muted); display: block; }
-.builder-summary .btn { display: block; text-align: center; width: 100%; padding: 16px 20px; }
+.builder-summary .btn { display: block; text-align: center; width: 100%; padding: 13px 20px; }
 .builder-summary .form-note { color: var(--muted); font-size: 0.8rem; margin: 12px 0 0; }
 
 @media (max-width: 860px) {
@@ -1213,7 +1213,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
     min-height: 44px !important;
     font-size: 16px !important;
   }
-  #support .accordion-card .btn { padding-top: 16px; padding-bottom: 16px; }
+  #support .accordion-card .btn { padding-top: 13px; padding-bottom: 13px; }
 }
 
 /* Tablet widths: three support cards get cramped (button text wraps unevenly),
@@ -1308,7 +1308,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 .testimonials.featured { grid-template-columns: repeat(3, 1fr); }
 .more-reviews { margin-top: 34px; text-align: center; }
 .more-reviews summary {
-  display: inline-block; background: #fff; cursor: pointer; list-style: none; padding: 14px 30px;
+  display: inline-block; background: #fff; cursor: pointer; list-style: none; padding: 13px 32px;
   border: 1px solid var(--ink); border-radius: 300px;
 }
 .more-reviews summary::-webkit-details-marker { display: none; }
@@ -1377,8 +1377,8 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 .membership-cards .doodle-icon { max-width: 130px; margin: 0 auto 2px; }
 .membership-cards .price { margin-bottom: 14px; }
 .price-per { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
-.membership-desc { text-align: left; color: var(--muted); font-size: 0.86rem; line-height: 1.55; margin: 0 0 16px; }
-.membership-cards .offer-list { text-align: left; font-size: 0.86rem; line-height: 1.5; margin-bottom: 24px; }
+.membership-desc { text-align: left; color: var(--muted); font-size: 1em; line-height: 1.55; margin: 0 0 16px; }
+.membership-cards .offer-list { text-align: left; font-size: 1em; line-height: 1.5; margin-bottom: 24px; }
 .membership-cards .btn { margin-top: auto; }
 .membership-hours { text-align: left; color: var(--muted); font-size: 0.92rem; max-width: 720px; margin: 28px auto 0; }
 @media (max-width: 760px) { .membership-cards .accordion-card.featured { margin-top: 10px; } }
@@ -1389,7 +1389,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
   .hero-actions .btn, .path-body .btn, .soft-card .btn,
   .recent-work .btn, .more-reviews summary {
     display: block; box-sizing: border-box; width: 100%;
-    padding: 15px 18px; font-size: 1rem; line-height: 1.3; text-align: center;
+    padding: 12px 18px; font-size: 1rem; line-height: 1.3; text-align: center;
   }
   .recent-work .btn, .more-reviews summary { max-width: 320px; margin-left: auto; margin-right: auto; }
   .more-reviews summary { margin-top: 0; }
@@ -1404,3 +1404,5 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 @media (max-width: 360px) {
   .hero-actions .btn, .path-body .btn, .soft-card .btn { font-size: 0.94rem; padding-left: 12px; padding-right: 12px; }
 }
+/* Phones: a touch larger so long paragraphs stay comfortable to read. */
+@media (max-width: 760px) { body { font-size: 15px; } }
