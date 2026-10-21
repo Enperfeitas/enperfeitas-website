@@ -2121,7 +2121,7 @@ body = """
   <div id="boxmaker-root"></div>
 </div>
 
-<script src="js/boxmaker-v3.js"></script>
+<script src="js/boxmaker-v4.js"></script>
 """ + SUPPORT_SECTION.replace("{intro_task}", "an evening of measuring, cutting and recutting board")
 page("box-maker.html", "Box Maker | Enperfeitas Studio",
      "Free online Box Maker for bookbinders: work out Solander and hinged box piece dimensions, a cutting layout and a numbered preview. Pay what you like.",

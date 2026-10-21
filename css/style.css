@@ -1406,3 +1406,11 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 }
 /* Phones: a touch larger so long paragraphs stay comfortable to read. */
 @media (max-width: 760px) { body { font-size: 15px; } }
+
+/* Box Maker cutting diagram: sheets sit side by side in one row you can
+   scroll sideways; when printing they wrap onto the page instead. */
+.bm-sheets { scrollbar-width: thin; }
+@media print {
+  .bm-sheets { flex-wrap: wrap !important; overflow: visible !important; }
+  .bm-noprint { display: none !important; }
+}
