@@ -2139,7 +2139,7 @@ body = """
   <div id="imposition-root"></div>
 </div>
 
-<script src="js/imposition-v2.js"></script>
+<script src="js/imposition-v3.js"></script>
 """ + SUPPORT_SECTION.replace("{intro_task}", "an evening of folding and swearing")
 page("booklet-imposition.html", "Booklet Imposition | Enperfeitas Studio",
      "Free online Booklet Imposition tool: turn a page-sequence PDF into saddle-stitch signatures ready to print, fold, nest and sew, with optional creep compensation. Pay what you like.",
