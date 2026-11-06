@@ -36,6 +36,7 @@ function onOpen() {
     .createMenu('Invitations')
     .addItem('Generate codes', 'generateCodes')
     .addItem('Send invitations', 'sendInvitations')
+    .addItem('Send reminders', 'sendReminders')
     .addSeparator()
     .addItem('Close auction', 'closeAuction')
     .addItem('Reset test bids', 'resetTestBids')
@@ -562,6 +563,17 @@ function invitationAfterWinning_() {
 // The sentence under the button.
 var INVITATION_LINK_NOTE = 'The link is personal, so please keep it to yourself.';
 
+// The reminder email uses the same layout as the invitation. Its wording lives
+// here, so you can change a sentence without touching the layout code.
+var REMINDER_SUBJECT = 'Reminder: ';              // followed by the piece title
+var REMINDER_LABEL = 'A gentle reminder';         // small line above the heading
+var REMINDER_HEADING = 'A reminder about the bidding';
+var REMINDER_INTRO_OPEN = 'A small reminder that bidding is open on this piece:';
+var REMINDER_INTRO_UPCOMING = 'A small reminder about this piece. Bidding has not opened yet:';
+var REMINDER_ALREADY_BID = 'If you have already placed a bid, thank you. You can see how it stands on your personal page.';
+var REMINDER_WINNING_NOTE = 'What happens if you win is in your first email, and the rules are at the bottom of the bidding page.';
+var REMINDER_QUESTIONS = 'If you have any questions, just reply to this email.';
+
 function escapeHtml_(s) {
   return String(s === null || s === undefined ? '' : s)
     .replace(/&/g, '&amp;')
@@ -633,8 +645,42 @@ function buildInvitationBody_(cfg, invitee) {
   return lines.join('\n');
 }
 
+// Plain text version of the reminder.
+function buildReminderBody_(cfg, invitee) {
+  var f = invitationFacts_(cfg, invitee);
+  var lines = [];
+  lines.push('Hello ' + f.first + ',');
+  lines.push('');
+  lines.push(f.upcoming ? REMINDER_INTRO_UPCOMING : REMINDER_INTRO_OPEN);
+  lines.push(f.title);
+  lines.push('');
+  lines.push('YOUR PERSONAL LINK');
+  lines.push(f.link);
+  lines.push(INVITATION_LINK_NOTE);
+  lines.push('');
+  lines.push('THE DETAILS');
+  if (f.upcoming) lines.push('Opens: ' + f.opens);
+  lines.push('Closes: ' + f.closes);
+  lines.push('Opening bid: ' + f.openingBid);
+  lines.push('');
+  lines.push('HOW BIDDING WORKS');
+  f.steps.forEach(function (s, i) {
+    lines.push((i + 1) + '. ' + s);
+  });
+  lines.push('');
+  lines.push(REMINDER_ALREADY_BID);
+  lines.push(REMINDER_WINNING_NOTE);
+  lines.push('');
+  lines.push(REMINDER_QUESTIONS);
+  lines.push('');
+  lines.push('Warmly,');
+  lines.push('Suzete');
+  lines.push('Enperfeitas Studio');
+  return lines.join('\n');
+}
+
 // Shown only in the test banner, so you can tell which layout your Sheet is running.
-var INVITATION_DESIGN_VERSION = '4';
+var INVITATION_DESIGN_VERSION = '5';
 
 // Designed version. It follows the website as closely as an email can: Roboto
 // Slab headings and Roboto text, black on white, thin #e6e6e6 lines, the white
@@ -651,8 +697,9 @@ var INVITATION_DESIGN_VERSION = '4';
 //   piece name 18 / 1.3     section heading 18 / 1.3     main heading 26 / 1.15
 // Spacing: steps of 8px (8, 16, 24, 32). A heading sits closer to the text
 // below it than to the text above it, so each block reads as one unit.
-function buildInvitationHtml_(cfg, invitee, testNote) {
+function buildInvitationHtml_(cfg, invitee, testNote, mode) {
   var f = invitationFacts_(cfg, invitee);
+  var R = mode === 'reminder';   // the reminder shares this layout, with its own wording
   var e = escapeHtml_;
   var SLAB = "font-family:'Roboto Slab',Rockwell,Georgia,'Times New Roman',serif;font-weight:700;letter-spacing:-0.01em;";
   var SANS = "font-family:'Roboto',Arial,Helvetica,sans-serif;";
@@ -677,7 +724,7 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
   h.push('<!doctype html><html lang="en"><head><meta charset="utf-8">');
   h.push('<meta name="viewport" content="width=device-width, initial-scale=1">');
   h.push('<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">');
-  h.push('<title>' + e('Your invitation to bid: ' + f.title) + '</title>');
+  h.push('<title>' + e((R ? REMINDER_SUBJECT : 'Your invitation to bid: ') + f.title) + '</title>');
   // The site fonts, for mail apps that can load them (Apple Mail, iOS Mail). Others use the fallbacks.
   h.push('<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">');
   h.push('<style>');
@@ -687,7 +734,7 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
   h.push('</style></head>');
   h.push('<body style="margin:0;padding:0;background-color:#fafafa;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">');
   // Preview line shown next to the subject in the inbox (not visible in the email).
-  h.push('<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#fafafa;">Your personal link to bid on ' + e(f.title) + '.</div>');
+  h.push('<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#fafafa;">' + (R ? 'A reminder about ' + e(f.title) + '. Bidding closes ' + e(f.closes) + '.' : 'Your personal link to bid on ' + e(f.title) + '.') + '</div>');
   h.push('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;"><tr><td align="center" style="padding:24px 12px;">');
   h.push('<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#ffffff;border:1px solid #e6e6e6;border-radius:10px;">');
 
@@ -701,10 +748,10 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
   }
 
   // Label, main heading (centred), greeting, the piece
-  cell('<p style="margin:32px 0 8px;text-align:center;' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">Invitation-only bidding</p>' +
-       '<h1 class="h1" style="' + SLAB + 'font-size:26px;line-height:1.15;margin:0 0 24px;text-align:center;color:#000000;">You are invited to bid</h1>' +
+  cell('<p style="margin:32px 0 8px;text-align:center;' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">' + e(R ? REMINDER_LABEL : 'Invitation-only bidding') + '</p>' +
+       '<h1 class="h1" style="' + SLAB + 'font-size:26px;line-height:1.15;margin:0 0 24px;text-align:center;color:#000000;">' + e(R ? REMINDER_HEADING : 'You are invited to bid') + '</h1>' +
        '<p style="margin:0 0 8px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Hello ' + e(f.first) + ',</p>' +
-       '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Thank you for signing up. You are invited to place bids on one piece:</p>' +
+       '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(R ? (f.upcoming ? REMINDER_INTRO_UPCOMING : REMINDER_INTRO_OPEN) : 'Thank you for signing up. You are invited to place bids on one piece:') + '</p>' +
        '<p class="ptitle" style="' + SLAB + 'margin:0;font-size:18px;line-height:1.3;color:#000000;">' + e(f.title) + '</p>', '0 32px');
 
   // The button (centred): white, black outline, pill shape, as on the website
@@ -732,11 +779,18 @@ function buildInvitationHtml_(cfg, invitee, testNote) {
 
   // How bidding works, and what happens if you win
   cell(h3('How bidding works') + list('ol', f.steps), '32px 32px 0');
-  cell(h3('If you win') + list('ul', f.afterWinning), '24px 32px 0');
+  if (R) {
+    cell('<p style="margin:0 0 8px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(REMINDER_ALREADY_BID) + '</p>' +
+         '<p style="margin:0;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(REMINDER_WINNING_NOTE) + '</p>', '24px 32px 0');
+  } else {
+    cell(h3('If you win') + list('ul', f.afterWinning), '24px 32px 0');
+  }
 
   // Reply line and sign-off
   var closing = '';
-  if (f.replyBy) {
+  if (R) {
+    closing += '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(REMINDER_QUESTIONS) + '</p>';
+  } else if (f.replyBy) {
     closing += '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">If you have not received this by ' + e(f.replyBy) + ', reply to this email.</p>';
   }
   closing += '<p style="margin:0;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Warmly,<br>' +
@@ -831,6 +885,131 @@ function sendInvitations() {
   var msg = sent + ' email(s) sent' + (cfg.testMode ? ' to ' + testAddress + ' (test mode, "sent" cells left empty).' : '.');
   if (stoppedForQuota) msg += ' Stopped early because the daily email limit was reached. Run it again tomorrow for the rest.';
   ui.alert('Send invitations', msg, ui.ButtonSet.OK);
+}
+
+/* ------------------------------------------------------------------ */
+/* Menu: Send reminders                                                */
+/*                                                                     */
+/* Sends the reminder email (same layout as the invitation) to people  */
+/* who already received an invitation. It can go to everyone invited,  */
+/* or only to people who have not placed a bid yet. A "reminded"       */
+/* column is added to the Invitees tab and filled with the time, so    */
+/* you can see who has had a reminder.                                 */
+/* ------------------------------------------------------------------ */
+
+// Finds the "reminded" column on the Invitees tab, or adds it to the right.
+function ensureRemindedColumn_(sheet) {
+  var lastCol = Math.max(1, sheet.getLastColumn());
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(normKey_);
+  var idx = headers.indexOf('reminded');
+  if (idx >= 0) return idx;
+  sheet.getRange(1, lastCol + 1).setValue('reminded').setFontWeight('bold');
+  return lastCol;
+}
+
+function sendReminders() {
+  var ui = SpreadsheetApp.getUi();
+  var cfg = readConfig_();
+  var data = readInvitees_();
+
+  var problems = [];
+  if (!cfg.pieceTitle) problems.push('piece_title');
+  if (!cfg.baseUrl) problems.push('page_base_url');
+  if (cfg.closingMs === null) problems.push('closing_time');
+  if (problems.length) {
+    ui.alert('Send reminders', 'Please fill in these Config values first: ' + problems.join(', ') + '.', ui.ButtonSet.OK);
+    return;
+  }
+  if (cfg.status === 'closed' || cfg.closingMs <= Date.now()) {
+    ui.alert('Send reminders', 'Bidding is already closed, so there is nothing to remind anyone about. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+
+  // Everyone who has been invited. In test mode the "sent" cells stay empty,
+  // so test mode counts every approved row that has a code.
+  var invited = data.rows.filter(function (r) {
+    return r.status === 'approved' && r.code && r.email && r.first && (cfg.testMode || r.sent);
+  });
+  if (!invited.length) {
+    ui.alert('Send reminders', 'Nobody to remind. Reminders go to approved rows that already received their invitation.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var hasBid = {};
+  readBids_().forEach(function (b) {
+    hasBid[b.code] = true;
+  });
+  var notBid = invited.filter(function (r) {
+    return !hasBid[normCode_(r.code)];
+  });
+
+  var testAddress = Session.getEffectiveUser().getEmail() || Session.getActiveUser().getEmail();
+  if (cfg.testMode && !testAddress) {
+    ui.alert('Send reminders', 'Test mode is on, but your own email address could not be found. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var choice = ui.alert(
+    'Send reminders',
+    'Invited so far: ' + invited.length + '\nNo bid placed yet: ' + notBid.length + '\n\n' +
+      'YES: send the reminder only to the ' + notBid.length + ' with no bid yet.\n' +
+      'NO: send it to all ' + invited.length + ' invited people.\n' +
+      'CANCEL: send nothing.' +
+      (cfg.testMode ? '\n\nTest mode is ON: the emails go to ' + testAddress + ' only, nobody else receives anything.' : ''),
+    ui.ButtonSet.YES_NO_CANCEL
+  );
+  if (choice === ui.Button.CANCEL || choice === ui.Button.CLOSE) return;
+  var todo = choice === ui.Button.YES ? notBid : invited;
+  if (!todo.length) {
+    ui.alert('Send reminders', 'Nobody is left to remind. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var quota = MailApp.getRemainingDailyQuota();
+  if (quota < todo.length) {
+    ui.alert(
+      'Send reminders',
+      'Only ' + quota + ' email(s) can be sent today, but ' + todo.length + ' are waiting. Nothing was sent. Try again tomorrow.',
+      ui.ButtonSet.OK
+    );
+    return;
+  }
+
+  var remindedCol = cfg.testMode ? -1 : ensureRemindedColumn_(data.sheet);
+  var sent = 0;
+  var stoppedForQuota = false;
+  for (var i = 0; i < todo.length; i++) {
+    if (MailApp.getRemainingDailyQuota() < 1) {
+      stoppedForQuota = true;
+      break;
+    }
+    var p = todo[i];
+    var subject = REMINDER_SUBJECT + cfg.pieceTitle;
+    var body = buildReminderBody_(cfg, p);
+    var testNote = '';
+    if (cfg.testMode) {
+      subject = '[TEST] ' + subject;
+      testNote = 'TEST MODE. In the real round this would go to: ' + p.email;
+      body = testNote + '\n\n' + body;
+    }
+    MailApp.sendEmail({
+      to: cfg.testMode ? testAddress : p.email,
+      subject: subject,
+      body: body,
+      htmlBody: buildInvitationHtml_(cfg, p, testNote, 'reminder'),
+      name: 'Enperfeitas Studio'
+    });
+    if (!cfg.testMode) {
+      var cell = data.sheet.getRange(p.row, remindedCol + 1);
+      cell.setNumberFormat('@');
+      cell.setValue(iso_(Date.now()));
+    }
+    sent++;
+  }
+
+  var msg = sent + ' reminder(s) sent' + (cfg.testMode ? ' to ' + testAddress + ' (test mode, "reminded" cells left empty).' : '.');
+  if (stoppedForQuota) msg += ' Stopped early because the daily email limit was reached. Run it again tomorrow for the rest.';
+  ui.alert('Send reminders', msg, ui.ButtonSet.OK);
 }
 
 /* ------------------------------------------------------------------ */

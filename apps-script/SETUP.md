@@ -176,6 +176,16 @@ Keep each sentence between the quotation marks, and keep the commas at the end o
 
 Email limits: a free Gmail account can send about 100 emails a day, and Google Workspace about 1500. The script checks your remaining allowance before it sends and stops with a message if it is too low. Nothing is sent in that case, and you can run it again the next day.
 
+## Sending a reminder
+
+Choose **Invitations > Send reminders**. The reminder uses the same design as the invitation: the personal link, the closing time, the opening bid and the steps. It goes to people who already received their invitation (approved, with a code and a sent time).
+
+The script asks how many were invited and how many have not placed a bid yet, then lets you choose: YES sends it only to the people with no bid yet, NO sends it to everyone invited, CANCEL sends nothing. A `reminded` column is added to the Invitees tab (the first time) and filled with the time, so you can see who has had one. You can send reminders more than once. Each run records the latest time.
+
+Test mode works the same as for invitations: with test_mode TRUE, every reminder goes to your own address only and the `reminded` cells stay empty. Reminders are not sent once bidding is closed.
+
+To change a sentence in the reminder, edit the lines starting with `REMINDER_` near the top of the email code in Code.gs, then publish a new version of the web app.
+
 ## While bidding is open
 
 - **Stop one person from bidding:** change their status to `revoked`.
