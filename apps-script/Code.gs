@@ -37,6 +37,7 @@ function onOpen() {
     .addItem('Generate codes', 'generateCodes')
     .addItem('Send invitations', 'sendInvitations')
     .addItem('Send reminders', 'sendReminders')
+    .addItem('Send winner email', 'sendWinnerEmail')
     .addSeparator()
     .addItem('Close auction', 'closeAuction')
     .addItem('Reset test bids', 'resetTestBids')
@@ -179,7 +180,9 @@ function readConfig_() {
     photoCount: toInt_(cfg.photo_count, null),
     photoAlt: str_(cfg.photo_alt),
     description: strMulti_(cfg.description),
-    details: strMulti_(cfg.details)
+    details: strMulti_(cfg.details),
+    winnerEmailed: str_(cfg.winner_emailed),
+    paymentLink: /^https:\/\//i.test(str_(cfg.payment_link)) ? str_(cfg.payment_link) : ''
   };
 }
 
@@ -574,6 +577,33 @@ var REMINDER_ALREADY_BID = 'If you have already placed a bid, thank you. You can
 var REMINDER_WINNING_NOTE = 'What happens if you win is in your first email, and the rules are at the bottom of the bidding page.';
 var REMINDER_QUESTIONS = 'If you have any questions, just reply to this email.';
 
+// The winner email uses the same layout too. Its wording lives here as well.
+var WINNER_SUBJECT = 'You won: ';                 // followed by the piece title
+var WINNER_LABEL = 'Bidding has closed';          // small line above the heading
+var WINNER_HEADING = 'Congratulations, you won';
+var WINNER_INTRO = 'Bidding has closed, and yours was the highest bid. The piece is yours:';
+var WINNER_NEXT_HEADING = 'What happens next';
+var WINNER_THANKS = 'Thank you for taking part.';
+var WINNER_QUESTIONS = 'If you have any questions, just reply to this email.';
+var WINNER_FOOTER = 'You are receiving this because you placed the winning bid in the bidding round at enperfeitas.com. If it reached you by mistake, please reply and let me know.';
+
+// Payment wording, used when Config has a payment_link (a Stripe link where the customer enters the amount).
+var WINNER_PAY_BUTTON = 'Pay securely online';
+var WINNER_PAY_NOTE = 'The link works for any amount, so please enter the amount shown above.';
+function winnerPayStep_(winner) {
+  return 'Please pay within 48 hours using the link in this email, and enter ' + fmtSek_(winner.amount) +
+    '. If shipping applies, I will tell you the extra amount when you reply, and you can pay it with the same link.';
+}
+
+// The steps shown under "What happens next".
+function winnerSteps_(cfg, winner) {
+  return [
+    cfg && cfg.paymentLink ? winnerPayStep_(winner) : 'You will receive an invoice by email within 24 hours, and payment is due within 48 hours.',
+    'Please reply to this email and tell me if you would like the piece shipped (with your delivery address) or collected at the studio in Stockholm. Shipping is added by location.',
+    'The piece is dispatched within 7 days of payment, and you have 14 days from delivery to withdraw from the purchase.'
+  ];
+}
+
 function escapeHtml_(s) {
   return String(s === null || s === undefined ? '' : s)
     .replace(/&/g, '&amp;')
@@ -679,8 +709,40 @@ function buildReminderBody_(cfg, invitee) {
   return lines.join('\n');
 }
 
+// Plain text version of the winner email. winner.amount is the winning bid in SEK.
+function buildWinnerBody_(cfg, winner) {
+  var f = invitationFacts_(cfg, winner);
+  var lines = [];
+  lines.push('Hello ' + f.first + ',');
+  lines.push('');
+  lines.push(WINNER_INTRO);
+  lines.push(f.title);
+  lines.push('');
+  lines.push('THE DETAILS');
+  lines.push('Your winning bid: ' + fmtSek_(winner.amount) + ', moms included');
+  lines.push('Closed: ' + f.closes);
+  if (cfg.paymentLink) {
+    lines.push('');
+    lines.push('PAYMENT LINK');
+    lines.push(cfg.paymentLink);
+    lines.push(WINNER_PAY_NOTE);
+  }
+  lines.push('');
+  lines.push(WINNER_NEXT_HEADING.toUpperCase());
+  winnerSteps_(cfg, winner).forEach(function (s, i) {
+    lines.push((i + 1) + '. ' + s);
+  });
+  lines.push('');
+  lines.push(WINNER_THANKS + ' ' + WINNER_QUESTIONS);
+  lines.push('');
+  lines.push('Warmly,');
+  lines.push('Suzete');
+  lines.push('Enperfeitas Studio');
+  return lines.join('\n');
+}
+
 // Shown only in the test banner, so you can tell which layout your Sheet is running.
-var INVITATION_DESIGN_VERSION = '5';
+var INVITATION_DESIGN_VERSION = '6';
 
 // Designed version. It follows the website as closely as an email can: Roboto
 // Slab headings and Roboto text, black on white, thin #e6e6e6 lines, the white
@@ -700,6 +762,7 @@ var INVITATION_DESIGN_VERSION = '5';
 function buildInvitationHtml_(cfg, invitee, testNote, mode) {
   var f = invitationFacts_(cfg, invitee);
   var R = mode === 'reminder';   // the reminder shares this layout, with its own wording
+  var W = mode === 'winner';     // so does the winner email (invitee.amount = winning bid)
   var e = escapeHtml_;
   var SLAB = "font-family:'Roboto Slab',Rockwell,Georgia,'Times New Roman',serif;font-weight:700;letter-spacing:-0.01em;";
   var SANS = "font-family:'Roboto',Arial,Helvetica,sans-serif;";
@@ -724,7 +787,7 @@ function buildInvitationHtml_(cfg, invitee, testNote, mode) {
   h.push('<!doctype html><html lang="en"><head><meta charset="utf-8">');
   h.push('<meta name="viewport" content="width=device-width, initial-scale=1">');
   h.push('<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">');
-  h.push('<title>' + e((R ? REMINDER_SUBJECT : 'Your invitation to bid: ') + f.title) + '</title>');
+  h.push('<title>' + e((W ? WINNER_SUBJECT : R ? REMINDER_SUBJECT : 'Your invitation to bid: ') + f.title) + '</title>');
   // The site fonts, for mail apps that can load them (Apple Mail, iOS Mail). Others use the fallbacks.
   h.push('<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">');
   h.push('<style>');
@@ -734,7 +797,7 @@ function buildInvitationHtml_(cfg, invitee, testNote, mode) {
   h.push('</style></head>');
   h.push('<body style="margin:0;padding:0;background-color:#fafafa;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">');
   // Preview line shown next to the subject in the inbox (not visible in the email).
-  h.push('<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#fafafa;">' + (R ? 'A reminder about ' + e(f.title) + '. Bidding closes ' + e(f.closes) + '.' : 'Your personal link to bid on ' + e(f.title) + '.') + '</div>');
+  h.push('<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#fafafa;">' + (W ? 'Your bid won ' + e(f.title) + '. Here is what happens next.' : R ? 'A reminder about ' + e(f.title) + '. Bidding closes ' + e(f.closes) + '.' : 'Your personal link to bid on ' + e(f.title) + '.') + '</div>');
   h.push('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;"><tr><td align="center" style="padding:24px 12px;">');
   h.push('<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#ffffff;border:1px solid #e6e6e6;border-radius:10px;">');
 
@@ -748,14 +811,14 @@ function buildInvitationHtml_(cfg, invitee, testNote, mode) {
   }
 
   // Label, main heading (centred), greeting, the piece
-  cell('<p style="margin:32px 0 8px;text-align:center;' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">' + e(R ? REMINDER_LABEL : 'Invitation-only bidding') + '</p>' +
-       '<h1 class="h1" style="' + SLAB + 'font-size:26px;line-height:1.15;margin:0 0 24px;text-align:center;color:#000000;">' + e(R ? REMINDER_HEADING : 'You are invited to bid') + '</h1>' +
+  cell('<p style="margin:32px 0 8px;text-align:center;' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">' + e(W ? WINNER_LABEL : R ? REMINDER_LABEL : 'Invitation-only bidding') + '</p>' +
+       '<h1 class="h1" style="' + SLAB + 'font-size:26px;line-height:1.15;margin:0 0 24px;text-align:center;color:#000000;">' + e(W ? WINNER_HEADING : R ? REMINDER_HEADING : 'You are invited to bid') + '</h1>' +
        '<p style="margin:0 0 8px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Hello ' + e(f.first) + ',</p>' +
-       '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(R ? (f.upcoming ? REMINDER_INTRO_UPCOMING : REMINDER_INTRO_OPEN) : 'Thank you for signing up. You are invited to place bids on one piece:') + '</p>' +
+       '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(W ? WINNER_INTRO : R ? (f.upcoming ? REMINDER_INTRO_UPCOMING : REMINDER_INTRO_OPEN) : 'Thank you for signing up. You are invited to place bids on one piece:') + '</p>' +
        '<p class="ptitle" style="' + SLAB + 'margin:0;font-size:18px;line-height:1.3;color:#000000;">' + e(f.title) + '</p>', '0 32px');
 
   // The button (centred): white, black outline, pill shape, as on the website
-  cell('<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;"><tr>' +
+  if (!W) cell('<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;"><tr>' +
        '<td class="btn" align="center" bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #000000;border-radius:300px;">' +
        '<a href="' + e(f.link) + '" style="display:inline-block;padding:15px 34px;' + SANS + 'font-size:16px;font-weight:500;line-height:1.2;color:#000000;text-decoration:none;border-radius:300px;">Open your bidding page</a>' +
        '</td></tr></table>' +
@@ -766,9 +829,14 @@ function buildInvitationHtml_(cfg, invitee, testNote, mode) {
 
   // The facts, in the style of the figures on the bidding page
   var facts = [];
-  if (f.upcoming) facts.push(['Opens', f.opens]);
-  facts.push(['Closes', f.closes]);
-  facts.push(['Opening bid', f.openingBid]);
+  if (W) {
+    facts.push(['Your winning bid', fmtSek_(invitee.amount) + ', moms included']);
+    facts.push(['Closed', f.closes]);
+  } else {
+    if (f.upcoming) facts.push(['Opens', f.opens]);
+    facts.push(['Closes', f.closes]);
+    facts.push(['Opening bid', f.openingBid]);
+  }
   var factRows = facts.map(function (x, i) {
     return '<tr><td style="padding:12px 0;' + (i < facts.length - 1 ? 'border-bottom:1px solid #e6e6e6;' : '') + 'text-align:left;">' +
       '<div style="' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;margin:0 0 4px;">' + e(x[0]) + '</div>' +
@@ -778,8 +846,18 @@ function buildInvitationHtml_(cfg, invitee, testNote, mode) {
        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + factRows + '</table></td></tr></table>', '32px 32px 0');
 
   // How bidding works, and what happens if you win
-  cell(h3('How bidding works') + list('ol', f.steps), '32px 32px 0');
-  if (R) {
+  if (W && cfg.paymentLink) {
+    cell('<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;"><tr>' +
+         '<td class="btn" align="center" bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #000000;border-radius:300px;">' +
+         '<a href="' + e(cfg.paymentLink) + '" style="display:inline-block;padding:15px 34px;' + SANS + 'font-size:16px;font-weight:500;line-height:1.2;color:#000000;text-decoration:none;border-radius:300px;">' + e(WINNER_PAY_BUTTON) + '</a>' +
+         '</td></tr></table>' +
+         '<p style="margin:16px 0 0;text-align:center;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(WINNER_PAY_NOTE) + '</p>' +
+         '<p style="margin:8px 0 0;' + SANS + 'font-size:13px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(cfg.paymentLink) + '</p>', '32px 32px 0');
+  }
+  cell(W ? h3(WINNER_NEXT_HEADING) + list('ol', winnerSteps_(cfg, invitee)) : h3('How bidding works') + list('ol', f.steps), '32px 32px 0');
+  if (W) {
+    // nothing more here: the steps above already say what happens after winning
+  } else if (R) {
     cell('<p style="margin:0 0 8px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(REMINDER_ALREADY_BID) + '</p>' +
          '<p style="margin:0;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(REMINDER_WINNING_NOTE) + '</p>', '24px 32px 0');
   } else {
@@ -788,7 +866,9 @@ function buildInvitationHtml_(cfg, invitee, testNote, mode) {
 
   // Reply line and sign-off
   var closing = '';
-  if (R) {
+  if (W) {
+    closing += '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(WINNER_THANKS + ' ' + WINNER_QUESTIONS) + '</p>';
+  } else if (R) {
     closing += '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(REMINDER_QUESTIONS) + '</p>';
   } else if (f.replyBy) {
     closing += '<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">If you have not received this by ' + e(f.replyBy) + ', reply to this email.</p>';
@@ -800,7 +880,7 @@ function buildInvitationHtml_(cfg, invitee, testNote, mode) {
 
   // Footer
   h.push('<tr><td class="pad" style="padding:20px 32px 24px;border-top:1px solid #e6e6e6;text-align:left;' + SANS + 'font-size:12px;line-height:1.6;color:#5a5a5a;">' +
-         'You are receiving this because you signed up for the bidding round at enperfeitas.com. If it reached you by mistake, please reply and let me know.</td></tr>');
+         e(W ? WINNER_FOOTER : 'You are receiving this because you signed up for the bidding round at enperfeitas.com. If it reached you by mistake, please reply and let me know.') + '</td></tr>');
 
   h.push('</table></td></tr></table></body></html>');
   return h.join('');
@@ -1013,6 +1093,108 @@ function sendReminders() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Menu: Send winner email                                             */
+/*                                                                     */
+/* Finds the highest bid, shows you who won and for how much, and      */
+/* after you confirm sends the winner email (same layout as the        */
+/* invitation). The time is saved in Config as winner_emailed, so the  */
+/* script warns you before sending it a second time.                   */
+/* ------------------------------------------------------------------ */
+
+function sendWinnerEmail() {
+  var ui = SpreadsheetApp.getUi();
+  var cfg = readConfig_();
+
+  var problems = [];
+  if (!cfg.pieceTitle) problems.push('piece_title');
+  if (!cfg.baseUrl) problems.push('page_base_url');
+  if (cfg.closingMs === null) problems.push('closing_time');
+  if (problems.length) {
+    ui.alert('Send winner email', 'Please fill in these Config values first: ' + problems.join(', ') + '.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var isClosed = cfg.status === 'closed' || cfg.closingMs <= Date.now();
+  if (!isClosed && !cfg.testMode) {
+    ui.alert('Send winner email', 'Bidding is still open, so there is no winner yet. Nothing was sent. Close the auction first, or wait for the closing time.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var high = highestBid_(readBids_());
+  if (!high) {
+    ui.alert('Send winner email', 'There are no bids, so there is no winner. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var data = readInvitees_();
+  var winner = null;
+  data.rows.forEach(function (r) {
+    if (!winner && r.code && normCode_(r.code) === high.code) winner = r;
+  });
+  if (!winner) {
+    ui.alert('Send winner email', 'The highest bid (' + fmtSek_(high.amount) + ', code ' + high.code + ') does not match any code on the Invitees tab. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+  if (!winner.email || !winner.first) {
+    ui.alert('Send winner email', 'The winner (code ' + high.code + ', row ' + winner.row + ' on the Invitees tab) has no email address or first name. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+  winner.amount = high.amount;
+
+  var testAddress = Session.getEffectiveUser().getEmail() || Session.getActiveUser().getEmail();
+  if (cfg.testMode && !testAddress) {
+    ui.alert('Send winner email', 'Test mode is on, but your own email address could not be found. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var question = 'Winner: ' + winner.first + ' (' + winner.email + ')\n' +
+    'Winning bid: ' + fmtSek_(high.amount) + ', moms included\n' +
+    'Piece: ' + cfg.pieceTitle + '\n' +
+    (cfg.paymentLink ? 'Payment: the email includes your payment link.' : 'Payment: no payment_link in Config, so the email says an invoice will follow.') + '\n\n';
+  if (!isClosed) question += 'Bidding is still open (test mode), so this is only a preview of the email.\n\n';
+  if (cfg.testMode) {
+    question += 'Test mode is ON: the email goes to ' + testAddress + ' only, nobody else receives anything. Send it?';
+  } else if (cfg.winnerEmailed) {
+    question += 'The winner email was already sent (' + cfg.winnerEmailed + '). Send it again?';
+  } else {
+    question += 'Send the winner email to ' + winner.first + ' now?';
+  }
+  if (ui.alert('Send winner email', question, ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+
+  if (MailApp.getRemainingDailyQuota() < 1) {
+    ui.alert('Send winner email', 'The daily email limit has been reached. Nothing was sent. Try again tomorrow.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var subject = WINNER_SUBJECT + cfg.pieceTitle;
+  var body = buildWinnerBody_(cfg, winner);
+  var testNote = '';
+  if (cfg.testMode) {
+    subject = '[TEST] ' + subject;
+    testNote = 'TEST MODE. In the real round this would go to: ' + winner.email;
+    body = testNote + '\n\n' + body;
+  }
+  MailApp.sendEmail({
+    to: cfg.testMode ? testAddress : winner.email,
+    subject: subject,
+    body: body,
+    htmlBody: buildInvitationHtml_(cfg, winner, testNote, 'winner'),
+    name: 'Enperfeitas Studio'
+  });
+  if (!cfg.testMode) {
+    writeConfigValue_('winner_emailed', iso_(Date.now()), true);
+  }
+
+  ui.alert(
+    'Send winner email',
+    cfg.testMode
+      ? 'Test email sent to ' + testAddress + ' (test mode, nothing was recorded).'
+      : 'The winner email was sent to ' + winner.first + ' (' + winner.email + ').',
+    ui.ButtonSet.OK
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Menu: Close auction, Reset test bids                                */
 /* ------------------------------------------------------------------ */
 
@@ -1075,6 +1257,7 @@ function createTabs() {
     ['test_mode', 'TRUE'],
     ['page_base_url', 'https://enperfeitas.com/bidding.html'],
     ['reply_by', ''],
+    ['payment_link', ''],
     ['photo_prefix', 'beige-jeand-de-g'],
     ['photo_count', 4],
     ['photo_alt', 'Beige linen book with a mustard leather spine'],

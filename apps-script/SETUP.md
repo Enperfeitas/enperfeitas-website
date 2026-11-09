@@ -186,6 +186,18 @@ Test mode works the same as for invitations: with test_mode TRUE, every reminder
 
 To change a sentence in the reminder, edit the lines starting with `REMINDER_` near the top of the email code in Code.gs, then publish a new version of the web app.
 
+## Sending the winner email
+
+When bidding has closed, choose **Invitations > Send winner email**. The script finds the highest bid (ignoring any bid marked void), looks up that person on the Invitees tab, and shows you the name, email address and winning amount. Nothing is sent until you press YES. The email uses the same design as the invitation: congratulations, the winning bid, the closing time, and a short "What happens next" list (invoice within 24 hours, payment within 48 hours, shipping or collection, dispatch and the 14 days to withdraw).
+
+**Payment link:** put your Stripe Payment Link in Config as `payment_link` (it must start with `https://`). Create it in Stripe with "Customers choose what to pay", so the same link works for every auction. The email then shows a "Pay securely online" button, and the first step asks the winner to pay within 48 hours and enter the winning amount; shipping, if any, is paid afterwards with the same link. If `payment_link` is empty, the email says an invoice will follow instead, and the confirmation box tells you so before you send.
+
+The time of sending is saved in Config as `winner_emailed`. If you run it again, the script tells you it was already sent and asks before sending a second time. The script will not send while bidding is still open, unless test_mode is TRUE (then it only sends a preview to your own address).
+
+If the winner does not pay in time, type `TRUE` in the void cell of every row from that person in the Bids tab (their earlier, lower bids would otherwise become the top bid), delete the `winner_emailed` row in Config, and run it again. The next highest bidder is then the winner.
+
+To change a sentence, edit the lines starting with `WINNER_` and the `winnerSteps_` list in Code.gs, then publish a new version of the web app.
+
 ## While bidding is open
 
 - **Stop one person from bidding:** change their status to `revoked`.

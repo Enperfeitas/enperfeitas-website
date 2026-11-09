@@ -1503,7 +1503,7 @@ body = f"""
 """
 page("design-your-book.html", "Design Your Own Book | Enperfeitas Studio",
      "Build your own handbound notebook, journal, or sketchbook with Enperfeitas Studio -- choose a size, paper, and cover colour, then send your design straight to the studio for a personal quote.",
-     body, active=None)
+     body, active=None, robots="noindex, nofollow")
 
 # ---------------------------------------------------------------- LATEST WORK
 gallery_labels = [
@@ -1931,7 +1931,7 @@ def download_page(p):
 """
     page(page_filename, f"Your download: {p['name']} | Enperfeitas",
          f"Download page for {p['name']}, shown automatically after Stripe checkout.",
-         body, active=None)
+         body, active=None, robots="noindex, nofollow")
 
 
 os.makedirs(os.path.join(DIST, "downloads"), exist_ok=True)
@@ -2661,3 +2661,62 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
         "`IMAGE-MANIFEST.md` for the filenames and direct links to the originals.\n"
     )
 print("wrote STRIPE-SHOP-SETUP.md")
+
+
+# ---------------------------------------------------------------- SITEMAP + ROBOTS
+# Public pages only. Left out on purpose: 404, bidding, order-confirmed,
+# design-your-book (disconnected for now) and the paid download pages, which
+# are all noindex.
+SITEMAP_PAGES = ["index", "about", "studio", "studio-membership", "workshops",
+                 "book-workshop-space", "collectibles", "bespoke-binding",
+                 "bespoke-boxes", "latest-work", "shop", "newsletter", "tools",
+                 "box-maker", "booklet-imposition", "onboarding", "contact",
+                 "shipping-info", "refund-policy", "privacy-policy", "terms-of-service"]
+with open(os.path.join(DIST, "sitemap.xml"), "w", encoding="utf-8") as f:
+    f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
+    for _s in SITEMAP_PAGES:
+        _loc = "https://enperfeitas.com/" if _s == "index" else f"https://enperfeitas.com/{_s}.html"
+        f.write(f"  <url><loc>{_loc}</loc></url>\n")
+    f.write("</urlset>\n")
+with open(os.path.join(DIST, "robots.txt"), "w", encoding="utf-8") as f:
+    f.write("User-agent: *\nAllow: /\n\nSitemap: https://enperfeitas.com/sitemap.xml\n")
+print("wrote sitemap.xml and robots.txt")
+
+# ---------------------------------------------------------------- REDIRECTS FROM THE OLD SQUARESPACE ADDRESSES
+# GitHub Pages cannot do server redirects, so each old address that Google still
+# lists as 404 gets a small folder/index.html that points (meta refresh + canonical
+# + script) to the closest current page. "" means the home page. The root folder
+# is mirrored by hand, like the pages.
+OLD_URL_REDIRECTS = {
+    "studio-1": "studio.html", "bespokebinding": "bespoke-binding.html", "bespokeboxes": "bespoke-boxes.html",
+    "hyra-studio": "book-workshop-space.html", "bookworkshopspace": "book-workshop-space.html",
+    "2023-2024work": "latest-work.html", "gallery": "latest-work.html",
+    "unique-collectibles": "collectibles.html", "arteditions": "collectibles.html",
+    "aboutus": "about.html", "folderaboutus": "about.html", "suzete": "about.html",
+    "home": "", "choose-workshop": "workshops.html", "team-marmorering-forslag": "workshops.html",
+    "shiping-info": "shipping-info.html", "join-the-community": "newsletter.html",
+    "enperfeitas-store": "shop.html", "enperfeitas-store/tutorials": "shop.html", "enperfeitas-store/templates": "shop.html",
+    "enperfeitas-store/p/gonetbeige": "collectibles.html", "enperfeitas-store/p/gonetjam": "collectibles.html",
+    "enperfeitas-store/p/gonetochre": "collectibles.html", "enperfeitas-store/p/a6gold": "collectibles.html",
+    "enperfeitas-store/p/a6ochre": "collectibles.html",
+    "enperfeitas-store/p/hardcover-notebook-lightcoral": "collectibles.html",
+    "enperfeitas-store/p/hardcover-notebook-darkblue": "collectibles.html",
+    "enperfeitas-store/p/enperfeitaszine1": "shop.html", "enperfeitas-store/p/free-undated-monthly-planner": "shop.html",
+    "enperfeitas-store/p/bespoke-handmade-book": "bespoke-binding.html", "enperfeitas-store/p/box05": "bespoke-boxes.html",
+    "enperfeitas-store/p/punchingcradlediy": "shop.html", "enperfeitas-store/p/punchingcradle": "shop.html",
+    "enperfeitas-store/p/spacers": "shop.html", "enperfeitas-store/p/corner-cutting-jig": "shop.html",
+    "enperfeitas-store/p/bookbindingtoolskit": "shop.html", "enperfeitas-store/p/concertina-tutorial": "shop.html",
+}
+for _old, _new in OLD_URL_REDIRECTS.items():
+    _t = "https://enperfeitas.com/" + _new
+    _dir = os.path.join(DIST, *_old.split("/"))
+    os.makedirs(_dir, exist_ok=True)
+    with open(os.path.join(_dir, "index.html"), "w", encoding="utf-8") as f:
+        f.write(
+            '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">\n'
+            '<title>This page has moved | Enperfeitas Studio</title>\n'
+            f'<link rel="canonical" href="{_t}">\n<meta http-equiv="refresh" content="0; url={_t}">\n'
+            f'<script>location.replace("{_t}");</script>\n</head><body style="font-family:Arial,Helvetica,sans-serif;padding:40px;">'
+            f'<p>This page has moved. <a href="{_t}">Continue to the new page</a>.</p></body></html>\n'
+        )
+print(f"wrote {len(OLD_URL_REDIRECTS)} redirect pages")
