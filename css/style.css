@@ -1415,11 +1415,14 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 /* Rhythm: 56px above and below a section (40px on phones) */
 section { padding: 56px 0; }
 .section-tight { padding: 40px 0; }
-.page-header { padding: 56px 32px 32px; }
+.page-header { padding: 56px 32px 16px; }
+/* the content right after a page title starts close to it */
+.page-header + section:not(.alt) { padding-top: 16px; }
 @media (max-width: 760px) {
   section { padding: 40px 0; }
   .section-tight { padding: 32px 0; }
-  .page-header { padding: 40px 32px 24px; }
+  .page-header { padding: 40px 32px 12px; }
+  .page-header + section:not(.alt) { padding-top: 12px; }
 }
 
 /* Cards: 10px corners, soft floating shadow (photos inside follow the card) */

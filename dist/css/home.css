@@ -51,7 +51,7 @@
 .hv-label { font-size: var(--fs-cap); font-weight: 500; letter-spacing: 0.01em; color: var(--muted); margin: 0 0 6px; }
 .hv-tile h3 { margin: 0 0 4px; font-size: var(--fs-h3); line-height: 1.15; text-align: left; }
 .hv-tag { margin: 0 0 10px; color: var(--muted); text-align: left; }
-.hv-from { margin: 0 0 18px; font-weight: 500; text-align: left; font-size: var(--fs-h3); line-height: var(--lh-h3); }
+.hv-from { margin: 0 0 18px; font-weight: 500; text-align: left; font-size: var(--fs-p2); line-height: 1.4; }
 .hv-from span { font-weight: 400; color: var(--muted); font-size: var(--fs-p2); }
 .hv-tile .btn { margin-top: auto; align-self: flex-start; }
 @media (max-width: 760px) { .hv-tile .btn { display: block; align-self: stretch; text-align: center; } }
