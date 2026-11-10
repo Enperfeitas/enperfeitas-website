@@ -1445,6 +1445,11 @@ section[style*="text-align:center"] h2, section.page-header h2, .wrap[style*="te
 .offer-row .price em { font-style: normal; }
 .offer-row .price em:first-child { font-weight: 500; }
 
+/* A page opener without a photo: centred black title, then a left-aligned description */
+.page-intro { padding: 0 0 24px; }
+.page-intro p { text-align: left; margin: 0 0 14px; }
+.page-intro .intro-lead { font-family: "Roboto Slab", Georgia, serif; font-weight: 700; }
+
 /* A page that starts with a full-width photo: the header floats over it, like the home page */
 body.hv-float header.site { top: 0; }
 body.hv-float .hero-cover-scrim {

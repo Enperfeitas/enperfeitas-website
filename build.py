@@ -199,6 +199,23 @@ def testimonial_card(title, quote, name, filename, source=""):
     """
 
 
+def page_intro(heading, subtext, subtext2=None):
+    """A plain page opener (no photo): a centred black title, then the description
+    left-aligned in a reading column. Used by Workshops, Bespoke Binding and Bespoke Boxes."""
+    sub2_html = f'\n    <p>{subtext2}</p>' if subtext2 else ""
+    return f"""
+<section class="page-header wrap">
+  <h1>{heading}</h1>
+</section>
+
+<section class="page-intro">
+  <div class="wrap" style="max-width:720px;">
+    <p class="intro-lead">{subtext}</p>{sub2_html}
+  </div>
+</section>
+"""
+
+
 def hero_cover(filename, heading, subtext, label, page="", source="", cta_label=None, cta_href=None, subtext2=None):
     """Full-bleed background-image banner with white text overlaid, matching
     the live site's page-header treatment (Home, Workshops, Bespoke Binding,
@@ -1032,10 +1049,8 @@ def workshop_card(title, photo_label, photo_filename, photo_source, items, book_
     """
 
 body = f"""
-{hero_cover("workshops-cover.webp", "Bookbinding &amp; Creative Workshops in Stockholm",
+{page_intro("Bookbinding &amp; Creative Workshops in Stockholm",
             "Learn with me for a day.",
-            "Hands arranging notebooks and marbled paper on a table", "Workshops",
-            source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/87788798-3932-4497-874b-5bb812ee17b3/IMG_9149.jpg?format=2500w",
             subtext2="From personalized journals to marbling techniques and artist&rsquo;s books, my workshops in Stockholm provide a hands-on, meditative space to learn, create, and connect. Perfect for beginners and experienced crafters alike, each session is designed to inspire and empower your creativity.")}
 
 <section>
@@ -1237,14 +1252,12 @@ body = f"""
 """
 page("workshops.html", "Workshops | Enperfeitas Studio",
      "Bookbinding and marbling workshops in Stockholm: single section, curved spine, exposed spine, Marble & Sip, and more.",
-     body, active="workshops.html", body_class="hv-float", extra_css="home.css", extra_js="home.js")
+     body, active="workshops.html")
 
 # ---------------------------------------------------------------- BESPOKE BINDING
 body = f"""
-{hero_cover("hero-hands-tools.webp", "The Book That Holds It",
+{page_intro("The Book That Holds It",
             "Custom bindings for weddings, family histories, cherished editions, and objects that carry too much meaning for a standard cover.",
-            "Hands binding a book, surrounded by bookbinding tools", "Bespoke Binding",
-            source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1f0fa009-cffa-404f-8fa5-9d96459a6e65/Banner+custom+made+prodcuts.jpg?format=2500w",
             subtext2="Most things wear out. A well-made binding doesn&rsquo;t. Every project in this category is treated as a legacy piece, designed with you, made by hand, and built to be passed on.")}
 
 <section>
@@ -1354,14 +1367,12 @@ body = f"""
 """
 page("bespoke-binding.html", "Bespoke Binding | Enperfeitas Studio",
      "Custom hand-sewn bindings, heritage wedding and family albums, fine bindings, rebinding, and restorations in Stockholm.",
-     body, active="bespoke-binding.html", body_class="hv-float", extra_css="home.css", extra_js="home.js")
+     body, active="bespoke-binding.html")
 
 # ---------------------------------------------------------------- BESPOKE BOXES
 body = f"""
-{hero_cover("boxes-slipcases.webp", "What You Put It In Says as Much as What's Inside",
-            "Handcrafted boxes, slipcases, and portfolios for art, photography, rare books, and anything else that deserves proper protection. A box isn't just storage. It's a statement that the object inside matters.",
-            "A box with a marbled interior, lined and empty", "Bespoke Boxes",
-            source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/99a102ac-3308-4f8a-b4aa-d48f5872409f/IMG_9331.jpg?format=2500w")}
+{page_intro("What You Put It In Says as Much as What's Inside",
+            "Handcrafted boxes, slipcases, and portfolios for art, photography, rare books, and anything else that deserves proper protection. A box isn't just storage. It's a statement that the object inside matters.")}
 
 <section>
   <div class="wrap grid-2 offer-row match-height">
@@ -1422,7 +1433,7 @@ body = f"""
 """
 page("bespoke-boxes.html", "Bespoke Boxes | Enperfeitas Studio",
      "Handcrafted portfolios, slipcases, and clamshell boxes for art, photography, and rare books, made in Stockholm.",
-     body, active="bespoke-boxes.html", body_class="hv-float", extra_css="home.css", extra_js="home.js")
+     body, active="bespoke-boxes.html")
 
 # ---------------------------------------------------------------- COLLECTIBLES
 # The live page (squarespace slug /unique-collectibles) has four offerings:
