@@ -877,19 +877,20 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 }
 
 /* The footer in four groups: on every page */
-.hv-footer { border-top: 1px solid var(--line); padding: 48px 0 26px; margin-top: 30px; }
+.hv-footer { border-top: 1px solid var(--line); padding: 36px 0 20px; margin-top: 24px; font-size: var(--fs-ui); line-height: 1.45; }
+/* the footer is small print: its text is the same size as the menu in the header */
 .hv-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
 @media (min-width: 860px) { .hv-footer-grid { grid-template-columns: 1.4fr repeat(4, 1fr); } }
 .hv-footer h4 { margin: 0 0 10px; font-family: "Roboto", Arial, sans-serif; font-size: var(--fs-cap); font-weight: 500; letter-spacing: 0.01em; color: var(--muted); text-align: left; }
 .hv-footer ul { list-style: none; margin: 0; padding: 0; }
-.hv-footer li { margin: 0 0 7px; text-align: left; }
+.hv-footer li { margin: 0 0 4px; text-align: left; }
 .hv-footer a { text-decoration: none; }
 .hv-footer a:hover { color: var(--accent); text-decoration: underline; }
 .hv-footer .hv-brand { grid-column: 1 / -1; }
 @media (min-width: 860px) { .hv-footer .hv-brand { grid-column: auto; } }
-.hv-footer .hv-brand p { margin: 0 0 10px; color: var(--muted); text-align: left; }
+.hv-footer .hv-brand p { margin: 0 0 4px; color: var(--muted); text-align: left; }
 .hv-footer .hv-brand strong { font-family: "Roboto Slab", Georgia, serif; font-size: var(--fs-h3); color: var(--ink); }
-.hv-footer-bottom { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: var(--fs-cap); }
+.hv-footer-bottom { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: var(--fs-cap); }
 .hv-footer-bottom a { color: var(--muted); }
 
 .list-links { list-style: none; padding: 0; margin: 0; }
