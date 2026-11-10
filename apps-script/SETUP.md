@@ -19,7 +19,7 @@ Fill these in before the real round. The test round can be done without them.
 - [ ] Terms wording on the page and in the invitation email, including the 14 day right of withdrawal. Please check with Konsumentverket what applies to a bid on a made-to-order or one-off piece, and what the page and your invoice must say. The page currently has a placeholder line about this.
 - [ ] Sign-up form link: put the real Google Form link in js/bidding.js (SIGNUP_FORM_URL).
 - [ ] Closing date and time, written with the Swedish time zone offset (see Step 4).
-- [ ] The wording of the invitation email in Code.gs (function buildInvitationBody_). It is plain English and easy to adjust.
+- [ ] The wording of the emails in Code.gs (the "Wording" part of the EMAILS section). It is plain English and easy to adjust.
 - [ ] The sign-up Form's consent line, and how long you will keep the Sheet with names and emails.
 - [ ] Decide what happens if the winner does not pay within 48 hours (the page says the piece is offered to the next bidder).
 - [ ] Run the full test round (Step 7) and tick every box in the test checklist.
@@ -152,15 +152,17 @@ Tick each one.
 
 After testing: choose **Invitations > Reset test bids**, then set closing_time and status in Config again, because a test may have moved the closing time or closed the auction.
 
-## Changing the wording of the invitation email
+## Changing the wording of the emails
 
-The wording is kept in three short places in `Code.gs`, near the function `buildInvitationHtml_`. You can change a sentence without touching the design.
+Every email (invitation, reminder, winner, payment, collection, dispatch and the "join the next round" question) is built with the same design, from one place in `Code.gs`: the section headed EMAILS, then "Wording". You can change a sentence without touching the design. The wording lines are grouped by email:
 
-- `invitationSteps_`: the numbered steps under "How bidding works".
-- `invitationAfterWinning_`: the points under "If you win" (invoice, payment, shipping, withdrawal).
-- `INVITATION_LINK_NOTE`: the sentence under the button.
+- **Invitation:** `invitationSteps_` (the numbered steps under "How bidding works"), `invitationAfterWinning_` (the points under "If you win"), `INVITATION_LINK_NOTE` (the sentence under the button) and `INVITATION_FOOTER`.
+- **Reminder:** the lines starting with `REMINDER_`.
+- **Winner:** the lines starting with `WINNER_`, and `winnerSteps_`.
+- **Shipping and payment, collection, dispatch:** the lines starting with `PAYMENT_`, `COLLECT_` and `DISPATCH_`.
+- **Asking previous participants:** the lines starting with `ASK_` and `NUDGE_`.
 
-The email uses the Enperfeitas logo from `images/email/logo.png` on the website, and the site fonts (Roboto Slab and Roboto) where the mail app can load them. Gmail and Outlook cannot load web fonts, so they show the closest font on the reader's device instead (Rockwell or Georgia for headings, Arial for text). That is a limit of email, not of the design. Apple Mail and the iPhone mail app show the exact fonts. In test mode the grey banner at the top of the email ends with "Layout version 4". If your test email does not say that, your Sheet is still running an older copy of the script: paste the latest Code.gs and publish a new version. The logo appears once the image is published on the website.
+The emails follow the website: the same fonts (Roboto Slab for headings, Roboto for text), the same colours, the same pill-shaped button and the same floating white card, with the Enperfeitas logo from `images/email/logo.png`. The text is the website's size on a phone (15 px). Apple Mail and the iPhone mail app show the exact fonts. Gmail and Outlook cannot load web fonts, so they show the same fallbacks the website uses (Georgia for headings, Arial for text). That is a limit of email, not of the design. In test mode the grey banner at the top of the email ends with "Layout version 8". If your test email does not say that, your Sheet is still running an older copy of the script: paste the latest Code.gs and publish a new version. The logo appears once the image is published on the website.
 
 Keep each sentence between the quotation marks, and keep the commas at the end of each line. After a change, publish a new version of the web app (Step 5), then run a test send to yourself.
 
@@ -175,6 +177,26 @@ Keep each sentence between the quotation marks, and keep the commas at the end o
 6. Merge the bidding-tool branch into main so that the page is public (or ask someone to help with this).
 
 Email limits: a free Gmail account can send about 100 emails a day, and Google Workspace about 1500. The script checks your remaining allowance before it sends and stops with a message if it is too low. Nothing is sent in that case, and you can run it again the next day.
+
+## The Invitations menu at a glance
+
+The menu follows the order of a round, top to bottom.
+
+| Menu item | When to use it |
+|---|---|
+| Generate codes | After approving new sign-ups, so each gets a personal code. |
+| Send invitations | Emails the approved people who have not been invited yet. |
+| Send reminders | While bidding is open: everyone invited, or only those with no bid yet. |
+| Close auction | When bidding should stop now. |
+| Send winner email | After bidding closes: congratulates the winner and asks for shipping or collection. |
+| Send payment details | When the winner replies: shipping cost and payment link, or the collection version. |
+| Send dispatch email | When the piece is posted: tracking details. |
+| Start new round | After a round is finished, before the next one. |
+| Ask previous participants | Asks last round's people if they want to join the next one. |
+| Reset test bids | Only while testing. |
+| Create Bids and Config tabs | First time only. |
+
+Every item asks you to confirm before it sends anything or changes anything. If something unexpected goes wrong, you get a message that says what happened instead of a technical error, and the details are written to the script's log (Apps Script > Executions).
 
 ## Sending a reminder
 
@@ -217,6 +239,26 @@ Test mode works as for the other emails: with test_mode TRUE both go to your own
 
 To change a sentence, edit the `PAYMENT_`, `COLLECT_` and `DISPATCH_` lines in Code.gs, then publish a new version of the web app.
 
+## Starting the next round
+
+Every round starts the same way. People from the last round are asked first, and nobody is invited again unless they say yes.
+
+**Status values** (the `status` column on the Invitees tab): `approved` = invited to this round, `returning` = took part before and is paused until they answer, `declined` = answered "not this round" (asked again next round), `unsubscribed` = answered "remove me" (never asked again), `pending` = new sign-up waiting for you, `revoked` = blocked by you.
+
+**1. Invitations > Start new round.** Only works once the auction is closed. Before it changes anything, it shows you who will be paused and what is not touched, and you press YES or NO.
+- **Paused as `returning`:** people who were approved *and* had an invitation sent (they took part), and people who answered "not this round" last time. Their `sent`, `reminded`, `asked`, `answered`, `delivery note`, `payment requested`, `paid` and `dispatched` cells are emptied.
+- **Never touched:** new sign-ups (pending or blank status), people you have approved but not yet invited, blocked people and people who removed themselves. New sign-ups for the next round stay exactly as they are.
+- **Backups:** the Invitees tab is copied to "Invitees backup (date)", and the finished round's bids are kept in a tab named "Bids (date) (piece title)". Then the Bids tab is emptied, `winner_emailed` is cleared and `round_started` is saved in Config. If you run it again, it warns you, because people invited since would be paused too.
+- **Afterwards:** update piece_title, description, closing_time and status in Config for the new piece.
+
+**2. Invitations > Ask previous participants.** It emails everyone with status `returning` who has not been asked yet (YES), or sends a gentle nudge to the ones who were asked and have not answered (NO). The email has a personal link to the page `join-round.html`, where they choose: **Yes, include me** (status becomes `approved`), **Not this round** (`declined`) or **Remove me from the list** (`unsubscribed`). The answer is saved in the Sheet straight away, with the time in the `answered` column. The time the question was sent is saved in `asked`. Nobody who has not said yes is sent an invitation or a reminder.
+
+**3. Invite as usual.** Everyone who said yes is `approved` with no `sent` time, so **Send invitations** picks them up together with your new approved sign-ups. A person who already has an invitation can still remove themselves, but cannot say "not this round".
+
+Test mode works as for the other emails: the questions go to your own address only and nothing is recorded.
+
+To change a sentence, edit the lines starting with `ASK_` and `NUDGE_` in Code.gs, and the texts in js/join-round.js, then publish a new version of the web app.
+
 ## While bidding is open
 
 - **Stop one person from bidding:** change their status to `revoked`.
@@ -226,7 +268,7 @@ To change a sentence, edit the `PAYMENT_`, `COLLECT_` and `DISPATCH_` lines in C
 
 ## After bidding closes
 
-The page shows the final result. The winner is the name on the highest line of the Bids tab. Look up that person's email in the Invitees tab (the code in the Bids tab matches the code in the Invitees tab). The page tells bidders that the winner is invoiced within 24 hours and pays within 48 hours, otherwise the piece is offered to the next bidder. Delete or archive the Sheet when you no longer need the names and emails.
+The page shows the final result. The winner is the name on the highest line of the Bids tab. Look up that person's email in the Invitees tab (the code in the Bids tab matches the code in the Invitees tab). The page and the invitation tell bidders what happens next: the winner is emailed and replies with shipping or collection, the payment details follow, and payment is due within 48 hours of receiving them, otherwise the piece is offered to the next bidder. The menu items Send winner email, Send payment details and Send dispatch email do each step. Delete or archive the Sheet when you no longer need the names and emails.
 
 ## If something looks wrong
 

@@ -2285,9 +2285,9 @@ body = r"""
             <li>All amounts are whole Swedish kronor (SEK) and include moms.</li>
             <li>A bid must be at least the minimum shown: the opening bid, or the current high bid plus the step.</li>
             <li>If a bid arrives in the last <span id="bid-ext">5</span> minutes, the closing time moves to that many minutes after the bid, so everyone has time to answer.</li>
-            <li>The winner is invoiced within 24 hours and pays within 48 hours. If payment does not arrive, the piece is offered to the next bidder.</li>
+            <li>After bidding closes, the winner is emailed and replies with whether the piece should be shipped or collected. The payment details then follow, and payment is due within 48 hours of receiving them. If payment does not arrive, the piece is offered to the next bidder.</li>
             <li>Only your first name is shown next to your bids.</li>
-            <li>Shipping is calculated by location and added to the invoice after bidding closes. Buyers in Stockholm can collect the piece from the studio in Vällingby instead.</li>
+            <li>Shipping is calculated by location and added to the payment details after bidding closes. Buyers in Stockholm can collect the piece from the studio in Vällingby instead, with no shipping cost.</li>
             <li>The piece is dispatched within 7 days of payment.</li>
             <li>You have the right to withdraw from the purchase within 14 days of receiving the piece. Tell us by email at info@enperfeitas.com within that time. The piece must be returned in essentially the same condition it arrived in. Return shipping is paid by the buyer. The amount you paid is refunded within 14 days of your message.</li>
             <li>Sold by Enperfeitas Studio, organisation number SE920423738301, Gudmundrågatan 10 - Vällingby.</li>
@@ -2720,3 +2720,67 @@ for _old, _new in OLD_URL_REDIRECTS.items():
             f'<p>This page has moved. <a href="{_t}">Continue to the new page</a>.</p></body></html>\n'
         )
 print(f"wrote {len(OLD_URL_REDIRECTS)} redirect pages")
+
+# ---------------------------------------------------------------- JOIN THE NEXT ROUND
+# The page behind the link in the "Would you like to join the next round?" email.
+# Unlisted and noindex. It reads and saves the answer through the Google Apps
+# Script (apps-script/Code.gs: roundinfo and respond), nothing is stored here.
+# Styled by css/join-round.css; the behaviour is js/join-round.js.
+body = '''
+<main class="jr" id="main">
+  <div class="jr-wrap">
+    <p class="jr-kicker">Invitation-only bidding</p>
+    <h1 class="jr-title">Will you join the next round?</h1>
+
+    <div class="jr-card">
+      <div id="jr-loading" class="jr-skeleton" aria-hidden="true">
+        <span></span><span></span><span></span>
+        <span class="jr-sk-btn"></span><span class="jr-sk-btn"></span>
+      </div>
+      <noscript><p class="jr-problem">This page needs JavaScript to save your answer. Please reply to the email instead, and I will note it down for you.</p></noscript>
+
+      <div id="jr-problem" class="jr-problem" hidden>
+        <p id="jr-problem-text"></p>
+        <a class="jr-btn" href="mailto:info@enperfeitas.com?subject=The%20next%20bidding%20round" style="text-decoration:none;">Reply by email</a>
+      </div>
+
+      <div id="jr-choose" hidden>
+        <p class="jr-hello" id="jr-hello"></p>
+        <p class="jr-lead">A new round of bidding is coming, and I would love for you to take part again. One tap is enough, and you can change your mind later with the same link.</p>
+        <p class="jr-chip" id="jr-chip" hidden></p>
+        <p class="jr-invited" id="jr-invited" hidden>You have already been sent an invitation for this round.</p>
+        <div class="jr-choice" id="jr-yes-row">
+          <button class="jr-btn jr-btn--primary" id="jr-yes" type="button">Yes, include me</button>
+          <p class="jr-note">I will email you an invitation before bidding opens.</p>
+        </div>
+        <div class="jr-choice" id="jr-no-row">
+          <button class="jr-btn" id="jr-no" type="button">Not this round</button>
+          <p class="jr-note">I will ask you again before the next round.</p>
+        </div>
+        <div class="jr-remove">
+          <button class="jr-link" id="jr-remove" type="button">Remove me from the list</button>
+          <p class="jr-note">I will not email you about bidding again.</p>
+        </div>
+        <p class="jr-error" id="jr-error" role="alert" hidden></p>
+      </div>
+
+      <div id="jr-done" class="jr-done" hidden>
+        <div class="jr-done-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <h2 class="jr-done-title" id="jr-done-title" tabindex="-1"></h2>
+        <p class="jr-done-text" id="jr-done-text"></p>
+        <button class="jr-link" id="jr-change" type="button">Change my answer</button>
+      </div>
+    </div>
+
+    <p class="jr-sign">Suzete<span>Enperfeitas Studio</span></p>
+    <p class="jr-privacy">Your answer is saved straight away. I only use your email address for this bidding list. <a href="privacy-policy.html">Privacy Policy</a></p>
+    <p class="jr-sr" role="status" id="jr-status"></p>
+  </div>
+</main>
+
+<script src="js/join-round.js" defer></script>
+'''
+page("join-round.html", "Join the next round | Enperfeitas Studio",
+     "Answer whether you would like to be invited to the next round of bidding at Enperfeitas Studio.",
+     body, active=None, robots="noindex, nofollow", extra_css="join-round.css",
+     extra_head='<link rel="preconnect" href="https://script.google.com" crossorigin>\n<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>\n')
