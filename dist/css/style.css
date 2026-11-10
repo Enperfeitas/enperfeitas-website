@@ -698,7 +698,7 @@ h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); margin: 28px 0 10px; co
      shouldn't flip just because the viewport narrows. This selector's
      higher specificity (class + tag) wins over the generic h1 rule above
      without needing !important. */
-  .hero-cover-content h1 { text-align: left; }
+  .hero-cover-content h1 { text-align: center; }
   /* Exception: .title-lg (the Studio page's "What's New at Enperfeitas
      Studio?" opener, and any future inline-hero title). Removing it from
      the selector list above isn't enough on its own — the element is
@@ -1396,6 +1396,59 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 @media (max-width: 760px) { .path-photo .img-wrap { aspect-ratio: 16 / 9; } }
 
 @media (max-width: 760px) { .soft-card .btn { align-self: stretch; text-align: center; } }
+
+/* =====================================================================
+   ONE LOOK FOR THE WHOLE SITE
+   What the home page set, now used on every page: the same width for image
+   sections, the same section rhythm, the same rounded floating cards, the
+   same section titles, and the header floating over a photo wherever a page
+   starts with one. Change a value here and every page follows.
+   ===================================================================== */
+
+/* Width: text stays at 1140px; sections made of photos and cards use up to 1440px */
+@media (min-width: 1000px) {
+  .wrap.wide, .wrap.grid-3, .wrap.gallery,
+  .wrap:has(> .cards-row), .wrap:has(> .grid-3), .wrap:has(> .grid-4) {
+    max-width: 1440px; padding-left: 24px; padding-right: 24px;
+  }
+}
+
+/* Rhythm: 56px above and below a section (40px on phones) */
+section { padding: 56px 0; }
+.section-tight { padding: 40px 0; }
+.page-header { padding: 56px 32px 32px; }
+@media (max-width: 760px) {
+  section { padding: 40px 0; }
+  .section-tight { padding: 32px 0; }
+  .page-header { padding: 40px 32px 24px; }
+}
+
+/* Cards: 10px corners, soft floating shadow (photos inside follow the card) */
+.img-wrap { border-radius: 10px; }
+.accordion-card, .card.shop-card, .testimonials .testimonial {
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.accordion-card { padding: 24px; }
+.accordion-card:hover, .card.shop-card:hover { box-shadow: 0 16px 38px rgba(0, 0, 0, 0.11), 0 2px 6px rgba(0, 0, 0, 0.05); }
+.card.shop-card { overflow: hidden; }
+.shop-card .img-wrap { border-radius: 0; box-shadow: none; }
+.shop-card .shop-card-body { padding: 20px 20px 24px; }
+.testimonials .testimonial { border: 1px solid var(--line); padding: 22px; box-shadow: none; }
+.embed-note { border-radius: 10px; }
+
+/* Section titles: left, like the home page. Only closing call-to-action bands are centred. */
+section h2 { text-align: left; }
+section[style*="text-align:center"] h2, section.page-header h2, .wrap[style*="text-align:center"] h2, .grid-2.two-paths h2 { text-align: center; }
+
+/* A page that starts with a full-width photo: the header floats over it, like the home page */
+body.hv-float header.site { top: 0; }
+body.hv-float .hero-cover-scrim {
+  background: linear-gradient(180deg, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.18) 22%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.72) 100%);
+}
+/* The headline over a photo is centred, like the home page */
+.hero-cover-content { text-align: center; }
+.hero-cover-content h1, .hero-cover-content p.sub { margin-left: auto; margin-right: auto; }
 
 /* ---------------------------------------------------------------------
    One button behaviour for the whole site: white with a dark outline, and it

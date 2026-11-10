@@ -633,7 +633,7 @@ body = f"""
 </section>
 
 <section>
-  <div class="wrap" style="max-width:640px;">
+  <div class="wrap" style="max-width:720px;">
     <blockquote>
       <p>&ldquo;Bookbinding is more than just a craft to me. It's a way to connect people and ideas, preserve stories and create lasting memories.</p>
       <p>Whether you want to share a personal journey, design a bespoke bookbinding piece, or showcase a professional portfolio, my handmade bookbinding services in Stockholm can bring your vision to life!&rdquo;</p>
@@ -687,10 +687,13 @@ events_accordion = accordion([
 ])
 
 body = f"""
+<section class="page-header wrap">
+  <h1>What's New at Enperfeitas Studio?</h1>
+</section>
+
 <section>
   <div class="wrap grid-2">
     <div>
-      <h1 class="title-lg">What's New at Enperfeitas Studio?</h1>
       <p>The mission is to build a thriving community where skills, ideas, and inspiration come together. Whether you're an instructor seeking the perfect workshop venue or a creator eager to explore a new craft, the studio provides the tools, space, and support to turn your passion into something extraordinary.</p>
       <p>Here&rsquo;s what you&rsquo;ll find at the studio:</p>
       <ul>
@@ -980,7 +983,7 @@ body = f"""
 </section>
 
 <section class="alt" style="text-align:center;">
-  <div class="wrap" style="max-width:600px;">
+  <div class="wrap" style="max-width:720px;">
     <h2>Application for Studio Use</h2>
     <a class="btn" href="mailto:info@enperfeitas.com?subject=Studio%20Space%20Application" aria-label="Apply for studio use by email">Apply by email</a>
     <p class="construction-note" style="margin-left:auto;margin-right:auto;">Include your activity, group size, and preferred date(s). See the details above.</p>
@@ -1071,7 +1074,7 @@ body = f"""
 </section>
 
 <section class="alt">
-  <div class="wrap" style="text-align:center;">
+  <div class="wrap">
     <h2>Bookbinding Workshops</h2>
   </div>
   <div class="wrap">
@@ -1127,7 +1130,7 @@ body = f"""
 </section>
 
 <section>
-  <div class="wrap" style="text-align:center;">
+  <div class="wrap">
     <h2>Marbling Workshops</h2>
   </div>
   <div class="wrap">
@@ -1234,7 +1237,7 @@ body = f"""
 """
 page("workshops.html", "Workshops | Enperfeitas Studio",
      "Bookbinding and marbling workshops in Stockholm: single section, curved spine, exposed spine, Marble & Sip, and more.",
-     body, active="workshops.html")
+     body, active="workshops.html", body_class="hv-float", extra_css="home.css", extra_js="home.js")
 
 # ---------------------------------------------------------------- BESPOKE BINDING
 body = f"""
@@ -1351,7 +1354,7 @@ body = f"""
 """
 page("bespoke-binding.html", "Bespoke Binding | Enperfeitas Studio",
      "Custom hand-sewn bindings, heritage wedding and family albums, fine bindings, rebinding, and restorations in Stockholm.",
-     body, active="bespoke-binding.html")
+     body, active="bespoke-binding.html", body_class="hv-float", extra_css="home.css", extra_js="home.js")
 
 # ---------------------------------------------------------------- BESPOKE BOXES
 body = f"""
@@ -1419,7 +1422,7 @@ body = f"""
 """
 page("bespoke-boxes.html", "Bespoke Boxes | Enperfeitas Studio",
      "Handcrafted portfolios, slipcases, and clamshell boxes for art, photography, and rare books, made in Stockholm.",
-     body, active="bespoke-boxes.html")
+     body, active="bespoke-boxes.html", body_class="hv-float", extra_css="home.css", extra_js="home.js")
 
 # ---------------------------------------------------------------- COLLECTIBLES
 # The live page (squarespace slug /unique-collectibles) has four offerings:
@@ -1683,7 +1686,7 @@ body = f"""
 """
 page("design-your-book.html", "Design Your Own Book | Enperfeitas Studio",
      "Build your own handbound notebook, journal, or sketchbook with Enperfeitas Studio -- choose a size, paper, and cover colour, then send your design straight to the studio for a personal quote.",
-     body, active=None, robots="noindex, nofollow")
+     body, active=None, robots="noindex, nofollow", body_class="hv-float", extra_css="home.css", extra_js="home.js")
 
 # ---------------------------------------------------------------- LATEST WORK
 gallery_labels = [
@@ -2027,7 +2030,7 @@ body = f"""
 </section>
 
 <section>
-  <div class="wrap" style="text-align:center;max-width:640px;">
+  <div class="wrap" style="text-align:center;max-width:720px;">
     <p style="color:var(--muted);font-size:var(--fs-p2);">Questions before you buy? <a href="mailto:info@enperfeitas.com">Get in touch</a>. See also <a href="shipping-info.html">Shipping Info</a> and <a href="refund-policy.html">Refunds and Returns</a>.</p>
   </div>
 </section>
@@ -2195,7 +2198,7 @@ body = f"""
 </section>
 
 <section style="text-align:center;">
-  <div class="wrap" style="max-width:480px;">
+  <div class="wrap" style="max-width:520px;">
     <iframe src="https://enperfeitas.substack.com/embed" width="100%" height="500"
             style="border:1px solid var(--line);background:transparent;"
             frameborder="0" scrolling="no"
@@ -2402,7 +2405,7 @@ body = """
 </section>
 
 <section class="alt">
-  <div class="wrap" style="text-align:center;max-width:620px;">
+  <div class="wrap" style="text-align:center;max-width:720px;">
     <h2>Free to use. Pay if you like.</h2>
     <p style="text-align:left;color:var(--muted);">Every tool is free and stays free. You'll find a few ways to say thanks at the bottom of each one.</p>
   </div>
@@ -2544,7 +2547,7 @@ body = f"""
   <p>Everything Enperfeitas, in one place.</p>
 </section>
 <section>
-  <div class="wrap" style="max-width:420px;">
+  <div class="wrap" style="max-width:520px;">
     <ul class="list-links">{link_html}</ul>
   </div>
 </section>
