@@ -8,7 +8,7 @@
 /* The small line above the title: the same as the site's .stat-line */
 .bid-kicker {
   margin: 0 0 10px;
-  font-size: 0.8rem;
+  font-size: var(--fs-cap);
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -18,7 +18,7 @@
 /* The title: exactly the site's .page-header h1 (Roboto Slab, centred, same size and spacing) */
 .bid-page h1 {
   font-family: "Roboto Slab", Georgia, serif;
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: var(--fs-h1);
   font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.1;
@@ -33,7 +33,7 @@
   padding: 10px 14px;
   border-left: 3px solid var(--accent);
   background: #fafafa;
-  font-size: 0.92rem;
+  font-size: var(--fs-p2);
   color: var(--muted);
   text-align: left;
 }
@@ -82,7 +82,7 @@
   padding: 8px 0;
   border-bottom: 1px solid var(--line);
 }
-.bid-details dt { font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.bid-details dt { font-size: var(--fs-cap); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .bid-details dd { margin: 0; text-align: left; }
 
 /* The main panel */
@@ -96,7 +96,7 @@
 .bid-figures { margin: 0; display: grid; grid-template-columns: 1fr; gap: 18px; }
 .bid-figures div { display: block; }
 .bid-figures dt {
-  font-size: 0.78rem;
+  font-size: var(--fs-cap);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -106,7 +106,7 @@
 .bid-figure {
   font-family: "Roboto Slab", Georgia, serif;
   font-weight: 700;
-  font-size: 1.9rem;
+  font-size: var(--fs-h2);
   line-height: 1.15;
   letter-spacing: -0.01em;
 }
@@ -129,7 +129,7 @@
   min-width: 0;
   padding: 14px 16px;
   font: inherit;
-  font-size: 1.1rem;
+  font-size: var(--fs-input);
   color: var(--ink);
   background: #fafafa;
   border: 1px solid var(--ink);
@@ -172,7 +172,7 @@
 
 /* History */
 .bid-section { margin: 30px 0 0; }
-.bid-section h2 { font-size: 1.25rem; margin: 0 0 12px; text-align: left; }
+.bid-section h2 { font-size: var(--fs-h3); margin: 0 0 12px; text-align: left; }
 .bid-history { list-style: none; margin: 0; padding: 0; }
 .bid-history li {
   display: grid;
@@ -183,7 +183,7 @@
 }
 .bid-history .h-name { font-weight: 500; }
 .bid-history .h-amount { text-align: right; font-variant-numeric: tabular-nums; }
-.bid-history .h-time { grid-column: 1 / -1; font-size: 0.9em; color: var(--muted); }
+.bid-history .h-time { grid-column: 1 / -1; font-size: var(--fs-p2); color: var(--muted); }
 .bid-history li.is-top .h-amount { font-weight: 700; }
 .bid-empty { margin: 0; color: var(--muted); text-align: left; }
 
@@ -237,10 +237,10 @@
 .bid-empty,
 .bid-history .h-name,
 .bid-history .h-amount,
-.bid-you { font-size: 1em; }
+.bid-you { font-size: var(--fs-p1); }
 .bid-sub,
-.bid-hint { font-size: 0.92em; }
-.bid-binding { margin: 10px 0 0; font-size: 0.9em; color: var(--muted); text-align: left; }
+.bid-hint { font-size: var(--fs-p2); }
+.bid-binding { margin: 10px 0 0; font-size: var(--fs-p2); color: var(--muted); text-align: left; }
 .bid-binding a { color: var(--muted); }
 .bid-binding a:hover { color: var(--accent); }
 

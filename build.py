@@ -2,10 +2,48 @@
 # -*- coding: utf-8 -*-
 """Generates the Enperfeitas static site into dist/."""
 import os
+import re
+import json
 import html
 import urllib.parse
 
 DIST = "/home/claude/enperfeitas/dist"
+
+# ---------------------------------------------------------------- STRUCTURED DATA
+# Small blocks of JSON-LD that tell Google what the pages are (the business, the
+# shop products with their prices, the membership options). They are written into
+# the <head> of the home, shop and studio-membership pages by page(..., jsonld=...).
+# Every price here must match the price people see on the page.
+SITE_URL = "https://enperfeitas.com"
+SELLER = {"@type": "Organization", "name": "Enperfeitas Studio", "url": SITE_URL + "/"}
+BRAND = {"@type": "Brand", "name": "Enperfeitas"}
+
+def _amount(text):
+    """'2,100 SEK' -> 2100, 'From 75 kr' -> 75, '550 kr' -> 550"""
+    m = re.search(r"\d[\d,]*(?:\.\d+)?", text)
+    value = float(m.group(0).replace(",", ""))
+    return int(value) if value == int(value) else value
+
+HOME_JSONLD = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": SITE_URL + "/#business",
+    "name": "Enperfeitas Studio",
+    "url": SITE_URL + "/",
+    "logo": SITE_URL + "/images/logo.webp",
+    "image": SITE_URL + "/images/hero-home.webp",
+    "description": "Handbound books, albums and boxes made by hand in Stockholm, plus bookbinding and marbling workshops, studio membership and a workshop space to rent.",
+    "email": "info@enperfeitas.com",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Gudmundrågatan 10",
+        "addressLocality": "Vällingby",
+        "addressRegion": "Stockholm",
+        "addressCountry": "SE",
+    },
+    "knowsLanguage": ["sv", "en", "pt"],
+    "sameAs": ["https://www.instagram.com/enperfeitas", "https://www.facebook.com/enperfeitas"],
+}
 
 NAV = [
     ("index.html", "Home"),
@@ -189,7 +227,7 @@ def hero_cover(filename, heading, subtext, label, page="", source="", cta_label=
 
 
 def page(filename, title, description, body, active=None, robots=None, extra_css=None, extra_head="",
-         body_class="", pre_header="", footer_html=None, extra_js=""):
+         body_class="", pre_header="", footer_html=None, extra_js="", jsonld=None):
     # body_class, pre_header, footer_html and extra_js are only used by the home page:
     # a class on <body>, a bar above the header, its own footer, and one extra script.
     nav_items = ""
@@ -203,6 +241,11 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
     robots_tag = f'<meta name="robots" content="{robots}">\n' if robots else ""
     extra_css_tag = f'<link rel="stylesheet" href="css/{extra_css}">\n' if extra_css else ""
     body_attr = f' class="{body_class}"' if body_class else ""
+    # structured data for Google: one or more JSON-LD blocks, written into the <head>
+    jsonld_tag = ""
+    if jsonld:
+        for _block in (jsonld if isinstance(jsonld, list) else [jsonld]):
+            jsonld_tag += '<script type="application/ld+json">' + chr(10) + json.dumps(_block, ensure_ascii=False, indent=2).replace('</', '<\\/') + chr(10) + '</script>' + chr(10)
     extra_js_tag = f'<script src="js/{extra_js}" defer></script>\n' if extra_js else ""
     footer_block = footer_html if footer_html else f"""<footer class="site">
   <div class="wrap footer-minimal">
@@ -225,7 +268,7 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-{extra_css_tag}{extra_head}</head>
+{extra_css_tag}{extra_head}{jsonld_tag}</head>
 <body{body_attr}>
 {pre_header}<header class="site">
   <div class="wrap nav-row">
@@ -580,7 +623,7 @@ body = r'''<section class="hv-hero" id="top">
 page("index.html", "Enperfeitas | Handbound Books, Bookbinding Workshops & Studio in Stockholm",
      "Handmade books, bespoke albums, and bookbinding workshops in Stockholm. Made to last. Made by hand.",
      body, active="index.html", extra_css="home.css", body_class="hv-home",
-     pre_header=HOME_TOPBAR, footer_html=HOME_FOOTER, extra_js="home.js",
+     pre_header=HOME_TOPBAR, footer_html=HOME_FOOTER, extra_js="home.js", jsonld=HOME_JSONLD,
      extra_head='<link rel="preload" as="image" href="images/hero-home-1200.webp" imagesrcset="images/hero-home-1200.webp 1200w, images/hero-home.webp 2400w" imagesizes="100vw" fetchpriority="high">\n')
 # ---------------------------------------------------------------- ABOUT
 body = f"""
@@ -624,7 +667,7 @@ body = f"""
     <h2>Enperfeitas Newsletter</h2>
     <p>Sign up to hear about workshops, new books, exclusive offers, and special events, plus fun, quirky insights about life as a bookbinder and the occasional simple-book tutorial.</p>
     <a class="btn" href="newsletter.html" aria-label="Sign up for the newsletter">Sign up</a>
-    <p style="margin-top:14px;color:var(--muted);font-size:0.85rem;">We respect your privacy.</p>
+    <p style="margin-top:14px;color:var(--muted);font-size:var(--fs-p2);">We respect your privacy.</p>
   </div>
 </section>
 """
@@ -812,14 +855,38 @@ body = f"""
     <div>
       <h2>Who this is for</h2>
       <p>People who want a professional studio to make in, without a set lesson. Casual and serious hobbyists, busy creatives, aspiring professionals, and collectors or restoration enthusiasts. It suits anyone who prefers a quiet, flexible environment to structured teaching, and who uses making as a way to slow down.</p>
-      <p style="color:var(--muted);font-size:0.92rem;"><strong>Before you join.</strong> To keep the studio safe and efficient for everyone, new members need to have attended at least one Enperfeitas workshop (or a comparable bookbinding course), or show prior knowledge of basic bookbinding techniques and tool use. Not sure if you qualify? <a href="mailto:info@enperfeitas.com?subject=Studio%20Membership">Get in touch</a> and we will help you find the best next step.</p>
+      <p style="color:var(--muted);font-size:var(--fs-p2);"><strong>Before you join.</strong> To keep the studio safe and efficient for everyone, new members need to have attended at least one Enperfeitas workshop (or a comparable bookbinding course), or show prior knowledge of basic bookbinding techniques and tool use. Not sure if you qualify? <a href="mailto:info@enperfeitas.com?subject=Studio%20Membership">Get in touch</a> and we will help you find the best next step.</p>
     </div>
   </div>
 </section>
 """
+# Structured data for the membership options. The prices are the ones on the cards above.
+def _membership_jsonld():
+    options = [
+        # name, price, monthly?, short description
+        ("Single session", 450, False, "One evening in the studio, 17:00 to 20:00, on a Tuesday or Thursday. If you join within 48 hours, the 450 SEK is credited toward a pass or your first month."),
+        ("5-Session Pass", 2100, False, "Five studio sessions to use over two months, on Tuesdays or Thursdays, 17:00 to 20:00."),
+        ("Basic membership", 1400, True, "Up to 8 studio sessions per month, on Tuesdays and Thursdays, 17:00 to 20:00. Billed monthly."),
+        ("Premium membership", 2400, True, "Up to 12 studio sessions per month on Tuesdays, Wednesdays and Thursdays, plus up to two 1-on-1 sessions with Suzete each month. Billed monthly."),
+    ]
+    elements = []
+    for position, (name, amount, monthly, description) in enumerate(options, 1):
+        offer = {"@type": "Offer", "price": amount, "priceCurrency": "SEK",
+                 "availability": "https://schema.org/InStock", "url": SITE_URL + "/studio-membership.html", "seller": SELLER}
+        if monthly:
+            offer["priceSpecification"] = {
+                "@type": "UnitPriceSpecification", "price": amount, "priceCurrency": "SEK",
+                "referenceQuantity": {"@type": "QuantitativeValue", "value": 1, "unitCode": "MON"},
+            }
+        elements.append({
+            "@type": "ListItem", "position": position,
+            "item": {"@type": "Product", "name": name, "description": description, "brand": BRAND, "offers": offer},
+        })
+    return {"@context": "https://schema.org", "@type": "ItemList", "name": "Studio membership options at Enperfeitas Studio", "itemListElement": elements}
+
 page("studio-membership.html", "Studio Membership | Enperfeitas",
      "Single sessions, a 5-session pass, and Basic and Premium monthly studio membership at Enperfeitas Studio, Stockholm.",
-     body, active="studio.html")
+     body, active="studio.html", jsonld=_membership_jsonld())
 
 # ---------------------------------------------------------------- BOOK WORKSHOP SPACE
 body = f"""
@@ -873,7 +940,7 @@ body = f"""
         <li>Cleaning fee (optional): +500 SEK</li>
         <li>Snacks &amp; refreshments (optional): +100 SEK per participant</li>
       </ul>
-      <p style="color:var(--muted);font-size:0.9rem;">Prices exclude VAT.</p>
+      <p style="color:var(--muted);font-size:var(--fs-p2);">Prices exclude VAT.</p>
     </div>
     <div>
       <h2>Cancellation policy</h2>
@@ -1973,13 +2040,40 @@ body = f"""
 
 <section>
   <div class="wrap" style="text-align:center;max-width:640px;">
-    <p style="color:var(--muted);font-size:0.9rem;">Questions before you buy? <a href="mailto:info@enperfeitas.com">Get in touch</a>. See also <a href="shipping-info.html">Shipping Info</a> and <a href="refund-policy.html">Refunds and Returns</a>.</p>
+    <p style="color:var(--muted);font-size:var(--fs-p2);">Questions before you buy? <a href="mailto:info@enperfeitas.com">Get in touch</a>. See also <a href="shipping-info.html">Shipping Info</a> and <a href="refund-policy.html">Refunds and Returns</a>.</p>
   </div>
 </section>
 """
+# Structured data for the shop: every product, built from the same PRODUCTS list the
+# page uses, so the name, the description and the price always match what people see.
+def _shop_jsonld():
+    elements = []
+    for position, p in enumerate(PRODUCTS, 1):
+        amount = _amount(p["price"])
+        if p["price"].lower().startswith("from"):
+            # "From 75 kr": the price depends on the size, so say "from" and how many options there are
+            offer = {"@type": "AggregateOffer", "lowPrice": amount, "priceCurrency": "SEK", "seller": SELLER}
+            if p.get("variant_options"):
+                offer["offerCount"] = len(p["variant_options"])
+        else:
+            offer = {"@type": "Offer", "price": amount, "priceCurrency": "SEK",
+                     "availability": "https://schema.org/InStock", "url": SITE_URL + "/shop.html", "seller": SELLER}
+        elements.append({
+            "@type": "ListItem", "position": position,
+            "item": {
+                "@type": "Product",
+                "name": p["name"],
+                "description": html.unescape(p["desc"]),
+                "image": SITE_URL + "/images/" + p["image"],
+                "brand": BRAND,
+                "offers": offer,
+            },
+        })
+    return {"@context": "https://schema.org", "@type": "ItemList", "name": "Enperfeitas shop: bookbinding tools and tutorials", "itemListElement": elements}
+
 page("shop.html", "Shop | Enperfeitas Studio",
      "Bookbinding tools and digital tutorials from Enperfeitas Studio: punching cradle, spacers, corner jig, and step-by-step guides.",
-     body, active="shop.html")
+     body, active="shop.html", jsonld=_shop_jsonld())
 
 # ---------------------------------------------------------------- ORDER CONFIRMED
 # A generic "thank you" page for Tools purchases -- optional to use.
@@ -2040,7 +2134,7 @@ def download_page(p):
       <a class="btn" id="dl-btn-{slug}" href="{file_path}" download hidden>Download {html.escape(p["name"])}</a>
       <span class="download-pending" id="dl-pending-{slug}">This file is still being added. Check back soon, or email <a href="mailto:info@enperfeitas.com?subject={mail_subject}">info@enperfeitas.com</a> and Suzete will send it straight to you.</span>
     </div>
-    <p style="margin-top:28px;color:var(--muted);font-size:0.9rem;">Questions about your order? <a href="mailto:info@enperfeitas.com">Get in touch</a>.</p>
+    <p style="margin-top:28px;color:var(--muted);font-size:var(--fs-p2);">Questions about your order? <a href="mailto:info@enperfeitas.com">Get in touch</a>.</p>
   </div>
 </section>
 <script>
@@ -2118,7 +2212,7 @@ body = f"""
             style="border:1px solid var(--line);background:transparent;"
             frameborder="0" scrolling="no"
             title="Subscribe to the Enperfeitas Studio newsletter on Substack"></iframe>
-    <p style="margin-top:18px;color:var(--muted);font-size:0.9rem;">Prefer to subscribe directly on Substack? <a href="https://enperfeitas.substack.com" target="_blank" rel="noopener">Open it here</a>.</p>
+    <p style="margin-top:18px;color:var(--muted);font-size:var(--fs-p2);">Prefer to subscribe directly on Substack? <a href="https://enperfeitas.substack.com" target="_blank" rel="noopener">Open it here</a>.</p>
   </div>
 </section>
 """
@@ -2249,7 +2343,7 @@ body = """
 <script src="js/boxmaker-v5.js"></script>
 """ + SUPPORT_SECTION.replace("{intro_task}", "an evening of measuring, cutting and recutting board")
 page("box-maker.html", "Box Maker | Enperfeitas Studio",
-     "Free online Box Maker for bookbinders: work out Solander and hinged box piece dimensions, a cutting layout and a numbered preview. Pay what you like.",
+     "Free online Box Maker for bookbinders: work out Solander and hinged box piece dimensions, a cutting layout and a preview. Pay what you like.",
      body, active="tools.html")
 
 # ---------------------------------------------------------------- BOOKLET IMPOSITION
@@ -2289,8 +2383,13 @@ body = """
         </svg>
       </div>
       <h3>Booklet Imposition</h3>
-      <p style="text-align:left;color:var(--muted);">Upload your book as a PDF and get it laid out as printable spreads, ready to fold, nest and sew. Download the whole book or one signature at a time.</p>
-      <a class="btn" style="margin-top:auto;" href="booklet-imposition.html">Open Booklet Imposition</a>
+      <p style="text-align:left;color:var(--muted);">Upload your book as a PDF and get it laid out as printable spreads, ready to fold, nest and sew. Choose how many sheets per signature, add trim allowance and creep compensation, and download the whole book or one signature at a time.</p>
+      <ul style="color:var(--muted);margin:0 0 22px;padding-left:20px;">
+        <li>Saddle-stitch signatures from any page-sequence PDF</li>
+        <li>Handles multi-signature books</li>
+        <li>Your file never leaves your browser</li>
+      </ul>
+      <a class="btn" style="margin-top:auto;" href="booklet-imposition.html" aria-label="Open the Booklet Imposition tool">Open Booklet Imposition</a>
     </div>
     <div class="accordion-card" style="display:flex;flex-direction:column;">
       <div style="text-align:center;margin-bottom:6px;" aria-hidden="true">
@@ -2303,14 +2402,26 @@ body = """
         </svg>
       </div>
       <h3>Box Maker</h3>
-      <p style="text-align:left;color:var(--muted);">Work out the piece dimensions for Solander and hinged boxes, with a cutting layout and a preview.</p>
-      <a class="btn" style="margin-top:auto;" href="box-maker.html">Open Box Maker</a>
+      <p style="text-align:left;color:var(--muted);">Work out the piece dimensions for Solander and hinged boxes, with a cutting layout and a preview, based on the method from <em>Constructing and Covering Boxes</em>. Measure once, cut once.</p>
+      <ul style="color:var(--muted);margin:0 0 22px;padding-left:20px;">
+        <li>Solander and hinged box dimensions</li>
+        <li>Cutting layout for your board</li>
+        <li>Live preview as you change sizes</li>
+      </ul>
+      <a class="btn" style="margin-top:auto;" href="box-maker.html" aria-label="Open the Box Maker tool">Open Box Maker</a>
     </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap" style="text-align:center;max-width:620px;">
+    <h2>Free to use. Pay if you like.</h2>
+    <p style="text-align:left;color:var(--muted);">Every tool is free and stays free. You'll find a few ways to say thanks at the bottom of each one.</p>
   </div>
 </section>
 """
 page("tools.html", "Free Tools for Bookbinders | Enperfeitas Studio",
-     "Free online tools for bookbinders from Enperfeitas Studio: booklet imposition and a box maker. Pay what you like.",
+     "Free online tools for bookbinders from Enperfeitas Studio: a booklet imposition tool for printing signatures and a box maker for Solander and hinged boxes. Pay what you like.",
      body, active="tools.html")
 # ---------------------------------------------------------------- BIDDING (invitation only)
 # Not in the menu, not indexed. Logic lives in apps-script/Code.gs; this page only displays it.
