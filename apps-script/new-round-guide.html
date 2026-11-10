@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Starting a new round | Enperfeitas bidding guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#000; --muted:#5a5a5a; --line:#e6e6e6; --accent:#954a1e; --soft:#fafafa; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#fff; color:var(--ink); font-family:"Roboto",Arial,Helvetica,sans-serif; font-size:15px; line-height:1.6; }
+  main { max-width: 820px; margin: 0 auto; padding: 40px 22px 90px; }
+  h1,h2,h3 { font-family:"Roboto Slab",Georgia,serif; font-weight:700; letter-spacing:-0.01em; line-height:1.15; }
+  h1 { font-size: clamp(2rem,5vw,2.8rem); margin: 0 0 10px; }
+  h2 { font-size: 1.6rem; margin: 52px 0 14px; padding-top: 22px; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.15rem; margin: 26px 0 8px; }
+  p { margin: 0 0 12px; }
+  .lead { color: var(--muted); font-size: 1.05rem; max-width: 640px; }
+  .kicker { font-size:.8rem; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin: 0 0 6px; }
+  code { background: var(--soft); border:1px solid var(--line); border-radius:4px; padding:1px 6px; font-size:.92em; }
+  .menu { font-weight:500; white-space:nowrap; }
+  .step { display:flex; gap:16px; align-items:flex-start; margin: 34px 0 6px; }
+  .step .n { flex:0 0 38px; height:38px; border:1px solid var(--accent); color:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:"Roboto Slab",Georgia,serif; font-weight:700; }
+  .step h2 { margin:0; padding:0; border:0; font-size:1.35rem; }
+  .box { background:var(--soft); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:8px; padding:12px 16px; margin: 14px 0; }
+  .box p:last-child, .box ul:last-child { margin-bottom: 0; }
+  .box strong.t { display:block; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500; margin-bottom:4px; }
+  .warn { border-left-color:#000; }
+  table { width:100%; border-collapse:collapse; margin: 12px 0 18px; font-size:.95em; }
+  th, td { text-align:left; vertical-align:top; padding:9px 10px; border-bottom:1px solid var(--line); }
+  th { font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+  td:first-child { white-space:nowrap; }
+  .yes { color:var(--accent); font-weight:500; }
+  .check { list-style:none; padding-left:0; }
+  .check li { position:relative; padding-left:30px; }
+  .check li::before { content:""; position:absolute; left:2px; top:4px; width:16px; height:16px; border:1px solid var(--ink); border-radius:4px; }
+  .timeline td:first-child { font-weight:500; }
+  .scroll { overflow-x:auto; }
+  @media print { main { padding:0; } h2 { break-after:avoid; } .box, table, .step { break-inside:avoid; } a { color:inherit; } }
+</style>
+</head>
+<body>
+<main>
+
+<p class="kicker">Enperfeitas bidding guide</p>
+<h1>Starting a new round</h1>
+<p class="lead">Everything you do between one round and the next, in order: what to change in the Sheet, what to publish on the website, and which menu item to use when. Keep this page open next to the Sheet.</p>
+
+<div class="box"><strong class="t">The short version</strong>
+<ol>
+  <li><span class="menu">Invitations &gt; Start new round</span>: pauses last round's people and empties the bids.</li>
+  <li>Change the <strong>Config</strong> tab to the new piece (the table in Step 2).</li>
+  <li>Add the new photos to the website and publish.</li>
+  <li>Approve new sign-ups and <span class="menu">Generate codes</span>.</li>
+  <li><span class="menu">Ask previous participants</span>, then nudge the ones who have not answered.</li>
+  <li>Test in test mode, then set <code>test_mode</code> to <code>FALSE</code> and <code>status</code> to <code>open</code>.</li>
+  <li><span class="menu">Send invitations</span>. During bidding, <span class="menu">Send reminders</span>.</li>
+  <li>After closing: winner email, payment details, dispatch email.</li>
+</ol></div>
+
+<h2 style="margin-top:40px">Before you begin</h2>
+<p>Do not start a new round until the old one is completely finished.</p>
+<ul class="check">
+  <li>The auction is closed, and the winner has been emailed, has paid, and the piece has been dispatched or collected.</li>
+  <li>You do not need anything from the old Bids tab any more. (It is saved for you in a backup tab in Step 1, but the Bids tab itself is emptied.)</li>
+  <li>You have the new piece's name, photos, description, opening bid and the dates.</li>
+</ul>
+<div class="box warn"><strong class="t">Why this order matters</strong><p>The winner emails find the winner from the Bids tab. <strong>Start new round</strong> empties that tab. If you start the new round first, "Send winner email" will say there are no bids.</p></div>
+
+<h2>A suggested timeline</h2>
+<p>This is only a suggestion, based on how your first round ran. Adjust the days to suit you.</p>
+<div class="scroll"><table class="timeline">
+  <tr><th>When</th><th>What</th></tr>
+  <tr><td>About 2 weeks before</td><td>Steps 1 to 4: start the new round, update Config, add the photos, update the sign-up form text with the dates. Leave <code>status</code> as <code>closed</code> for now.</td></tr>
+  <tr><td>10 days before bidding</td><td>Step 6: <span class="menu">Ask previous participants</span>.</td></tr>
+  <tr><td>7 days before</td><td>A gentle nudge to those who have not answered (same menu item, choose NO).</td></tr>
+  <tr><td>4 days before</td><td>Close the sign-up form. Approve new sign-ups. <span class="menu">Generate codes</span>.</td></tr>
+  <tr><td>3 days before</td><td>Step 7: test everything with <code>test_mode</code> <code>TRUE</code>.</td></tr>
+  <tr><td>2 days before</td><td>Step 8: <code>test_mode</code> <code>FALSE</code>, <code>status</code> <code>open</code>, <span class="menu">Send invitations</span>.</td></tr>
+  <tr><td>Bidding day, morning</td><td><span class="menu">Send reminders</span> (YES = only people with no bid yet).</td></tr>
+  <tr><td>After closing</td><td>Step 10: winner email, payment details when they reply, dispatch email.</td></tr>
+</table></div>
+<div class="box"><strong class="t">Email limit</strong><p>A free Gmail account can send about 100 emails a day. The question email, the invitation and each reminder all count. The script checks before it sends and stops safely if the limit is too low, and you can finish the next day. With a big list, spread the steps over different days.</p></div>
+
+<div class="step"><div class="n">1</div><h2>Start the new round</h2></div>
+<p>In the Sheet, choose <span class="menu">Invitations &gt; Start new round</span>.</p>
+<p><strong>It only works once the auction is closed.</strong> Before it changes anything, it shows you a summary:</p>
+<ul>
+  <li><strong>Paused until they answer:</strong> the people who took part last round (approved, and an invitation was sent), plus anyone who answered "not this round" before. Their status becomes <code>returning</code>.</li>
+  <li><strong>Not touched:</strong> new sign-ups waiting for approval, people you approved but have not invited yet, blocked people, and people who removed themselves.</li>
+</ul>
+<p>Press <strong>YES</strong> to go on, or <strong>NO</strong> to stop with nothing changed.</p>
+<div class="box"><strong class="t">What it does when you press YES</strong>
+<ul>
+  <li>Copies the Invitees tab to <em>Invitees backup (date)</em>, and the finished round's bids to <em>Bids (date) (piece title)</em>.</li>
+  <li>Empties the Bids tab.</li>
+  <li>For the paused people only: sets status to <code>returning</code> and empties the columns that belong to one round (sent, reminded, asked, answered, delivery note, payment requested, paid, dispatched).</li>
+  <li>Clears <code>winner_emailed</code> in Config and writes <code>round_started</code>.</li>
+</ul></div>
+<p><strong>It does not change</strong> the piece, the closing time, the status, the photos or any other Config value. You do that next.</p>
+<div class="box warn"><strong class="t">If you press it twice</strong><p>The second time you will see a warning, because anyone invited since the first time would be paused too. Only continue if you are sure.</p></div>
+
+<div class="step"><div class="n">2</div><h2>Update the Config tab</h2></div>
+<p>Open the <strong>Config</strong> tab. Column A is the name of each setting (do not rename it). Change the values in column B.</p>
+<div class="scroll"><table>
+  <tr><th>Setting</th><th>Change it?</th><th>What to write</th></tr>
+  <tr><td>piece_title</td><td class="yes">Every round</td><td>The name of the new piece. It appears on the page, in every email subject and in the emails.</td></tr>
+  <tr><td>opening_bid</td><td class="yes">Usually</td><td>Whole SEK, moms included. The first bid must be at least this.</td></tr>
+  <tr><td>min_step</td><td>Rarely</td><td>How much higher each bid must be than the last. 100 is the default.</td></tr>
+  <tr><td>start_time</td><td>Optional</td><td>When bidding opens, for example <code>2026-12-05T18:00:00+01:00</code>. Before this time the page shows the piece and a countdown, with no bid form. Leave empty to open at once. It must be earlier than <code>closing_time</code>.</td></tr>
+  <tr><td>closing_time</td><td class="yes">Every round</td><td>When bidding ends, written like <code>2026-12-06T20:00:00+01:00</code>. The last part is the Swedish time offset: <code>+01:00</code> from the last Sunday of October to the last Sunday of March, and <code>+02:00</code> in summer. A bid in the last minutes moves it automatically, so do not edit it while bidding runs.</td></tr>
+  <tr><td>extension_minutes</td><td>Rarely</td><td>5 by default. The page tells bidders about it in the rules.</td></tr>
+  <tr><td>status</td><td class="yes">Every round</td><td>After Start new round it is still <code>closed</code>. Write <code>open</code> when you are ready for people to see the new piece (Step 8). If <code>start_time</code> is in the future, the page shows a countdown until then.</td></tr>
+  <tr><td>test_mode</td><td class="yes">Every round</td><td><code>TRUE</code> while you test: every email goes only to you. <code>FALSE</code> for the real send. Check it before every real send.</td></tr>
+  <tr><td>page_base_url</td><td>Never</td><td>The address of the bidding page. Leave as it is.</td></tr>
+  <tr><td>photo_prefix</td><td class="yes">Every round</td><td>The start of the new photo file names, for example <code>blue-book</code> for <code>blue-book-1.webp</code>. Lowercase letters, numbers and hyphens only.</td></tr>
+  <tr><td>photo_count</td><td class="yes">Every round</td><td>How many photos (the most shown is 12).</td></tr>
+  <tr><td>photo_alt</td><td class="yes">Every round</td><td>One plain sentence describing the photos. It is read aloud for people who use a screen reader.</td></tr>
+  <tr><td>description</td><td class="yes">Every round</td><td>Two or three plain sentences about the piece. For a new paragraph press Alt+Enter (Windows) or Option+Enter (Mac) inside the cell.</td></tr>
+  <tr><td>details</td><td class="yes">Every round</td><td>One fact per line, as <code>Label: value</code>, for example <code>Size: 20 x 13 cm</code>. Lines without a value are left out.</td></tr>
+  <tr><td>reply_by</td><td>Optional</td><td>A time such as <code>Wednesday 4 December at 12:00</code>. The invitation then adds "If you have not received this by then, reply to this email." Leave empty to leave the line out.</td></tr>
+  <tr><td>payment_link</td><td>Only if new</td><td>Your Stripe link for shipped pieces. Must start with <code>https://</code>.</td></tr>
+  <tr><td>payment_link_no_shipping</td><td>Only if new</td><td>Your Stripe link for pieces collected at the studio.</td></tr>
+</table></div>
+<div class="box warn"><strong class="t">Do not edit these</strong><p><code>winner_emailed</code> and <code>round_started</code> are filled in and cleared by the script. Leave them alone.</p></div>
+<p><strong>Tip:</strong> if a time cell turns into a date by itself, select it, choose Format &gt; Number &gt; Plain text, and type it again.</p>
+
+<div class="step"><div class="n">3</div><h2>Add the photos to the website</h2></div>
+<ol>
+  <li>Save each photo as <code>.webp</code>, about 1200 pixels on the long side and under 300 KB. Portrait photos (4 to 5) look best.</li>
+  <li>Name them with the piece name first, then a number: <code>blue-book-1.webp</code>, <code>blue-book-2.webp</code>. Number 1 is the main photo.</li>
+  <li>Put them in the website folder <code>images/bidding</code>.</li>
+  <li>Commit and publish them in GitHub Desktop like any other change.</li>
+</ol>
+<p>The new <code>photo_prefix</code> in Config must match the file names exactly. If a photo cannot be found, the page simply hides the photo area.</p>
+
+<div class="step"><div class="n">4</div><h2>Update the sign-up form</h2></div>
+<ul>
+  <li>In the Google Form, update the description with the new dates (when the list closes, when invitations go out, when bidding takes place). If you do not know them yet, keep the wording that says the next round's date is not set.</li>
+  <li>Make sure the Form is accepting responses until the day you want the list to close. Then turn off "Accepting responses" in the Form's Responses tab.</li>
+</ul>
+
+<div class="step"><div class="n">5</div><h2>Approve new sign-ups and make codes</h2></div>
+<p>People who signed up for the new round appear in the <strong>Invitees</strong> tab with an empty or <code>pending</code> status. They were not touched by Step 1.</p>
+<ol>
+  <li>In the <strong>status</strong> column, write <code>approved</code> for everyone you want to invite. Leave the others as they are.</li>
+  <li>Choose <span class="menu">Invitations &gt; Generate codes</span>. Each approved person without a code gets one. It skips rows with no first name or email and tells you.</li>
+</ol>
+<p>Do not write <code>approved</code> next to people who took part last round. They are <code>returning</code> and become <code>approved</code> by themselves when they answer yes (Step 6).</p>
+
+<div class="step"><div class="n">6</div><h2>Ask last round's people</h2></div>
+<p>Choose <span class="menu">Invitations &gt; Ask previous participants</span>. It shows how many people are waiting for an answer, how many have not been asked yet, and how many were asked but have not answered.</p>
+<ul>
+  <li><strong>YES</strong> asks those who have not been asked yet.</li>
+  <li><strong>NO</strong> sends a gentle nudge to those who were asked and have not answered. Use it a few days later.</li>
+  <li><strong>CANCEL</strong> sends nothing.</li>
+</ul>
+<p>The email has a personal link to the answer page. The person chooses one of three answers, and the Sheet changes straight away:</p>
+<div class="scroll"><table>
+  <tr><th>Their choice</th><th>Status becomes</th><th>What it means</th></tr>
+  <tr><td>Yes, include me</td><td><code>approved</code></td><td>They get this round's invitation when you use Send invitations.</td></tr>
+  <tr><td>Not this round</td><td><code>declined</code></td><td>No invitation or reminder this round. They are asked again next round.</td></tr>
+  <tr><td>Remove me from the list</td><td><code>unsubscribed</code></td><td>Never asked or emailed again.</td></tr>
+  <tr><td>(no answer)</td><td><code>returning</code></td><td>Nothing is sent to them about this round. No invitation, no reminder.</td></tr>
+</table></div>
+<p>The time the question was sent is in the <strong>asked</strong> column and the time they answered is in <strong>answered</strong>. You can change a status by hand at any time.</p>
+<div class="box"><strong class="t">The answer page must be online</strong><p>The link points to <code>join-round.html</code> on your website, so publish the website folder (GitHub Desktop) before you send this email.</p></div>
+
+<div class="step"><div class="n">7</div><h2>Test everything</h2></div>
+<p>Set <code>test_mode</code> to <code>TRUE</code>. In test mode every email goes only to you, marked [TEST], and nothing is written in the Sheet's "sent", "asked" or "reminded" columns.</p>
+<ul class="check">
+  <li>Run <span class="menu">Send invitations</span>. Check the email that reaches you: the piece name, dates, opening bid and the button.</li>
+  <li>Open the bidding page from that button. Check the photos, description, details and countdown.</li>
+  <li>Run <span class="menu">Ask previous participants</span> and look at the question email.</li>
+  <li>Place a test bid with <strong>your own</strong> code, then choose <span class="menu">Reset test bids</span> (it only works in test mode).</li>
+  <li>After testing, check the <code>closing_time</code> and <code>status</code> in Config again, because a test can move the closing time or close the auction.</li>
+</ul>
+<div class="box warn"><strong class="t">Careful with other people's links</strong><p>Test mode protects the <em>emails</em>. It does not protect the <em>pages</em>. If you place a bid, or press an answer button, using another person's personal link, it is saved for that person, even in test mode. To test the pages safely, add a row for yourself in the Invitees tab (your own email, <code>approved</code>, Generate codes, and a date in the <code>sent</code> cell <em>before</em> Step 1, so it becomes <code>returning</code> like the others). Use your own link, and delete the row when you are done.</p></div>
+
+<div class="step"><div class="n">8</div><h2>Go live and invite</h2></div>
+<ol>
+  <li>In Config set <code>test_mode</code> to <code>FALSE</code>.</li>
+  <li>Set <code>status</code> to <code>open</code>. With a future <code>start_time</code> the page shows the piece with a countdown, and bidding opens by itself at that time.</li>
+  <li>Check <code>closing_time</code> once more, including the <code>+01:00</code> or <code>+02:00</code>.</li>
+  <li>Choose <span class="menu">Invitations &gt; Send invitations</span>. It emails every <code>approved</code> person who has a code and no <code>sent</code> time: your new sign-ups, and the returning people who said yes. You see how many before you confirm.</li>
+</ol>
+<p>The invitation says what happens after winning: the winner is emailed after bidding closes and replies with shipping or collection, the payment details follow, and payment is due within 48 hours of receiving them.</p>
+
+<div class="step"><div class="n">9</div><h2>While bidding is open</h2></div>
+<ul>
+  <li><span class="menu">Send reminders</span>: YES sends the reminder only to people with no bid yet, NO sends it to everyone invited. A <strong>reminded</strong> column records who got one.</li>
+  <li><strong>Stop one person from bidding:</strong> change their status to <code>revoked</code>.</li>
+  <li><strong>Cancel a single bid:</strong> in the Bids tab, write <code>TRUE</code> in the <code>void</code> column of that row.</li>
+  <li><strong>Close early:</strong> <span class="menu">Close auction</span>. Otherwise it closes by itself at <code>closing_time</code>.</li>
+</ul>
+
+<div class="step"><div class="n">10</div><h2>After bidding closes</h2></div>
+<ol>
+  <li><span class="menu">Send winner email</span>: shows you the winner and the winning bid, and after you confirm it congratulates them and asks whether they want the piece shipped or collected. It has no payment link.</li>
+  <li>When they reply, <span class="menu">Send payment details</span>. Choose YES for shipped (then type the shipping cost) or NO for collection. The email has your payment link, or the no-shipping link for collection.</li>
+  <li>When the payment arrives, type the date in the <code>paid</code> column of the winner's row in the Invitees tab.</li>
+  <li><span class="menu">Send dispatch email</span> when the piece is posted. You can add the tracking number. It warns you if the <code>paid</code> cell is empty.</li>
+</ol>
+<div class="box"><strong class="t">If the winner does not pay in time</strong><p>In the Bids tab write <code>TRUE</code> in the <code>void</code> column of <strong>every</strong> row from that person (their earlier, lower bids would otherwise become the top bid). Delete the <code>winner_emailed</code> row in Config. Then <span class="menu">Send winner email</span> goes to the next highest bidder.</p></div>
+<p>When all of this is finished, you are ready to start the next round at Step 1.</p>
+
+<h2>Quick reference</h2>
+<h3>The status words</h3>
+<div class="scroll"><table>
+  <tr><th>Status</th><th>Meaning</th></tr>
+  <tr><td><code>pending</code> (or empty)</td><td>New sign-up waiting for you to approve.</td></tr>
+  <tr><td><code>approved</code></td><td>Invited to bid in the current round.</td></tr>
+  <tr><td><code>returning</code></td><td>Took part before. Paused until they answer. No invitation, no reminder.</td></tr>
+  <tr><td><code>declined</code></td><td>Answered "not this round". Asked again next round.</td></tr>
+  <tr><td><code>unsubscribed</code></td><td>Answered "remove me". Never asked again.</td></tr>
+  <tr><td><code>revoked</code></td><td>Blocked by you.</td></tr>
+</table></div>
+<h3>The Invitations menu, in the order you use it</h3>
+<div class="scroll"><table>
+  <tr><th>Menu item</th><th>Use it</th></tr>
+  <tr><td>Generate codes</td><td>After approving new sign-ups.</td></tr>
+  <tr><td>Send invitations</td><td>Invites approved people who have not been invited yet.</td></tr>
+  <tr><td>Send reminders</td><td>While bidding is open.</td></tr>
+  <tr><td>Close auction</td><td>To stop bidding now.</td></tr>
+  <tr><td>Send winner email</td><td>After bidding closes.</td></tr>
+  <tr><td>Send payment details</td><td>When the winner replies with shipping or collection.</td></tr>
+  <tr><td>Send dispatch email</td><td>When the piece is posted.</td></tr>
+  <tr><td>Start new round</td><td>When the old round is completely finished.</td></tr>
+  <tr><td>Ask previous participants</td><td>After Start new round, and again as a nudge.</td></tr>
+  <tr><td>Reset test bids</td><td>Only while testing.</td></tr>
+</table></div>
+
+<h2>Common mistakes</h2>
+<ul>
+  <li><strong>Forgetting <code>status</code>.</strong> After Start new round it is still <code>closed</code>, so the page shows the piece as closed. Set it to <code>open</code> in Step 8.</li>
+  <li><strong>Forgetting <code>test_mode</code>.</strong> With <code>TRUE</code>, "Send invitations" only sends to you. With <code>FALSE</code>, it sends to everyone. Check it before every real send.</li>
+  <li><strong>A wrong time offset.</strong> <code>+01:00</code> in winter, <code>+02:00</code> in summer. A wrong one moves the closing time by an hour.</li>
+  <li><strong>A closing time in the past.</strong> The page treats the round as closed, whatever <code>status</code> says.</li>
+  <li><strong>Starting the new round too early.</strong> Do it only after the winner has been emailed and has paid (see "Before you begin").</li>
+  <li><strong>Photo names that do not match.</strong> The file names and <code>photo_prefix</code> must be identical, lowercase, with hyphens.</li>
+  <li><strong>Not publishing the website.</strong> The photos and the answer page only appear once you commit and publish the website folder.</li>
+  <li><strong>Not publishing the script.</strong> After changing <code>Code.gs</code>, use Deploy &gt; Manage deployments &gt; New version. Saving alone does not update it.</li>
+</ul>
+
+<p style="margin-top:46px;color:var(--muted);font-size:.92em">If something looks wrong, the message in the Sheet says what happened and nothing more is done after that point. Every menu item asks you to confirm before it sends or changes anything.</p>
+
+</main>
+</body>
+</html>

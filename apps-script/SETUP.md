@@ -241,7 +241,7 @@ To change a sentence, edit the `PAYMENT_`, `COLLECT_` and `DISPATCH_` lines in C
 
 ## Starting the next round
 
-Every round starts the same way. People from the last round are asked first, and nobody is invited again unless they say yes.
+Every round starts the same way. People from the last round are asked first, and nobody is invited again unless they say yes. For a full step-by-step walkthrough, with every Config field and a suggested timeline, open `new-round-guide.html` in this folder.
 
 **Status values** (the `status` column on the Invitees tab): `approved` = invited to this round, `returning` = took part before and is paused until they answer, `declined` = answered "not this round" (asked again next round), `unsubscribed` = answered "remove me" (never asked again), `pending` = new sign-up waiting for you, `revoked` = blocked by you.
 

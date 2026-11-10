@@ -1,0 +1,221 @@
+/* ==========================================================================
+   Home page v2 (preview). Borrows the structure of an ecommerce home page:
+   a thin facts bar, price tiles, one brand sentence, product cards with the
+   same pattern every time, section titles with a button on the right.
+   It keeps the site's own look: white, flat, thin lines, Roboto Slab and
+   Roboto, the terracotta accent, left-aligned text.
+   ========================================================================== */
+
+/* Thin bar above the header: true facts only */
+.topbar { background: #000; color: #fff; font-size: 0.8rem; line-height: 1.3; }
+.topbar ul { list-style: none; margin: 0 auto; padding: 0 16px; max-width: var(--max); display: flex; justify-content: center; flex-wrap: wrap; }
+.topbar li { padding: 9px 18px; text-align: center; }
+.topbar li + li { border-left: 1px solid rgba(255, 255, 255, 0.28); }
+.topbar a { color: #fff; text-decoration: none; }
+.topbar a:hover { color: #fff; text-decoration: underline; }
+@media (max-width: 760px) {
+  .topbar li:nth-child(n+2) { display: none; }
+}
+
+/* Section titles: title on the left, one button on the right */
+.hv-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 24px; flex-wrap: wrap; margin: 0 0 26px; }
+.hv-head h2 { margin: 0; text-align: left; }
+.hv-head p { margin: 6px 0 0; color: var(--muted); text-align: left; max-width: 560px; }
+.hv-head .btn { margin: 0; }
+@media (max-width: 760px) {
+  .hv-head h2 { text-align: left; }
+  .hv-head .btn { display: inline-block !important; width: auto !important; margin: 0 !important; }
+}
+
+.hv-section { padding: 56px 0; }
+@media (max-width: 760px) { .hv-section { padding: 40px 0; } }
+
+/* 1. Price tiles */
+.hv-tiles { display: grid; grid-template-columns: 1fr; gap: 22px; }
+@media (min-width: 760px) { .hv-tiles { grid-template-columns: 1fr 1fr; gap: 26px; } }
+.hv-tile {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+  color: var(--ink);
+}
+.hv-tile:hover { color: var(--ink); }
+.hv-tile-img { aspect-ratio: 16 / 10; overflow: hidden; background: #f2f2f2; }
+.hv-tile-img img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.hv-tile:hover .hv-tile-img img { transform: scale(1.03); }
+.hv-tile-body { padding: 22px 24px 26px; display: flex; flex-direction: column; flex: 1; text-align: left; }
+.hv-label { font-size: 0.74rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+.hv-tile h3 { margin: 0 0 4px; font-size: 1.5rem; line-height: 1.15; text-align: left; }
+.hv-tag { margin: 0 0 10px; color: var(--muted); text-align: left; }
+.hv-from { margin: 0 0 18px; font-weight: 500; text-align: left; }
+.hv-from span { font-weight: 400; color: var(--muted); }
+.hv-tile .btn { margin-top: auto; align-self: flex-start; }
+@media (max-width: 760px) { .hv-tile .btn { display: block; align-self: stretch; text-align: center; } }
+
+/* 3. Product cards: the same pattern every time */
+.hv-products { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+@media (max-width: 1000px) { .hv-products { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) {
+  /* a row you swipe through, like a shop app */
+  .hv-products { display: flex; overflow-x: auto; gap: 14px; scroll-snap-type: x mandatory; margin: 0 -32px; padding: 0 32px 6px; scrollbar-width: none; }
+  .hv-products::-webkit-scrollbar { display: none; }
+  .hv-card { flex: 0 0 78%; scroll-snap-align: start; }
+}
+.hv-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; text-align: left; }
+.hv-card-img { aspect-ratio: 1 / 1; background: #f2f2f2; overflow: hidden; }
+.hv-card-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hv-card-body { padding: 16px 16px 18px; display: flex; flex-direction: column; flex: 1; }
+.hv-card h3 { margin: 0 0 2px; font-size: 1.1rem; line-height: 1.25; text-align: left; }
+.hv-card .hv-tag { margin: 0 0 12px; font-size: 0.95em; }
+.hv-specs { list-style: none; margin: 0 0 16px; padding: 0; }
+.hv-specs li { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 0.92em; line-height: 1.35; }
+.hv-specs svg { flex: 0 0 18px; width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.hv-card .btn { display: block; width: 100%; text-align: center; margin: auto 0 0; padding: 12px 18px; }
+.hv-card .btn span { color: var(--muted); }
+.hv-card .btn:hover span { color: inherit; }
+
+/* 4. Newsletter and tools cards */
+.hv-news { display: grid; grid-template-columns: 1fr; gap: 22px; }
+@media (min-width: 860px) { .hv-news { grid-template-columns: 1.4fr 1fr; } }
+.hv-news-card { border-radius: 10px; padding: 32px 30px 34px; text-align: left; display: flex; flex-direction: column; align-items: flex-start; }
+.hv-news-card h3 { margin: 0 0 8px; font-size: 1.6rem; line-height: 1.15; text-align: left; }
+.hv-news-card p { margin: 0 0 22px; text-align: left; }
+.hv-news-card.tint { background: rgba(149, 74, 30, 0.07); }
+.hv-news-card.line { background: #fff; border: 1px solid var(--line); }
+@media (max-width: 760px) { .hv-news-card .btn { display: block; align-self: stretch; text-align: center; } }
+
+/* 5. Footer in four groups */
+.hv-footer { border-top: 1px solid var(--line); padding: 48px 0 26px; margin-top: 30px; }
+.hv-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
+@media (min-width: 860px) { .hv-footer-grid { grid-template-columns: 1.4fr repeat(4, 1fr); } }
+.hv-footer h4 { margin: 0 0 10px; font-family: "Roboto", Arial, sans-serif; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: left; }
+.hv-footer ul { list-style: none; margin: 0; padding: 0; }
+.hv-footer li { margin: 0 0 7px; text-align: left; }
+.hv-footer a { text-decoration: none; }
+.hv-footer a:hover { color: var(--accent); text-decoration: underline; }
+.hv-footer .hv-brand { grid-column: 1 / -1; }
+@media (min-width: 860px) { .hv-footer .hv-brand { grid-column: auto; } }
+.hv-footer .hv-brand p { margin: 0 0 10px; color: var(--muted); text-align: left; }
+.hv-footer .hv-brand strong { font-family: "Roboto Slab", Georgia, serif; font-size: 1.3rem; color: var(--ink); }
+.hv-footer-bottom { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: 0.92em; }
+.hv-footer-bottom a { color: var(--muted); }
+
+/* Wider image sections: the site's text pages stay at 1140px, but image-led
+   sections use the room a laptop or desktop screen gives them (up to 1440px). */
+@media (min-width: 1000px) {
+  .wrap.wide { max-width: 1440px; padding-left: 24px; padding-right: 24px; }
+}
+/* Four tiles in a row once there is room, so the photos do not become huge */
+@media (min-width: 1100px) {
+  .hv-tiles { grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .hv-tile-img { aspect-ratio: 4 / 3; }
+  .hv-tile-body { padding: 20px 20px 24px; }
+  .hv-tile h3 { font-size: 1.35rem; }
+}
+/* Reviews: one row you scroll sideways, so every review is in the same place */
+.hv-arrows { display: flex; gap: 10px; }
+.hv-arrow { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--ink); background: #fff; color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: border-color 0.15s ease, color 0.15s ease; }
+.hv-arrow svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.hv-arrow:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.hv-arrow:disabled { opacity: 0.35; cursor: default; }
+.hv-arrow:focus-visible, .hv-reviews:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 760px) { .hv-arrows { display: none; } }
+.hv-reviews { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 0; padding: 4px 2px 14px; margin: 0; scrollbar-width: thin; scrollbar-color: #cfcfcf transparent; }
+@media (prefers-reduced-motion: no-preference) { .hv-reviews { scroll-behavior: smooth; } }
+.hv-reviews .testimonial {
+  flex: 0 0 340px; scroll-snap-align: start;
+  background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 22px 22px 20px;
+  font-size: 1em; display: flex; flex-direction: column; text-align: left;
+}
+.hv-reviews .testimonial-photo { width: 96px; height: 96px; margin: 0 0 14px; }
+.hv-reviews .testimonial:hover .testimonial-photo { transform: none; }
+.hv-reviews .testimonial .who { margin-bottom: 8px; }
+.hv-reviews .testimonial p { flex: 1; }
+.hv-reviews .testimonial cite { margin-top: 6px; font-size: 0.9em; }
+@media (max-width: 760px) {
+  .hv-reviews { margin: 0 -32px; padding-left: 32px; padding-right: 32px; scroll-padding-left: 32px; }
+  .hv-reviews .testimonial { flex-basis: 82%; }
+}
+/* ==========================================================================
+   Hero and statement (v2)
+   A full-screen photo with the header floating over it and one very large
+   headline at the bottom, then a calm white section with a single statement.
+   ========================================================================== */
+:root { --hv-bar: 34px; }
+
+/* The header floats transparent over the photo, and turns solid white once you scroll */
+body.hv-home header.site {
+  position: fixed; left: 0; right: 0; top: var(--hv-bar);
+  background: transparent;
+  transition: background-color 0.25s ease, top 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+body.hv-home .header-utility a { color: #fff; }
+body.hv-home .logo-img { filter: brightness(0) invert(1); transition: filter 0.25s ease; }
+body.hv-home .logo-text { color: #fff; }
+body.hv-home:not(.hv-scrolled) header.site:not(.nav-open) nav.primary a { text-shadow: 0 1px 12px rgba(0,0,0,0.35); }
+body.hv-home nav.primary a { color: #fff; }
+body.hv-home nav.primary a:hover { color: var(--accent-light); }
+body.hv-home nav.primary a.active { border-bottom-color: #fff; }
+body.hv-home .nav-toggle-bar { background: #fff; }
+/* solid state: scrolled, or the phone menu is open */
+body.hv-home.hv-scrolled header.site,
+body.hv-home header.site.nav-open { background: #fff; top: 0; box-shadow: 0 1px 0 var(--line); }
+body.hv-home.hv-scrolled .header-utility a,
+body.hv-home header.site.nav-open .header-utility a { color: var(--muted); }
+body.hv-home.hv-scrolled .logo-img,
+body.hv-home header.site.nav-open .logo-img { filter: none; }
+body.hv-home.hv-scrolled .logo-text,
+body.hv-home header.site.nav-open .logo-text { color: var(--ink); }
+body.hv-home.hv-scrolled nav.primary a,
+body.hv-home header.site.nav-open nav.primary a { color: var(--ink); }
+body.hv-home.hv-scrolled nav.primary a:hover,
+body.hv-home header.site.nav-open nav.primary a:hover { color: var(--accent); }
+body.hv-home.hv-scrolled nav.primary a.active,
+body.hv-home header.site.nav-open nav.primary a.active { border-bottom-color: var(--accent); }
+body.hv-home.hv-scrolled .nav-toggle-bar,
+body.hv-home header.site.nav-open .nav-toggle-bar { background: var(--ink); }
+
+/* The hero: edge to edge, as tall as the screen */
+.hv-hero {
+  position: relative; width: 100%;
+  height: calc(100vh - var(--hv-bar)); height: calc(100svh - var(--hv-bar));
+  min-height: 560px; max-height: 1100px;
+  overflow: hidden; background: #111; color: #fff;
+}
+.hv-hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; display: block; }
+/* soft shading at the top (behind the white logo and menu) and at the bottom (behind the headline), so white text reads on any photo, light or dark */
+.hv-hero-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.18) 22%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.12) 52%, rgba(0,0,0,0.72) 100%); }
+.hv-hero-text { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 24px 3vw; text-align: center; }
+/* One large headline, centred. Its size follows the screen width (70% of the size that would fill the width),
+   so it can never run off the edge (the longest line is 8.94 em wide). */
+.hv-hero h1 {
+  margin: 0; color: #fff; text-align: center; text-transform: uppercase;
+  font-size: min(calc((100vw - 64px) / 12.93), 10.5rem);
+  line-height: 0.96; letter-spacing: -0.01em;
+  text-shadow: 0 2px 28px rgba(0,0,0,0.28);
+}
+.hv-hero h1 span { display: block; }
+.hv-hero h1 .mb { display: none; }
+@media (max-width: 760px) {
+  .hv-hero { min-height: 520px; }
+  .hv-hero-text { padding: 0 20px 28px; }
+  /* on a phone it stays on two lines, centred */
+  .hv-hero h1 { font-size: calc((100vw - 48px) / 10.14); text-align: center; }
+  .hv-hero h1 .mb { display: none; }
+}
+
+/* The statement: right after the hero, one calm column of text */
+.hv-intro { padding: clamp(72px, 11vw, 150px) 0 clamp(64px, 9vw, 120px); }
+.hv-intro-inner { max-width: 760px; margin: 0 auto; }
+.hv-intro .hv-label { margin: 0 0 18px; }
+.hv-statement {
+  font-family: "Roboto Slab", Georgia, serif; font-weight: 400;
+  font-size: clamp(1.55rem, 2.8vw, 2.4rem); line-height: 1.36; letter-spacing: -0.005em;
+  margin: 0; text-align: left;
+}
+.hv-statement a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 5px; }
+.hv-statement a:hover { color: var(--ink); }

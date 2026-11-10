@@ -188,7 +188,10 @@ def hero_cover(filename, heading, subtext, label, page="", source="", cta_label=
 """
 
 
-def page(filename, title, description, body, active=None, robots=None, extra_css=None, extra_head=""):
+def page(filename, title, description, body, active=None, robots=None, extra_css=None, extra_head="",
+         body_class="", pre_header="", footer_html=None, extra_js=""):
+    # body_class, pre_header, footer_html and extra_js are only used by the home page:
+    # a class on <body>, a bar above the header, its own footer, and one extra script.
     nav_items = ""
     for href, label in NAV:
         if href in HIDDEN_FROM_NAV:
@@ -199,6 +202,17 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
     legal = " &middot; ".join(f'<a href="{href}">{label}</a>' for href, label in LEGAL_LINKS)
     robots_tag = f'<meta name="robots" content="{robots}">\n' if robots else ""
     extra_css_tag = f'<link rel="stylesheet" href="css/{extra_css}">\n' if extra_css else ""
+    body_attr = f' class="{body_class}"' if body_class else ""
+    extra_js_tag = f'<script src="js/{extra_js}" defer></script>\n' if extra_js else ""
+    footer_block = footer_html if footer_html else f"""<footer class="site">
+  <div class="wrap footer-minimal">
+    <p class="footer-tagline">Enperfeitas Studio, Stockholm.<br>Making things that last.</p>
+    <div class="footer-bottom" style="border-top:none;">
+      <div>&copy; 2026 Enperfeitas Studio</div>
+      <div>{legal}</div>
+    </div>
+  </div>
+</footer>"""
 
     html = f"""<!doctype html>
 <html lang="en">
@@ -212,8 +226,8 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 {extra_css_tag}{extra_head}</head>
-<body>
-<header class="site">
+<body{body_attr}>
+{pre_header}<header class="site">
   <div class="wrap nav-row">
     <div class="header-utility">
       <a href="mailto:info@enperfeitas.com" aria-label="Email">
@@ -245,17 +259,9 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
 
 {body}
 
-<footer class="site">
-  <div class="wrap footer-minimal">
-    <p class="footer-tagline">Enperfeitas Studio, Stockholm.<br>Making things that last.</p>
-    <div class="footer-bottom" style="border-top:none;">
-      <div>&copy; 2026 Enperfeitas Studio</div>
-      <div>{legal}</div>
-    </div>
-  </div>
-</footer>
+{footer_block}
 <script src="js/nav.js"></script>
-</body>
+{extra_js_tag}</body>
 </html>
 """
     with open(os.path.join(DIST, filename), "w", encoding="utf-8") as f:
@@ -263,78 +269,204 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
 
 
 # ---------------------------------------------------------------- HOME
-# Hand-written markup (hero actions, floating path cards, facts strip, recent work,
-# featured reviews, closing band). Styles live in css/style.css under 'Home page'.
-body = r"""
-<section class="hero-cover hero-home">
-  <img class="hero-cover-img" src="images/hero-hands-tools.webp" alt="Hands binding a book, surrounded by bookbinding tools"
-       onerror="this.style.display='none';this.closest('.hero-cover').classList.add('img-missing');">
-  <div class="hero-cover-scrim"></div>
-  <div class="wrap hero-cover-content">
-    <h1>Some things<br>deserve to last</h1>
-    <p class="sub">Handbound books, albums, and boxes made in Stockholm, for the moments, stories, and work that matter too much for anything ordinary.</p>
+# A full-screen photo hero with the header floating over it, one statement, four
+# price tiles, a row of tools, recent work, a row of reviews you scroll sideways,
+# and a newsletter card. The styles live in css/home.css and the behaviour (the
+# header turning white when you scroll, the review arrows) in js/home.js.
+# The thin bar above the header and the four-group footer are used on this page only.
+HOME_TOPBAR = '''<div class="topbar"><ul><li>Handbound in Stockholm</li><li><a href="workshops.html">Workshops open for booking</a></li><li><a href="studio-membership.html">Studio membership from 450 SEK</a></li></ul></div>
+'''
+HOME_FOOTER = '''<footer class="hv-footer">
+  <div class="wrap">
+    <div class="hv-footer-grid">
+      <div class="hv-brand">
+        <p><strong>Enperfeitas</strong></p>
+        <p>Enperfeitas Studio, Stockholm.<br>Making things that last.</p>
+      </div>
+      <div><h4>Learn</h4><ul>
+        <li><a href="workshops.html">Workshops</a></li>
+        <li><a href="studio-membership.html">Studio membership</a></li>
+        <li><a href="studio.html">The Studio</a></li>
+        <li><a href="tools.html">Free tools</a></li>
+      </ul></div>
+      <div><h4>Make</h4><ul>
+        <li><a href="bespoke-binding.html">Bespoke Binding</a></li>
+        <li><a href="bespoke-boxes.html">Bespoke Boxes</a></li>
+        <li><a href="collectibles.html">Collectibles</a></li>
+        <li><a href="latest-work.html">Latest work</a></li>
+      </ul></div>
+      <div><h4>Shop</h4><ul>
+        <li><a href="shop.html">Tools and tutorials</a></li>
+        <li><a href="shipping-info.html">Shipping info</a></li>
+        <li><a href="refund-policy.html">Refunds and returns</a></li>
+      </ul></div>
+      <div><h4>Studio</h4><ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="newsletter.html">Newsletter</a></li>
+        <li><a href="https://www.instagram.com/enperfeitas" target="_blank" rel="noopener">Instagram</a></li>
+      </ul></div>
+    </div>
+    <div class="hv-footer-bottom">
+      <div>&copy; 2026 Enperfeitas Studio</div>
+      <div><a href="privacy-policy.html">Privacy Policy</a> &middot; <a href="terms-of-service.html">Terms of Service</a> &middot; <a href="links.html">All Links</a></div>
+    </div>
+  </div>
+</footer>'''
+body = r'''<section class="hv-hero" id="top">
+  <img class="hv-hero-img" src="images/hero-home.webp" srcset="images/hero-home-1200.webp 1200w, images/hero-home.webp 2400w" sizes="100vw" width="2400" height="1600" alt="Hands holding a handbound book with a green cloth spine, surrounded by notebooks in cork, marbled paper and green cloth" fetchpriority="high">
+  <div class="hv-hero-scrim"></div>
+  <div class="hv-hero-text">
+    <h1><span>Some things</span> <span>deserve <i class="mb"></i>to last</span></h1>
   </div>
 </section>
 
-<section id="paths" class="path-float">
+<section class="hv-intro" id="intro">
   <div class="wrap">
-    <h2 class="sr-only">Two ways in: learn with us, or have something made</h2>
-    <div class="path-grid">
-      <article class="path-card">
-        <div class="path-photo">
-          <div class="img-wrap"><img src="images/home-studio-interior.webp" alt="Inside Enperfeitas Studio" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Inside Enperfeitas Studio</span></div>
-        </div>
-        <div class="path-body">
-          <span class="path-label">Learn</span>
-          <h3>I want to learn</h3>
-          <p class="path-tag"><em>Your creative sanctuary in Stockholm.</em></p>
-          <p>Workshops, studio membership, tools, and space. A place in Stockholm where making things by hand is taken seriously.</p>
-          <a class="btn path-btn" href="studio.html">Explore the Studio</a>
+    <div class="hv-intro-inner">
+      <p class="hv-label">Enperfeitas Studio, Stockholm</p>
+      <p class="hv-statement">I make books, albums and boxes by hand in Stockholm, and I teach you to make your own. Come to a <a href="workshops.html">workshop</a>, join the <a href="studio.html">studio</a>, or <a href="collectibles.html">have something made</a> that will still matter in thirty years.</p>
+    </div>
+  </div>
+</section>
+<section class="hv-section" id="start">
+  <div class="wrap wide">
+    <div class="hv-head">
+      <div>
+        <h2>Where would you like to start?</h2>
+        <p>Learn the craft, join the studio, equip your own bench, or have something made for you.</p>
+      </div>
+    </div>
+    <div class="hv-tiles">
+      <article class="hv-tile">
+        <div class="hv-tile-img"><img src="images/workshop-single-section.webp" alt="Hands folding paper for a concertina and single-section book" loading="lazy"></div>
+        <div class="hv-tile-body">
+          <p class="hv-label">Learn</p>
+          <h3>Workshops</h3>
+          <p class="hv-tag">Bookbinding and marbling, hands on, in the studio in V&auml;llingby.</p>
+          <p class="hv-from"><span>Reserve your seat online</span></p>
+          <a class="btn" href="workshops.html">See the workshops</a>
         </div>
       </article>
-      <article class="path-card">
-        <div class="path-photo">
-          <div class="img-wrap"><img src="images/home-books-portfolio.webp" alt="A row of orange and patterned notebooks on a shelf" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">A row of orange and patterned notebooks on a shelf</span></div>
+      <article class="hv-tile">
+        <div class="hv-tile-img"><img src="images/workshops-hero.webp" alt="The studio: work tables, a plan chest and the Enperfeitas sign" loading="lazy" style="object-position:50% 70%;"></div>
+        <div class="hv-tile-body">
+          <p class="hv-label">Make</p>
+          <h3>Studio membership</h3>
+          <p class="hv-tag">Your creative sanctuary in Stockholm.</p>
+          <p class="hv-from">From 450 SEK</p>
+          <a class="btn" href="studio-membership.html">See membership options</a>
         </div>
-        <div class="path-body">
-          <span class="path-label">Commission</span>
-          <h3>I need something made</h3>
-          <p class="path-tag"><em>Crafted to last generations.</em></p>
-          <p>A wedding guest book. A family history finally bound. A portfolio that does justice to the work inside it. Something that will still exist, and still matter, in thirty years.</p>
-          <a class="btn path-btn" href="collectibles.html" aria-label="See what I can make for you">See what I can make</a>
+      </article>
+      <article class="hv-tile">
+        <div class="hv-tile-img"><img src="images/shop-spacers.webp" alt="Hands holding acrylic bookbinding spacers over a cutting mat" loading="lazy" style="object-position:50% 40%;"></div>
+        <div class="hv-tile-body">
+          <p class="hv-label">Shop</p>
+          <h3>Tools and tutorials</h3>
+          <p class="hv-tag">Tools made for the bench, and step-by-step guides.</p>
+          <p class="hv-from">From 75 kr</p>
+          <a class="btn" href="shop.html">Shop now</a>
+        </div>
+      </article>
+      <article class="hv-tile">
+        <div class="hv-tile-img"><img src="images/home-books-portfolio.webp" alt="A row of orange and patterned notebooks on a shelf" loading="lazy"></div>
+        <div class="hv-tile-body">
+          <p class="hv-label">Commission</p>
+          <h3>Made for you</h3>
+          <p class="hv-tag">Crafted to last generations. A guest book, a family history, a portfolio.</p>
+          <p class="hv-from">Starting from 1,600 kr <span>&middot; quoted for each project</span></p>
+          <a class="btn" href="collectibles.html" aria-label="See what I can make for you">See what I can make</a>
         </div>
       </article>
     </div>
   </div>
 </section>
 
-<section class="trust-strip">
-  <div class="wrap">
-    <ul class="trust-list">
-      <li><strong>30+</strong>workshop &amp; studio sessions every year</li>
-      <li><strong>By hand</strong>in the studio, in Stockholm</li>
-      <li><strong>3 languages</strong>Swedish, English or Portuguese</li>
-    </ul>
+
+<section class="hv-section">
+  <div class="wrap wide">
+    <div class="hv-head">
+      <h2>Start with the tools</h2>
+      <a class="btn secondary" href="shop.html">See the whole shop</a>
+    </div>
+    <div class="hv-products">
+      <article class="hv-card">
+        <div class="hv-card-img"><img src="images/shop-punching-cradle.webp" alt="Punching cradle" loading="lazy"></div>
+        <div class="hv-card-body">
+          <h3>Punching Cradle</h3>
+          <p class="hv-tag">Aligned holes, every time.</p>
+          <ul class="hv-specs">
+            <li><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>Durable, high-quality MDF</li>
+            <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Even holes across your signatures</li>
+          </ul>
+          <a class="btn" href="shop.html">View <span>&middot;</span> 550 kr</a>
+        </div>
+      </article>
+      <article class="hv-card">
+        <div class="hv-card-img"><img src="images/shop-spacers.webp" alt="Acrylic bookbinding spacers" loading="lazy" style="object-position:50% 40%;"></div>
+        <div class="hv-card-body">
+          <h3>Bookbinding Spacers</h3>
+          <p class="hv-tag">Even cover edges.</p>
+          <ul class="hv-specs">
+            <li><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>Acrylic, 25 cm long</li>
+            <li><svg viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M7 9l-3 3 3 3"/><path d="M17 9l3 3-3 3"/></svg>7 to 25 mm, an L-shape, or a set of 6</li>
+          </ul>
+          <a class="btn" href="shop.html">View <span>&middot;</span> from 75 kr</a>
+        </div>
+      </article>
+      <article class="hv-card">
+        <div class="hv-card-img"><img src="images/shop-corner-jig.webp" alt="Corner cutting jig" loading="lazy"></div>
+        <div class="hv-card-body">
+          <h3>Corner Cutting Jig</h3>
+          <p class="hv-tag">Clean mitred corners.</p>
+          <ul class="hv-specs">
+            <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Precise 45&deg; cuts on cover turn-ins</li>
+            <li><svg viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M7 9l-3 3 3 3"/><path d="M17 9l3 3-3 3"/></svg>2, 2.5 or 3 mm, or all three</li>
+          </ul>
+          <a class="btn" href="shop.html">View <span>&middot;</span> from 90 kr</a>
+        </div>
+      </article>
+      <article class="hv-card">
+        <div class="hv-card-img"><img src="images/shop-tutorial-bookcloth.webp" alt="Bookcloth tutorial" loading="lazy"></div>
+        <div class="hv-card-body">
+          <h3>Bookcloth Tutorial</h3>
+          <p class="hv-tag">Make your own bookcloth.</p>
+          <ul class="hv-specs">
+            <li><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg>PDF guide, instant download</li>
+            <li><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>Clear, illustrated steps</li>
+          </ul>
+          <a class="btn" href="shop.html">View <span>&middot;</span> 90 kr</a>
+        </div>
+      </article>
+    </div>
   </div>
 </section>
 
 <section class="recent-work">
-  <div class="wrap">
-    <h2 style="text-align:center;">Recently on the bench</h2>
+  <div class="wrap wide">
+    <div class="hv-head">
+      <h2>Recently on the bench</h2>
+      <a class="btn secondary" href="latest-work.html">See all latest work</a>
+    </div>
     <div class="recent-grid">
 <a class="recent-tile" href="latest-work.html" aria-label="Marbled notebooks in yellow and red, see more on Latest Work"><div class="img-wrap"><img src="images/work-81-marbled-notebooks-yellow-red.webp" alt="Marbled notebooks in yellow and red" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Marbled notebooks in yellow and red</span></div></a>
 <a class="recent-tile" href="latest-work.html" aria-label="Thick book with a decorative cover, see more on Latest Work"><div class="img-wrap"><img src="images/work-54-thick-book-decorative-cover.webp" alt="Thick book with a decorative cover" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Thick book with a decorative cover</span></div></a>
 <a class="recent-tile" href="latest-work.html" aria-label="Red gift box with a matching book, see more on Latest Work"><div class="img-wrap"><img src="images/work-55-red-gift-box-matching.webp" alt="Red gift box with a matching book" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Red gift box with a matching book</span></div></a>
 <a class="recent-tile" href="latest-work.html" aria-label="Open book with marbled paper, see more on Latest Work"><div class="img-wrap"><img src="images/work-17-open-book-marbled-paper.webp" alt="Open book with marbled paper" style="opacity:0;" loading="lazy" decoding="async" onload="this.style.opacity='1';this.nextElementSibling.style.display='none';" onerror="this.style.display='none';"><span class="ph-label">Open book with marbled paper</span></div></a>
     </div>
-    <p style="text-align:center;margin-top:30px;"><a class="btn secondary" href="latest-work.html">See all latest work</a></p>
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <h2 style="text-align:center;">What people say after holding it in their hands</h2>
-    <div class="testimonials featured">
+<section class="hv-section">
+  <div class="wrap wide">
+    <div class="hv-head">
+      <h2>What people say after holding it in their hands</h2>
+      <div class="hv-arrows" aria-hidden="false">
+        <button type="button" class="hv-arrow" id="rev-prev" aria-label="Previous reviews" disabled><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button type="button" class="hv-arrow" id="rev-next" aria-label="Next reviews"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+    <div class="hv-reviews" id="reviews" role="region" aria-label="Customer reviews, scroll sideways for more" tabindex="0">
 <div class="testimonial">
       <div class="testimonial-photo">
         <img src="images/review-marbling.webp" alt="Marbling Workshop" style="opacity:0;"
@@ -371,10 +503,6 @@ body = r"""
       <p>&ldquo;I had a lot of fun making my first book ever, warmly encouraged and mentored by Suzete! I will come back!!!&rdquo;</p>
       <cite>Anna Pehrsson</cite>
     </div>
-    </div>
-    <details class="more-reviews">
-      <summary>More reviews</summary>
-      <div class="testimonials">
 <div class="testimonial">
       <div class="testimonial-photo">
         <img src="images/review-curved-spine.webp" alt="Bookbinding Workshop: Curved Spine" style="opacity:0;"
@@ -428,23 +556,19 @@ body = r"""
       <p>&ldquo;S&aring; pedagogisk f&ouml;rklaring f&ouml;r att bygga en punching cradle &#10084;&#65039;&rdquo;</p>
       <cite>Ankie Glas</cite>
     </div>
-      </div>
-    </details>
-    <p style="text-align:center;margin-top:30px;">
-<a href="https://www.google.com/search?q=Enperfeitas+Studio&amp;stick=H4sIAAAAAAAA_-NgU1I1qDAxM02zTDM0NDU0TTNPTUmyMqiwsDS2sEiySDYyNzRIS0pOXsQq5JpXkFqUlppZklisEFxSmpKZDwCmFu_ePgAAAA&amp;hl=en&amp;mat=CZg19H7WyqDHElYBa0lj_-eaT3FTM3GMIqpZ4xVDWW-wqfy8BgwB3WyDzeGebgLQc7ANSDsE4ZaJOOFNgZ7gHobG_EdZvpBdvITqd0u_928pPlVTBVGEw9U14deZfmeWYA&amp;authuser=1#mpd=~14384720232423110040/customers/reviews" target="_blank" rel="noopener">See more recent reviews on Google &rarr;</a>
-    </p>
+    </div>
   </div>
 </section>
 
-<section class="alt">
-  <div class="wrap">
-    <div class="closing-grid">
-      <div class="soft-card">
+<section class="hv-section" style="padding-top:8px;">
+  <div class="wrap wide">
+    <div class="hv-news">
+      <div class="hv-news-card tint">
         <h3>Follow the work</h3>
         <p>Studio news, slow process, and the occasional surprise, straight to your inbox.</p>
         <a class="btn" href="newsletter.html">Sign up for the newsletter</a>
       </div>
-      <div class="soft-card">
+      <div class="hv-news-card line">
         <h3>Free tools for bookbinders</h3>
         <p>A booklet imposition tool and a box maker, built for my own bench and free for yours.</p>
         <a class="btn secondary" href="tools.html">Explore the free tools</a>
@@ -452,11 +576,12 @@ body = r"""
     </div>
   </div>
 </section>
-"""
+'''
 page("index.html", "Enperfeitas | Handbound Books, Bookbinding Workshops & Studio in Stockholm",
      "Handmade books, bespoke albums, and bookbinding workshops in Stockholm. Made to last. Made by hand.",
-     body, active="index.html")
-
+     body, active="index.html", extra_css="home.css", body_class="hv-home",
+     pre_header=HOME_TOPBAR, footer_html=HOME_FOOTER, extra_js="home.js",
+     extra_head='<link rel="preload" as="image" href="images/hero-home-1200.webp" imagesrcset="images/hero-home-1200.webp 1200w, images/hero-home.webp 2400w" imagesizes="100vw" fetchpriority="high">\n')
 # ---------------------------------------------------------------- ABOUT
 body = f"""
 <section class="page-header wrap">
