@@ -398,8 +398,7 @@ h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); margin: 28px 0 10px; co
 
 .stat-line {
   text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.01em;
   font-size: var(--fs-cap);
   font-weight: 500;
   color: var(--muted);
@@ -578,8 +577,7 @@ h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); margin: 28px 0 10px; co
 .variant-label {
   display: block;
   font-size: var(--fs-cap);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--muted);
   margin-bottom: 6px;
 }
@@ -604,8 +602,7 @@ h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); margin: 28px 0 10px; co
 .badge-digital {
   display: inline-block;
   font-size: var(--fs-cap);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--muted);
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -839,9 +836,8 @@ footer.site {
 footer.site h4 {
   font-family: "Roboto", Arial, sans-serif;
   color: var(--ink);
-  text-transform: uppercase;
   font-size: var(--fs-cap);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.01em;
   font-weight: 500;
   margin: 0 0 14px;
 }
@@ -879,7 +875,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 .hv-footer { border-top: 1px solid var(--line); padding: 48px 0 26px; margin-top: 30px; }
 .hv-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
 @media (min-width: 860px) { .hv-footer-grid { grid-template-columns: 1.4fr repeat(4, 1fr); } }
-.hv-footer h4 { margin: 0 0 10px; font-family: "Roboto", Arial, sans-serif; font-size: var(--fs-cap); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: left; }
+.hv-footer h4 { margin: 0 0 10px; font-family: "Roboto", Arial, sans-serif; font-size: var(--fs-cap); font-weight: 500; letter-spacing: 0.01em; color: var(--muted); text-align: left; }
 .hv-footer ul { list-style: none; margin: 0; padding: 0; }
 .hv-footer li { margin: 0 0 7px; text-align: left; }
 .hv-footer a { text-decoration: none; }
@@ -980,8 +976,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
   color: #fff;
   font-size: var(--fs-cap);
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   padding: 6px 16px;
   border-radius: 300px;
   white-space: nowrap;
@@ -1331,8 +1326,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 .path-photo .img-wrap { aspect-ratio: 16 / 10; border-radius: 0; box-shadow: none; }
 .path-body { display: flex; flex-direction: column; flex: 1; padding: 26px 28px 30px; }
 .path-label {
-  align-self: flex-start; font-size: var(--fs-cap); letter-spacing: 0.1em; text-transform: uppercase;
-  font-weight: 500; color: var(--accent); border: 1px solid var(--accent);
+  align-self: flex-start; font-size: var(--fs-cap); letter-spacing: 0.01em; font-weight: 500; color: var(--accent); border: 1px solid var(--accent);
   border-radius: 99px; padding: 4px 12px; margin-bottom: 12px;
 }
 .path-body h3 { margin: 0 0 6px; font-size: var(--fs-h3); }
