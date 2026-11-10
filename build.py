@@ -1468,11 +1468,11 @@ body = f"""
 <section>
   <div class="wrap grid-3">
     <div class="card shop-card">
-      {img_block("Close-up of a hand holding two watercolor-designed personalised notebooks, with options for blank, dotted, or lined pages", "work-09-notebooks-flatlay.webp", "Collectibles", source="https://images.squarespace-cdn.com/content/v1/6287cba0410c800d0ff1f2b2/1681115714668-LEMN4KP4RUSKI0CHAQ6H/Colors+-78.jpg?format=1000w")}
+      {img_block("Three stacked fabric-covered notebooks with colorful floral and plaid patterns on a grey surface", "work-61-three-stacked-fabric-covered.webp", "Collectibles")}
       <div class="shop-card-body">
         <h3>Artisan Edition</h3>
-        <p class="desc">A handbound notebook, journal, or sketchbook, made to your specifications. For those who want a beautiful object for their own daily practice, or a gift that will actually be kept.</p>
-        <a class="btn secondary" href="https://forms.gle/yuBu5Nujt8dvXUzZA" target="_blank" rel="noopener" aria-label="Request an invitation to the private bidding">Request an invitation</a>
+        <p class="desc">From time to time I put an Artisan Edition up for bidding: a handbound notebook, made once and offered in a small private round. Sign up to be invited to the next one, and you can place your bid when it opens.</p>
+        <a class="btn secondary" href="https://forms.gle/yuBu5Nujt8dvXUzZA" target="_blank" rel="noopener" aria-label="Sign up for the next Artisan Edition bidding round">Sign up for the next round</a>
       </div>
     </div>
     <div class="card shop-card">
