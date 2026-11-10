@@ -268,7 +268,6 @@ header.site.nav-open .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) 
 }
 .hero-cover-content h1 {
   color: #fff;
-  text-transform: uppercase;
   font-size: clamp(2rem, 4.6vw, 4rem);
   line-height: 1.08;
   max-width: 900px;
