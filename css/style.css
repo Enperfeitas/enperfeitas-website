@@ -1406,7 +1406,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 
 /* Width: text stays at 1140px; sections made of photos and cards use up to 1440px */
 @media (min-width: 1000px) {
-  .wrap.wide, .wrap.grid-3, .wrap.gallery,
+  .wrap.wide, .wrap.grid-3, .wrap.gallery, .wrap.offer-row, .wrap.grid-2:has(img),.page-intro .wrap,
   .wrap:has(> .cards-row), .wrap:has(> .grid-3), .wrap:has(> .grid-4) {
     max-width: 1440px; padding-left: 24px; padding-right: 24px;
   }
@@ -1483,8 +1483,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 /* A page opener without a photo: centred black title, then a left-aligned description */
 .page-intro { padding: 0; }
 .page-intro + section { padding-top: 32px; }
-.page-intro + section .grid-2 { align-items: start; }
-.page-intro p { text-align: left; margin: 0 0 12px; max-width: none; }
+/* the first block of text sits right under the intro (not centred against a tall photo) */
+.page-intro + section .offer-row .text-col,
+.page-intro + section .grid-2.match-height > div:first-child { align-self: start; }
+.page-intro p { text-align: left; margin: 0 0 12px; max-width: 900px; }
 .page-intro p:last-child { margin-bottom: 0; }
 .page-header h1 { text-wrap: balance; }
 .page-intro .intro-lead { font-family: "Roboto Slab", Georgia, serif; font-weight: 700; }
