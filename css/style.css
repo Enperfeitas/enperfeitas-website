@@ -1435,6 +1435,11 @@ section { padding: 56px 0; }
 section h2 { text-align: left; }
 section[style*="text-align:center"] h2, section.page-header h2, .wrap[style*="text-align:center"] h2, .grid-2.two-paths h2 { text-align: center; }
 
+/* "Starting from ..." under a Bespoke Binding / Bespoke Boxes offer: normal paragraph size, no italics */
+.offer-row .price { font-size: var(--fs-p1); font-weight: 400; line-height: 1.6; margin: 18px 0 20px; }
+.offer-row .price em { font-style: normal; }
+.offer-row .price em:first-child { font-weight: 500; }
+
 /* A page that starts with a full-width photo: the header floats over it, like the home page */
 body.hv-float header.site { top: 0; }
 body.hv-float .hero-cover-scrim {
