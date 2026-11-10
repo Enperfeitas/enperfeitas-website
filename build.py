@@ -199,9 +199,6 @@ def testimonial_card(title, quote, name, filename, source=""):
     """
 
 
-SITE_URL = "https://enperfeitas.com/"
-
-
 def page_intro(heading, subtext, subtext2=None):
     """A plain page opener (no photo): a centred black title, then the description
     left-aligned in a reading column. Used by Workshops, Bespoke Binding and Bespoke Boxes."""
@@ -267,16 +264,6 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
         for _block in (jsonld if isinstance(jsonld, list) else [jsonld]):
             jsonld_tag += '<script type="application/ld+json">' + chr(10) + json.dumps(_block, ensure_ascii=False, indent=2).replace('</', '<\\/') + chr(10) + '</script>' + chr(10)
     extra_js_tag = f'<script src="js/{extra_js}" defer></script>\n' if extra_js else ""
-    # address, social-sharing preview and browser tab icon. Pages kept out of Google (noindex) get no canonical.
-    page_url = SITE_URL + ("" if filename == "index.html" else filename)
-    esc = lambda s: s.replace('"', '&quot;')
-    share_tags = '<link rel="icon" href="favicon.svg" type="image/svg+xml">\n<meta name="theme-color" content="#ffffff">\n'
-    if not (robots and "noindex" in robots):
-        share_tags += f'<link rel="canonical" href="{page_url}">\n'
-        share_tags += (f'<meta property="og:type" content="website">\n<meta property="og:site_name" content="Enperfeitas Studio">\n'
-                       f'<meta property="og:title" content="{esc(title)}">\n<meta property="og:description" content="{esc(description)}">\n'
-                       f'<meta property="og:url" content="{page_url}">\n<meta property="og:image" content="{SITE_URL}images/hero-home-1200.webp">\n'
-                       f'<meta name="twitter:card" content="summary_large_image">\n')
     # every page gets the four-group footer (HOME_FOOTER, defined below the page function)
     footer_block = footer_html if footer_html else HOME_FOOTER
 
@@ -287,13 +274,12 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{description}">
-{robots_tag}{share_tags}<link rel="preconnect" href="https://fonts.googleapis.com">
+{robots_tag}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 {extra_css_tag}{extra_head}{jsonld_tag}</head>
 <body{body_attr}>
-<a class="skip-link" href="#main">Skip to content</a>
 {pre_header}<header class="site">
   <div class="wrap nav-row">
     <div class="header-utility">
@@ -308,9 +294,10 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
       </a>
     </div>
     <a class="logo" href="index.html">
-      <img src="images/logo.webp" alt="Enperfeitas" class="logo-img" width="188" height="70"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-      <span class="logo-text" style="display:none;">Enperfeitas</span>
+      <img src="images/logo.webp" alt="Enperfeitas" class="logo-img" style="display:none;"
+           onload="this.style.display='block';this.nextElementSibling.style.display='none';"
+           onerror="this.style.display='none';">
+      <span class="logo-text">Enperfeitas</span>
     </a>
     <button class="nav-toggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false">
       <span class="nav-toggle-bar"></span>
@@ -323,9 +310,7 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
   </div>
 </header>
 
-<main id="main">
 {body}
-</main>
 
 {footer_block}
 <script src="js/nav.js"></script>
@@ -351,24 +336,24 @@ HOME_FOOTER = '''<footer class="hv-footer">
         <p><strong>Enperfeitas</strong></p>
         <p>Enperfeitas Studio, Stockholm.<br>Making things that last.</p>
       </div>
-      <div><p class="hv-fh">Learn</p><ul>
+      <div><h4>Learn</h4><ul>
         <li><a href="workshops.html">Workshops</a></li>
         <li><a href="studio-membership.html">Studio membership</a></li>
         <li><a href="studio.html">The Studio</a></li>
         <li><a href="tools.html">Free tools</a></li>
       </ul></div>
-      <div><p class="hv-fh">Make</p><ul>
+      <div><h4>Make</h4><ul>
         <li><a href="bespoke-binding.html">Bespoke Binding</a></li>
         <li><a href="bespoke-boxes.html">Bespoke Boxes</a></li>
         <li><a href="collectibles.html">Collectibles</a></li>
         <li><a href="latest-work.html">Latest work</a></li>
       </ul></div>
-      <div><p class="hv-fh">Shop</p><ul>
+      <div><h4>Shop</h4><ul>
         <li><a href="shop.html">Tools and tutorials</a></li>
         <li><a href="shipping-info.html">Shipping info</a></li>
         <li><a href="refund-policy.html">Refunds and returns</a></li>
       </ul></div>
-      <div><p class="hv-fh">Studio</p><ul>
+      <div><h4>Studio</h4><ul>
         <li><a href="about.html">About</a></li>
         <li><a href="contact.html">Contact</a></li>
         <li><a href="newsletter.html">Newsletter</a></li>
@@ -2353,7 +2338,6 @@ SUPPORT_SECTION = """<section class="section-tight" id="support">
 # unlisted (not linked from anywhere, noindex), just no longer gated.
 body = """
 <div class="wrap" id="boxmaker-wrap">
-  <h1 class="sr-only">Box Maker</h1>
   <p class="tool-back"><a href="tools.html">&larr; All free tools</a></p>
   <div id="boxmaker-root"></div>
 </div>
@@ -2372,7 +2356,6 @@ page("box-maker.html", "Box Maker | Enperfeitas Studio",
 # password gate, reachable only by direct URL.
 body = """
 <div class="wrap" id="imposition-wrap">
-  <h1 class="sr-only">Booklet Imposition</h1>
   <p class="tool-back"><a href="tools.html">&larr; All free tools</a></p>
   <div id="imposition-root"></div>
 </div>
