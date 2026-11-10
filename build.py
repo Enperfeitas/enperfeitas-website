@@ -247,15 +247,8 @@ def page(filename, title, description, body, active=None, robots=None, extra_css
         for _block in (jsonld if isinstance(jsonld, list) else [jsonld]):
             jsonld_tag += '<script type="application/ld+json">' + chr(10) + json.dumps(_block, ensure_ascii=False, indent=2).replace('</', '<\\/') + chr(10) + '</script>' + chr(10)
     extra_js_tag = f'<script src="js/{extra_js}" defer></script>\n' if extra_js else ""
-    footer_block = footer_html if footer_html else f"""<footer class="site">
-  <div class="wrap footer-minimal">
-    <p class="footer-tagline">Enperfeitas Studio, Stockholm.<br>Making things that last.</p>
-    <div class="footer-bottom" style="border-top:none;">
-      <div>&copy; 2026 Enperfeitas Studio</div>
-      <div>{legal}</div>
-    </div>
-  </div>
-</footer>"""
+    # every page gets the four-group footer (HOME_FOOTER, defined below the page function)
+    footer_block = footer_html if footer_html else HOME_FOOTER
 
     html = f"""<!doctype html>
 <html lang="en">
@@ -387,7 +380,7 @@ body = r'''<section class="hv-hero" id="top">
           <p class="hv-label">Learn</p>
           <h3>Workshops</h3>
           <p class="hv-tag">Bookbinding and marbling, hands on, in the studio in V&auml;llingby.</p>
-          <p class="hv-from"><span>Reserve your seat online</span></p>
+          <p class="hv-from"><span>See dates and prices</span></p>
           <a class="btn" href="workshops.html">See the workshops</a>
         </div>
       </article>
@@ -583,11 +576,6 @@ body = r'''<section class="hv-hero" id="top">
       <cite>Inger Larsson</cite>
     </div>
 <div class="testimonial">
-      <span class="who">Free Undated Monthly Planner Template</span>
-      <p>&ldquo;Tack sn&auml;lla - det var super topp. Den var perfekt att ha i min jobb kalender f&ouml;r att snabbt f&aring; en &ouml;versikt hur m&aring;nadens projekt ser ut. Ser fram emot att forts&auml;tta f&ouml;lja ditt arbete. Skulle g&auml;rna komma till din atelj&eacute;.&rdquo;</p>
-      <cite>G&ouml;rel Karlsson</cite>
-    </div>
-<div class="testimonial">
       <div class="testimonial-photo">
         <img src="images/review-cradle-tutorial.webp" alt="Punching Cradle Tutorial (DIY)" style="opacity:0;"
              loading="lazy" decoding="async"
@@ -623,7 +611,7 @@ body = r'''<section class="hv-hero" id="top">
 page("index.html", "Enperfeitas | Handbound Books, Bookbinding Workshops & Studio in Stockholm",
      "Handmade books, bespoke albums, and bookbinding workshops in Stockholm. Made to last. Made by hand.",
      body, active="index.html", extra_css="home.css", body_class="hv-home",
-     pre_header=HOME_TOPBAR, footer_html=HOME_FOOTER, extra_js="home.js", jsonld=HOME_JSONLD,
+     pre_header=HOME_TOPBAR,extra_js="home.js", jsonld=HOME_JSONLD,
      extra_head='<link rel="preload" as="image" href="images/hero-home-1200.webp" imagesrcset="images/hero-home-1200.webp 1200w, images/hero-home.webp 2400w" imagesizes="100vw" fetchpriority="high">\n')
 # ---------------------------------------------------------------- ABOUT
 body = f"""
