@@ -1407,7 +1407,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 
 /* Width: text stays at 1140px; sections made of photos and cards use up to 1440px */
 @media (min-width: 1000px) {
-  .wrap.wide, .wrap.grid-3, .wrap.gallery,
+  .wrap.wide, .wrap.grid-3, .wrap.gallery, .wrap.offer-row, .wrap.grid-2:has(img),
   .wrap:has(> .cards-row), .wrap:has(> .grid-3), .wrap:has(> .grid-4) {
     max-width: 1440px; padding-left: 24px; padding-right: 24px;
   }
@@ -1450,7 +1450,11 @@ section[style*="text-align:center"] h2, section.page-header h2, .wrap[style*="te
 .offer-row .price em:first-child { font-weight: 500; }
 
 /* A page opener without a photo: centred black title, then a left-aligned description */
-.page-intro { padding: 0; }
+.page-intro { padding: 32px 0 0; }
+/* the title and the description share one column, so they are exactly the same width */
+.intro-col { max-width: 760px; }
+.page-intro h1 { font-size: var(--fs-h1); line-height: 1.1; margin: 0 0 24px; text-align: center; text-wrap: balance; }
+@media (max-width: 760px) { .page-intro { padding-top: 24px; } }
 .page-intro + section { padding-top: 32px; }
 /* the first block of text sits right under the intro (not centred against a tall photo) */
 .page-intro + section .offer-row .text-col,

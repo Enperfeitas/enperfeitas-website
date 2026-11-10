@@ -202,15 +202,14 @@ def testimonial_card(title, quote, name, filename, source=""):
 def page_intro(heading, subtext, subtext2=None):
     """A plain page opener (no photo): a centred black title, then the description
     left-aligned in a reading column. Used by Workshops, Bespoke Binding and Bespoke Boxes."""
+    # with a second paragraph, the first is a short bold tagline; on its own it is a normal paragraph
     sub2_html = f'\n    <p>{subtext2}</p>' if subtext2 else ""
+    lead_cls = ' class="intro-lead"' if subtext2 else ""
     return f"""
-<section class="page-header wrap">
-  <h1>{heading}</h1>
-</section>
-
 <section class="page-intro">
-  <div class="wrap">
-    <p class="intro-lead">{subtext}</p>{sub2_html}
+  <div class="wrap intro-col">
+    <h1>{heading}</h1>
+    <p{lead_cls}>{subtext}</p>{sub2_html}
   </div>
 </section>
 """
@@ -708,7 +707,7 @@ events_accordion = accordion([
 
 body = f"""
 <section class="page-header wrap">
-  <h1>What's New at Enperfeitas Studio?</h1>
+  <h1>What's New at<br>Enperfeitas Studio?</h1>
 </section>
 
 <section>
