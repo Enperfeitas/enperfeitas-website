@@ -209,7 +209,7 @@ def page_intro(heading, subtext, subtext2=None):
 </section>
 
 <section class="page-intro">
-  <div class="wrap" style="max-width:720px;">
+  <div class="wrap">
     <p class="intro-lead">{subtext}</p>{sub2_html}
   </div>
 </section>

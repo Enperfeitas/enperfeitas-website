@@ -1415,7 +1415,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 /* Rhythm: 56px above and below a section (40px on phones) */
 section { padding: 56px 0; }
 .section-tight { padding: 40px 0; }
-.page-header { padding: 56px 32px 16px; }
+.page-header { padding: 32px 32px 16px; }
 /* the content right after a page title starts close to it */
 .page-header + section:not(.alt) { padding-top: 16px; }
 @media (max-width: 760px) {
@@ -1449,8 +1449,12 @@ section[style*="text-align:center"] h2, section.page-header h2, .wrap[style*="te
 .offer-row .price em:first-child { font-weight: 500; }
 
 /* A page opener without a photo: centred black title, then a left-aligned description */
-.page-intro { padding: 0 0 24px; }
-.page-intro p { text-align: left; margin: 0 0 14px; }
+.page-intro { padding: 0; }
+.page-intro + section { padding-top: 32px; }
+.page-intro + section .grid-2 { align-items: start; }
+.page-intro p { text-align: left; margin: 0 0 12px; max-width: none; }
+.page-intro p:last-child { margin-bottom: 0; }
+.page-header h1 { text-wrap: balance; }
 .page-intro .intro-lead { font-family: "Roboto Slab", Georgia, serif; font-weight: 700; }
 
 /* A page that starts with a full-width photo: the header floats over it, like the home page */
