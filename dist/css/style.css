@@ -880,7 +880,7 @@ footer.site a:hover { color: var(--accent); text-decoration: underline; }
 .hv-footer { border-top: 1px solid var(--line); padding: 48px 0 26px; margin-top: 30px; }
 .hv-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
 @media (min-width: 860px) { .hv-footer-grid { grid-template-columns: 1.4fr repeat(4, 1fr); } }
-.hv-footer h4 { margin: 0 0 10px; font-family: "Roboto", Arial, sans-serif; font-size: var(--fs-cap); font-weight: 500; letter-spacing: 0.01em; color: var(--muted); text-align: left; }
+.hv-footer .hv-fh { margin: 0 0 10px; font-family: "Roboto", Arial, sans-serif; font-size: var(--fs-cap); font-weight: 500; letter-spacing: 0.01em; color: var(--muted); text-align: left; }
 .hv-footer ul { list-style: none; margin: 0; padding: 0; }
 .hv-footer li { margin: 0 0 7px; text-align: left; }
 .hv-footer a { text-decoration: none; }
@@ -1447,6 +1447,38 @@ section[style*="text-align:center"] h2, section.page-header h2, .wrap[style*="te
 .offer-row .price { font-size: var(--fs-p1); font-weight: 400; line-height: 1.6; margin: 18px 0 20px; }
 .offer-row .price em { font-style: normal; }
 .offer-row .price em:first-child { font-weight: 500; }
+
+/* ---- Usability and speed: keyboard, touch, motion --------------------------- */
+/* Skip link: appears when you press Tab, so keyboard users can jump past the menu */
+.skip-link { position: absolute; left: 12px; top: -60px; z-index: 100; background: #000; color: #fff; padding: 10px 16px; border-radius: 300px; text-decoration: none; }
+.skip-link:focus { top: 12px; color: #fff; }
+/* A clear ring on whatever has the keyboard focus */
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px;
+}
+/* The logo never jumps the page around while it loads */
+.logo-img { aspect-ratio: 600 / 224; }
+/* Touch: the small header icons and the menu button get a full 44px tap area without looking bigger */
+.header-utility a { padding: 13px; margin: -13px; }
+.header-utility { gap: 28px; }
+.nav-toggle { width: 44px; height: 44px; padding: 0 10px; right: 22px; }
+@media (max-width: 960px) { .nav-toggle { top: 66px; right: 22px; } }
+/* A shorter header on phones, so the page starts higher */
+@media (max-width: 760px) {
+  .logo-img { height: 56px; }
+  .logo { margin-bottom: 12px; }
+  .header-utility { margin-bottom: 10px; }
+  .nav-toggle { top: 55px; }
+}
+/* Menu links and footer links are comfortable to tap */
+@media (max-width: 960px) { nav.primary a { padding: 14px 2px; } }
+.hv-footer li a { display: inline-block; padding: 4px 0; }
+@media (max-width: 760px) { .hv-footer li a { padding: 8px 0; } .hv-footer-bottom a { display: inline-block; padding: 6px 0; } }
+/* People who ask their device for less motion get none */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
 
 /* A page opener without a photo: centred black title, then a left-aligned description */
 .page-intro { padding: 0; }
