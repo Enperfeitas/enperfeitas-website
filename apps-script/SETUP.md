@@ -188,15 +188,34 @@ To change a sentence in the reminder, edit the lines starting with `REMINDER_` n
 
 ## Sending the winner email
 
-When bidding has closed, choose **Invitations > Send winner email**. The script finds the highest bid (ignoring any bid marked void), looks up that person on the Invitees tab, and shows you the name, email address and winning amount. Nothing is sent until you press YES. The email uses the same design as the invitation: congratulations, the winning bid, the closing time, and a short "What happens next" list (invoice within 24 hours, payment within 48 hours, shipping or collection, dispatch and the 14 days to withdraw).
+When bidding has closed, choose **Invitations > Send winner email**. The script finds the highest bid (ignoring any bid marked void), looks up that person on the Invitees tab, and shows you the name, email address and winning amount. Nothing is sent until you press YES. The email uses the same design as the invitation: congratulations, the winning bid, the closing time, and a short "What happens next" list. It asks the winner to reply with shipping (and an address) or collection, says the payment details follow in a second email with payment due within 48 hours, and mentions dispatch and the 14 days to withdraw. It has no payment link, because at that point you do not yet know if the piece is shipped or collected.
 
-**Payment link:** put your Stripe Payment Link in Config as `payment_link` (it must start with `https://`). Create it in Stripe with "Customers choose what to pay", so the same link works for every auction. The email then shows a "Pay securely online" button, and the first step asks the winner to pay within 48 hours and enter the winning amount; shipping, if any, is paid afterwards with the same link. If `payment_link` is empty, the email says an invoice will follow instead, and the confirmation box tells you so before you send.
+**Payment links:** they are used by the next email, "Send payment details" (see below), not by the winner email. Put them in Config: `payment_link` (used when the piece is shipped) and `payment_link_no_shipping` (used when it is collected at the studio). Each must start with `https://`. Create them in Stripe with "Customers choose what to pay", so the same links work for every auction.
 
 The time of sending is saved in Config as `winner_emailed`. If you run it again, the script tells you it was already sent and asks before sending a second time. The script will not send while bidding is still open, unless test_mode is TRUE (then it only sends a preview to your own address).
 
 If the winner does not pay in time, type `TRUE` in the void cell of every row from that person in the Bids tab (their earlier, lower bids would otherwise become the top bid), delete the `winner_emailed` row in Config, and run it again. The next highest bidder is then the winner.
 
 To change a sentence, edit the lines starting with `WINNER_` and the `winnerSteps_` list in Code.gs, then publish a new version of the web app.
+
+## After the winner replies: shipping, payment, dispatch
+
+Once the winner has replied with a delivery address (or said they will collect), three things help you keep track.
+
+**Four columns on the Invitees tab.** They are added the first time you send the winner email for real (or one of the two emails below): `delivery note`, `payment requested`, `paid`, `dispatched`. Fill in `delivery note` (the address, or "collect") and `paid` (the date the payment arrives) by hand. The script fills in `payment requested` and `dispatched` with the time each email was sent. It only ever writes in the winner's row.
+
+**Invitations > Send payment details.** It first asks whether the winner is having the piece shipped (YES) or collecting it at the studio (NO), or you can cancel.
+
+- **Shipped:** it asks for the shipping cost in whole SEK (moms included), then shows the winner, the shipping cost, the winning bid and the total, and asks YES or NO. The email shows the three amounts, your `payment_link` (or says an invoice will follow if it is empty) and the next steps. It tells the winner to pay only the shipping if the bid is already paid, or the total in one go if not.
+- **Collected:** no shipping cost is asked for. The email says the piece will be collected at the studio, shows only the winning bid, and uses the Config row `payment_link_no_shipping`. If that row is empty, it uses `payment_link` instead, and the confirmation box tells you so. The `delivery note` cell is set to "collect at the studio" if it was empty.
+
+If you run it again, it warns you that it was already sent.
+
+**Invitations > Send dispatch email.** It asks for tracking details (for example "PostNord 00123456789"), which you can leave empty. Then it shows the winner and asks YES or NO. If the `paid` column is empty for the winner, the question carries a warning, so you do not dispatch before payment arrives. The email says the piece is on its way, shows the date and tracking, and repeats the 14 days to withdraw. If you run it again, it warns you first.
+
+Test mode works as for the other emails: with test_mode TRUE both go to your own address only, marked [TEST], and nothing is recorded in the columns.
+
+To change a sentence, edit the `PAYMENT_`, `COLLECT_` and `DISPATCH_` lines in Code.gs, then publish a new version of the web app.
 
 ## While bidding is open
 

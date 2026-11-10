@@ -38,6 +38,11 @@ function onOpen() {
     .addItem('Send invitations', 'sendInvitations')
     .addItem('Send reminders', 'sendReminders')
     .addItem('Send winner email', 'sendWinnerEmail')
+    .addItem('Send payment details (shipping)', 'sendPaymentDetails')
+    .addItem('Send dispatch email', 'sendDispatchEmail')
+    .addSeparator()
+    .addItem('Start new round', 'startNewRound')
+    .addItem('Ask previous participants', 'askPreviousParticipants')
     .addSeparator()
     .addItem('Close auction', 'closeAuction')
     .addItem('Reset test bids', 'resetTestBids')
@@ -59,6 +64,9 @@ function doGet(e) {
     if (action === 'whoami') {
       return json_(whoami_(e.parameter.code));
     }
+    if (action === 'roundinfo') {
+      return json_(roundInfo_(e.parameter.code));
+    }
     return json_({ ok: false, error: 'unknown_action' });
   } catch (err) {
     console.error(err && err.stack ? err.stack : err);
@@ -76,6 +84,9 @@ function doPost(e) {
     }
     if (body.action === 'bid') {
       return json_(placeBid_(body.code, body.amount));
+    }
+    if (body.action === 'respond') {
+      return json_(respondToRound_(body.code, body.answer));
     }
     return json_({ ok: false, error: 'unknown_action' });
   } catch (err) {
@@ -182,7 +193,9 @@ function readConfig_() {
     description: strMulti_(cfg.description),
     details: strMulti_(cfg.details),
     winnerEmailed: str_(cfg.winner_emailed),
-    paymentLink: /^https:\/\//i.test(str_(cfg.payment_link)) ? str_(cfg.payment_link) : ''
+    roundStarted: str_(cfg.round_started),
+    paymentLink: /^https:\/\//i.test(str_(cfg.payment_link)) ? str_(cfg.payment_link) : '',
+    paymentLinkNoShipping: /^https:\/\//i.test(str_(cfg.payment_link_no_shipping)) ? str_(cfg.payment_link_no_shipping) : ''
   };
 }
 
@@ -587,19 +600,16 @@ var WINNER_THANKS = 'Thank you for taking part.';
 var WINNER_QUESTIONS = 'If you have any questions, just reply to this email.';
 var WINNER_FOOTER = 'You are receiving this because you placed the winning bid in the bidding round at enperfeitas.com. If it reached you by mistake, please reply and let me know.';
 
-// Payment wording, used when Config has a payment_link (a Stripe link where the customer enters the amount).
+// Payment button wording, used by the shipping and collection emails (the winner email has no payment link).
 var WINNER_PAY_BUTTON = 'Pay securely online';
 var WINNER_PAY_NOTE = 'The link works for any amount, so please enter the amount shown above.';
-function winnerPayStep_(winner) {
-  return 'Please pay within 48 hours using the link in this email, and enter ' + fmtSek_(winner.amount) +
-    '. If shipping applies, I will tell you the extra amount when you reply, and you can pay it with the same link.';
-}
 
-// The steps shown under "What happens next".
-function winnerSteps_(cfg, winner) {
+// The steps shown under "What happens next". No payment link here: the winner first
+// replies with shipping or collection, and the payment details follow in a second email.
+function winnerSteps_() {
   return [
-    cfg && cfg.paymentLink ? winnerPayStep_(winner) : 'You will receive an invoice by email within 24 hours, and payment is due within 48 hours.',
     'Please reply to this email and tell me if you would like the piece shipped (with your delivery address) or collected at the studio in Stockholm. Shipping is added by location.',
+    'I will then send you the payment details, with the shipping cost if the piece is shipped. Payment is due within 48 hours.',
     'The piece is dispatched within 7 days of payment, and you have 14 days from delivery to withdraw from the purchase.'
   ];
 }
@@ -721,15 +731,9 @@ function buildWinnerBody_(cfg, winner) {
   lines.push('THE DETAILS');
   lines.push('Your winning bid: ' + fmtSek_(winner.amount) + ', moms included');
   lines.push('Closed: ' + f.closes);
-  if (cfg.paymentLink) {
-    lines.push('');
-    lines.push('PAYMENT LINK');
-    lines.push(cfg.paymentLink);
-    lines.push(WINNER_PAY_NOTE);
-  }
   lines.push('');
   lines.push(WINNER_NEXT_HEADING.toUpperCase());
-  winnerSteps_(cfg, winner).forEach(function (s, i) {
+  winnerSteps_().forEach(function (s, i) {
     lines.push((i + 1) + '. ' + s);
   });
   lines.push('');
@@ -846,15 +850,7 @@ function buildInvitationHtml_(cfg, invitee, testNote, mode) {
        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + factRows + '</table></td></tr></table>', '32px 32px 0');
 
   // How bidding works, and what happens if you win
-  if (W && cfg.paymentLink) {
-    cell('<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;"><tr>' +
-         '<td class="btn" align="center" bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #000000;border-radius:300px;">' +
-         '<a href="' + e(cfg.paymentLink) + '" style="display:inline-block;padding:15px 34px;' + SANS + 'font-size:16px;font-weight:500;line-height:1.2;color:#000000;text-decoration:none;border-radius:300px;">' + e(WINNER_PAY_BUTTON) + '</a>' +
-         '</td></tr></table>' +
-         '<p style="margin:16px 0 0;text-align:center;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(WINNER_PAY_NOTE) + '</p>' +
-         '<p style="margin:8px 0 0;' + SANS + 'font-size:13px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(cfg.paymentLink) + '</p>', '32px 32px 0');
-  }
-  cell(W ? h3(WINNER_NEXT_HEADING) + list('ol', winnerSteps_(cfg, invitee)) : h3('How bidding works') + list('ol', f.steps), '32px 32px 0');
+  cell(W ? h3(WINNER_NEXT_HEADING) + list('ol', winnerSteps_()) : h3('How bidding works') + list('ol', f.steps), '32px 32px 0');
   if (W) {
     // nothing more here: the steps above already say what happens after winning
   } else if (R) {
@@ -978,13 +974,17 @@ function sendInvitations() {
 /* ------------------------------------------------------------------ */
 
 // Finds the "reminded" column on the Invitees tab, or adds it to the right.
-function ensureRemindedColumn_(sheet) {
+function ensureColumn_(sheet, name) {
   var lastCol = Math.max(1, sheet.getLastColumn());
   var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(normKey_);
-  var idx = headers.indexOf('reminded');
+  var idx = headers.indexOf(normKey_(name));
   if (idx >= 0) return idx;
-  sheet.getRange(1, lastCol + 1).setValue('reminded').setFontWeight('bold');
+  sheet.getRange(1, lastCol + 1).setValue(name).setFontWeight('bold');
   return lastCol;
+}
+
+function ensureRemindedColumn_(sheet) {
+  return ensureColumn_(sheet, 'reminded');
 }
 
 function sendReminders() {
@@ -1101,7 +1101,10 @@ function sendReminders() {
 /* script warns you before sending it a second time.                   */
 /* ------------------------------------------------------------------ */
 
-function sendWinnerEmail() {
+// Shared by the three winner menu items: checks the Config values, finds the
+// winning bid and the winner's row on the Invitees tab. Shows an explanation
+// and returns null when something is missing, so the caller just stops.
+function winnerContext_(title) {
   var ui = SpreadsheetApp.getUi();
   var cfg = readConfig_();
 
@@ -1110,20 +1113,20 @@ function sendWinnerEmail() {
   if (!cfg.baseUrl) problems.push('page_base_url');
   if (cfg.closingMs === null) problems.push('closing_time');
   if (problems.length) {
-    ui.alert('Send winner email', 'Please fill in these Config values first: ' + problems.join(', ') + '.', ui.ButtonSet.OK);
-    return;
+    ui.alert(title, 'Please fill in these Config values first: ' + problems.join(', ') + '.', ui.ButtonSet.OK);
+    return null;
   }
 
   var isClosed = cfg.status === 'closed' || cfg.closingMs <= Date.now();
   if (!isClosed && !cfg.testMode) {
-    ui.alert('Send winner email', 'Bidding is still open, so there is no winner yet. Nothing was sent. Close the auction first, or wait for the closing time.', ui.ButtonSet.OK);
-    return;
+    ui.alert(title, 'Bidding is still open, so there is no winner yet. Nothing was sent. Close the auction first, or wait for the closing time.', ui.ButtonSet.OK);
+    return null;
   }
 
   var high = highestBid_(readBids_());
   if (!high) {
-    ui.alert('Send winner email', 'There are no bids, so there is no winner. Nothing was sent.', ui.ButtonSet.OK);
-    return;
+    ui.alert(title, 'There are no bids, so there is no winner. Nothing was sent.', ui.ButtonSet.OK);
+    return null;
   }
 
   var data = readInvitees_();
@@ -1132,25 +1135,32 @@ function sendWinnerEmail() {
     if (!winner && r.code && normCode_(r.code) === high.code) winner = r;
   });
   if (!winner) {
-    ui.alert('Send winner email', 'The highest bid (' + fmtSek_(high.amount) + ', code ' + high.code + ') does not match any code on the Invitees tab. Nothing was sent.', ui.ButtonSet.OK);
-    return;
+    ui.alert(title, 'The highest bid (' + fmtSek_(high.amount) + ', code ' + high.code + ') does not match any code on the Invitees tab. Nothing was sent.', ui.ButtonSet.OK);
+    return null;
   }
   if (!winner.email || !winner.first) {
-    ui.alert('Send winner email', 'The winner (code ' + high.code + ', row ' + winner.row + ' on the Invitees tab) has no email address or first name. Nothing was sent.', ui.ButtonSet.OK);
-    return;
+    ui.alert(title, 'The winner (code ' + high.code + ', row ' + winner.row + ' on the Invitees tab) has no email address or first name. Nothing was sent.', ui.ButtonSet.OK);
+    return null;
   }
   winner.amount = high.amount;
 
   var testAddress = Session.getEffectiveUser().getEmail() || Session.getActiveUser().getEmail();
   if (cfg.testMode && !testAddress) {
-    ui.alert('Send winner email', 'Test mode is on, but your own email address could not be found. Nothing was sent.', ui.ButtonSet.OK);
-    return;
+    ui.alert(title, 'Test mode is on, but your own email address could not be found. Nothing was sent.', ui.ButtonSet.OK);
+    return null;
   }
+  return { ui: ui, cfg: cfg, data: data, high: high, winner: winner, isClosed: isClosed, testAddress: testAddress };
+}
+
+function sendWinnerEmail() {
+  var c = winnerContext_('Send winner email');
+  if (!c) return;
+  var ui = c.ui, cfg = c.cfg, high = c.high, winner = c.winner, isClosed = c.isClosed, testAddress = c.testAddress;
 
   var question = 'Winner: ' + winner.first + ' (' + winner.email + ')\n' +
     'Winning bid: ' + fmtSek_(high.amount) + ', moms included\n' +
     'Piece: ' + cfg.pieceTitle + '\n' +
-    (cfg.paymentLink ? 'Payment: the email includes your payment link.' : 'Payment: no payment_link in Config, so the email says an invoice will follow.') + '\n\n';
+    'The email asks the winner to reply with shipping or collection. It has no payment link: the payment details follow in a second email.\n\n';
   if (!isClosed) question += 'Bidding is still open (test mode), so this is only a preview of the email.\n\n';
   if (cfg.testMode) {
     question += 'Test mode is ON: the email goes to ' + testAddress + ' only, nobody else receives anything. Send it?';
@@ -1183,6 +1193,7 @@ function sendWinnerEmail() {
   });
   if (!cfg.testMode) {
     writeConfigValue_('winner_emailed', iso_(Date.now()), true);
+    ensureOrderColumns_(c.data.sheet);   // so the tracking columns are there to fill in
   }
 
   ui.alert(
@@ -1192,6 +1203,624 @@ function sendWinnerEmail() {
       : 'The winner email was sent to ' + winner.first + ' (' + winner.email + ').',
     ui.ButtonSet.OK
   );
+}
+
+/* ------------------------------------------------------------------ */
+/* After the winner email: order tracking, payment details, dispatch   */
+/*                                                                     */
+/* Four columns are added to the Invitees tab (the first time the real */
+/* winner email is sent, or the first time one of the two emails below */
+/* is sent): delivery note, payment requested, paid, dispatched.       */
+/* "delivery note" and "paid" are for you to fill in by hand. The two  */
+/* emails below fill in "payment requested" and "dispatched" with the  */
+/* time they were sent. Only the winner's row is ever touched.         */
+/* ------------------------------------------------------------------ */
+
+var ORDER_COLUMNS = ['delivery note', 'payment requested', 'paid', 'dispatched'];
+
+// The shipping and payment email. Same layout as the others.
+var PAYMENT_SUBJECT = 'Shipping and payment: ';   // followed by the piece title
+var PAYMENT_LABEL = 'Shipping and payment';
+var PAYMENT_HEADING = 'Shipping for your piece';
+var PAYMENT_INTRO = 'Thank you for your delivery details. Here is the shipping cost for your piece:';
+var PAYMENT_NOTE = 'If you have already paid your winning bid, please pay only the shipping amount. If not, you can pay the total in one go, or the two amounts separately.';
+var PAYMENT_NOTE_INVOICE = 'I will send you an invoice for the shipping amount, or for the total if your winning bid has not been paid yet.';
+var PAYMENT_STEPS = [
+  'Once the payment has arrived, I will dispatch the piece within 7 days.',
+  'I will email you the tracking details when it is on its way.'
+];
+
+// The same email when the winner collects the piece at the studio (no shipping).
+var COLLECT_SUBJECT = 'Collection and payment: ';   // followed by the piece title
+var COLLECT_LABEL = 'Collection and payment';
+var COLLECT_HEADING = 'Collecting your piece';
+var COLLECT_INTRO = 'Thank you for letting me know. The piece will be ready for you to collect at the studio in Stockholm:';
+var COLLECT_NOTE = 'There is no shipping cost. If you have not already paid your winning bid, please do so with the link below.';
+var COLLECT_NOTE_INVOICE = 'There is no shipping cost. I will send you an invoice for your winning bid if you have not already paid it.';
+var COLLECT_STEPS = [
+  'Once the payment has arrived, I will contact you to agree a time to collect the piece.',
+  'You have 14 days from the day you receive it to withdraw from the purchase.'
+];
+
+// The dispatch email.
+var DISPATCH_SUBJECT = 'On its way: ';            // followed by the piece title
+var DISPATCH_LABEL = 'Dispatched';
+var DISPATCH_HEADING = 'Your piece is on its way';
+var DISPATCH_INTRO = 'Your piece has been dispatched:';
+var DISPATCH_NOTE = 'You have 14 days from delivery to withdraw from the purchase. Please let me know when the piece has arrived safely.';
+
+function ensureOrderColumns_(sheet) {
+  var cols = {};
+  ORDER_COLUMNS.forEach(function (n) {
+    cols[n] = ensureColumn_(sheet, n);
+  });
+  return cols;
+}
+
+// One notice = one small email in the same layout as the invitation.
+// o: { subject, label, heading, intro, piece, facts [[label, value]], paras [text],
+//      button {text, link, note}, sections [{heading, items}], closing, footer, preview }
+function buildNoticePlain_(first, o) {
+  var lines = ['Hello ' + first + ',', '', o.intro];
+  if (o.piece) lines.push(o.piece);
+  lines.push('');
+  if (o.facts.length) {
+    lines.push('THE DETAILS');
+    o.facts.forEach(function (x) { lines.push(x[0] + ': ' + x[1]); });
+    lines.push('');
+  }
+  (o.paras || []).forEach(function (p) { lines.push(p); lines.push(''); });
+  if (o.button) {
+    lines.push(o.button.label || 'PAYMENT LINK');
+    lines.push(o.button.link);
+    if (o.button.note) lines.push(o.button.note);
+    lines.push('');
+  }
+  (o.sections || []).forEach(function (s) {
+    lines.push(s.heading.toUpperCase());
+    s.items.forEach(function (it, i) { lines.push((i + 1) + '. ' + it); });
+    lines.push('');
+  });
+  lines.push(o.closing);
+  lines.push('');
+  lines.push('Warmly,');
+  lines.push('Suzete');
+  lines.push('Enperfeitas Studio');
+  return lines.join('\n');
+}
+
+function buildNoticeHtml_(cfg, first, o, testNote) {
+  var e = escapeHtml_;
+  var SLAB = "font-family:'Roboto Slab',Rockwell,Georgia,'Times New Roman',serif;font-weight:700;letter-spacing:-0.01em;";
+  var SANS = "font-family:'Roboto',Arial,Helvetica,sans-serif;";
+  var origin = cfg.baseUrl.replace(/^(https?:\/\/[^\/]+).*$/, '$1');
+  if (!/^https?:\/\//.test(origin)) origin = 'https://enperfeitas.com';
+  var h = [];
+  function cell(content, style) {
+    h.push('<tr><td class="pad" style="padding:' + (style || '0 32px') + ';text-align:left;">' + content + '</td></tr>');
+  }
+  h.push('<!doctype html><html lang="en"><head><meta charset="utf-8">');
+  h.push('<meta name="viewport" content="width=device-width, initial-scale=1">');
+  h.push('<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">');
+  h.push('<title>' + e(o.subject) + '</title>');
+  h.push('<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">');
+  h.push('<style>.btn:hover{background-color:#954a1e !important;border-color:#954a1e !important;}.btn:hover a{color:#ffffff !important;}@media only screen and (max-width:520px){.pad{padding-left:20px !important;padding-right:20px !important;}.h1{font-size:24px !important;}.ptitle{font-size:17px !important;}}</style></head>');
+  h.push('<body style="margin:0;padding:0;background-color:#fafafa;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">');
+  h.push('<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#fafafa;">' + e(o.preview) + '</div>');
+  h.push('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;"><tr><td align="center" style="padding:24px 12px;">');
+  h.push('<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#ffffff;border:1px solid #e6e6e6;border-radius:10px;">');
+  h.push('<tr><td align="center" style="padding:24px 32px 20px;border-bottom:1px solid #e6e6e6;">' +
+         '<img src="' + e(origin + '/images/email/logo.png') + '" width="170" alt="Enperfeitas" style="display:block;width:170px;max-width:100%;height:auto;border:0;' + SLAB + 'font-size:24px;color:#000000;"></td></tr>');
+  if (testNote) {
+    cell('<div style="margin:24px 0 0;padding:10px 16px;border-left:3px solid #954a1e;background-color:#fafafa;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(testNote) + ' Layout version ' + e(INVITATION_DESIGN_VERSION) + '.</div>', '0 32px');
+  }
+  cell('<p style="margin:32px 0 8px;text-align:center;' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;">' + e(o.label) + '</p>' +
+       '<h1 class="h1" style="' + SLAB + 'font-size:26px;line-height:1.15;margin:0 0 24px;text-align:center;color:#000000;">' + e(o.heading) + '</h1>' +
+       '<p style="margin:0 0 8px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Hello ' + e(first) + ',</p>' +
+       '<p style="margin:0' + (o.piece ? ' 0 16px' : '') + ';' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(o.intro) + '</p>' +
+       (o.piece ? '<p class="ptitle" style="' + SLAB + 'margin:0;font-size:18px;line-height:1.3;color:#000000;">' + e(o.piece) + '</p>' : ''), '0 32px');
+  if (o.facts.length) {
+    var factRows = o.facts.map(function (x, i) {
+      return '<tr><td style="padding:12px 0;' + (i < o.facts.length - 1 ? 'border-bottom:1px solid #e6e6e6;' : '') + 'text-align:left;">' +
+        '<div style="' + SANS + 'font-size:12px;line-height:1.4;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a5a;margin:0 0 4px;">' + e(x[0]) + '</div>' +
+        '<div style="' + SANS + 'font-size:16px;line-height:1.5;font-weight:400;color:#000000;">' + e(x[1]) + '</div></td></tr>';
+    }).join('');
+    cell('<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fafafa;border-radius:10px;"><tr><td style="padding:4px 20px;">' +
+         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + factRows + '</table></td></tr></table>', '32px 32px 0');
+  }
+  (o.paras || []).forEach(function (p) {
+    cell('<p style="margin:0;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(p) + '</p>', '24px 32px 0');
+  });
+  if (o.button) {
+    cell('<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;"><tr>' +
+         '<td class="btn" align="center" bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #000000;border-radius:300px;">' +
+         '<a href="' + e(o.button.link) + '" style="display:inline-block;padding:15px 34px;' + SANS + 'font-size:16px;font-weight:500;line-height:1.2;color:#000000;text-decoration:none;border-radius:300px;">' + e(o.button.text) + '</a>' +
+         '</td></tr></table>' +
+         (o.button.note ? '<p style="margin:16px 0 0;text-align:center;' + SANS + 'font-size:14px;line-height:1.5;color:#5a5a5a;">' + e(o.button.note) + '</p>' : '') +
+         '<p style="margin:8px 0 0;' + SANS + 'font-size:13px;line-height:1.5;color:#5a5a5a;word-break:break-all;">If the button does not work, copy this address into your browser:<br>' + e(o.button.link) + '</p>', '24px 32px 0');
+  }
+  (o.sections || []).forEach(function (s) {
+    cell('<h3 style="' + SLAB + 'font-size:18px;line-height:1.3;margin:0 0 10px;color:#000000;">' + e(s.heading) + '</h3>' +
+         '<ol style="margin:0;padding-left:22px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' +
+         s.items.map(function (it) { return '<li style="margin:0 0 8px;padding-left:4px;">' + e(it) + '</li>'; }).join('') + '</ol>', '32px 32px 0');
+  });
+  cell('<p style="margin:0 0 16px;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">' + e(o.closing) + '</p>' +
+       '<p style="margin:0;' + SANS + 'font-size:16px;line-height:1.6;color:#000000;">Warmly,<br>' +
+       '<span style="' + SLAB + 'font-size:18px;">Suzete</span><br>' +
+       '<span style="font-size:15px;color:#5a5a5a;">Enperfeitas Studio</span></p>', '32px 32px 32px');
+  h.push('<tr><td class="pad" style="padding:20px 32px 24px;border-top:1px solid #e6e6e6;text-align:left;' + SANS + 'font-size:12px;line-height:1.6;color:#5a5a5a;">' + e(o.footer) + '</td></tr>');
+  h.push('</table></td></tr></table></body></html>');
+  return h.join('');
+}
+
+// Sends one notice to the winner (or, in test mode, to you only) and returns true when sent.
+function sendNotice_(c, title, o) {
+  var cfg = c.cfg, winner = c.winner;
+  if (MailApp.getRemainingDailyQuota() < 1) {
+    c.ui.alert(title, 'The daily email limit has been reached. Nothing was sent. Try again tomorrow.', c.ui.ButtonSet.OK);
+    return false;
+  }
+  var subject = o.subject;
+  var body = buildNoticePlain_(winner.first, o);
+  var testNote = '';
+  if (cfg.testMode) {
+    subject = '[TEST] ' + subject;
+    testNote = 'TEST MODE. In the real round this would go to: ' + winner.email;
+    body = testNote + '\n\n' + body;
+  }
+  MailApp.sendEmail({
+    to: cfg.testMode ? c.testAddress : winner.email,
+    subject: subject,
+    body: body,
+    htmlBody: buildNoticeHtml_(cfg, winner.first, o, testNote),
+    name: 'Enperfeitas Studio'
+  });
+  return true;
+}
+
+function askText_(ui, title, text) {
+  var r = ui.prompt(title, text, ui.ButtonSet.OK_CANCEL);
+  if (r.getSelectedButton() !== ui.Button.OK) return null;
+  return str_(r.getResponseText());
+}
+
+// What is already recorded for the winner in one of the order columns.
+function orderCell_(c, name) {
+  var sheet = c.data.sheet;
+  var lastCol = sheet.getLastColumn();
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(normKey_);
+  var idx = headers.indexOf(normKey_(name));
+  if (idx < 0) return '';
+  return str_(sheet.getRange(c.winner.row, idx + 1).getValue());
+}
+
+function recordOrderTime_(c, name) {
+  var cols = ensureOrderColumns_(c.data.sheet);
+  var cell = c.data.sheet.getRange(c.winner.row, cols[name] + 1);
+  cell.setNumberFormat('@');
+  cell.setValue(iso_(Date.now()));
+}
+
+function sendPaymentDetails() {
+  var title = 'Send payment details';
+  var c = winnerContext_(title);
+  if (!c) return;
+  var ui = c.ui, cfg = c.cfg, winner = c.winner;
+
+  var choice = ui.alert(title,
+    'Is ' + winner.first + ' having the piece shipped, or collecting it at the studio?\n\n' +
+    'YES: shipped (you will be asked for the shipping cost)\n' +
+    'NO: collected at the studio, no shipping\n' +
+    'CANCEL: stop',
+    ui.ButtonSet.YES_NO_CANCEL);
+  if (choice !== ui.Button.YES && choice !== ui.Button.NO) return;
+  var collect = choice === ui.Button.NO;
+
+  var shipping = 0;
+  if (!collect) {
+    var answer = askText_(ui, title, 'Shipping cost for ' + winner.first + ', in whole SEK with moms included (for example 150).');
+    if (answer === null) return;
+    shipping = toInt_(answer.replace(/sek|kr|\s/gi, ''), null);
+    if (shipping === null || shipping < 1) {
+      ui.alert(title, 'Please enter the shipping cost as a whole number above 0. Nothing was sent.', ui.ButtonSet.OK);
+      return;
+    }
+  }
+  var total = winner.amount + shipping;
+  // Collection uses the no-shipping link; if that row is empty, the normal link is used.
+  var link = collect ? (cfg.paymentLinkNoShipping || cfg.paymentLink) : cfg.paymentLink;
+  var linkNote = !link ? 'Payment: no payment link in Config, so the email says an invoice will follow.'
+    : collect && !cfg.paymentLinkNoShipping ? 'Payment: the email includes payment_link (payment_link_no_shipping is empty in Config).'
+    : collect ? 'Payment: the email includes payment_link_no_shipping.'
+    : 'Payment: the email includes payment_link.';
+
+  var already = cfg.testMode ? '' : orderCell_(c, 'payment requested');
+  var question = 'To: ' + winner.first + ' (' + winner.email + ')\n' +
+    (collect ? 'Collected at the studio, no shipping\n' : 'Shipping: ' + fmtSek_(shipping) + '\n') +
+    'Winning bid: ' + fmtSek_(winner.amount) + '\n' +
+    (collect ? '' : 'Total with the bid: ' + fmtSek_(total) + '\n') +
+    linkNote + '\n\n';
+  if (cfg.testMode) {
+    question += 'Test mode is ON: the email goes to ' + c.testAddress + ' only, nobody else receives anything. Send it?';
+  } else if (already) {
+    question += 'Payment details were already sent (' + already + '). Send them again?';
+  } else {
+    question += 'Send the shipping and payment email now?';
+  }
+  if (ui.alert(title, question, ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+
+  var facts = collect
+    ? [['Your winning bid', fmtSek_(winner.amount) + ', moms included']]
+    : [
+        ['Shipping', fmtSek_(shipping) + ', moms included'],
+        ['Your winning bid', fmtSek_(winner.amount) + ', moms included'],
+        ['Total with your bid', fmtSek_(total) + ', moms included']
+      ];
+  var o = {
+    subject: (collect ? COLLECT_SUBJECT : PAYMENT_SUBJECT) + cfg.pieceTitle,
+    label: collect ? COLLECT_LABEL : PAYMENT_LABEL,
+    heading: collect ? COLLECT_HEADING : PAYMENT_HEADING,
+    intro: collect ? COLLECT_INTRO : PAYMENT_INTRO,
+    piece: cfg.pieceTitle,
+    facts: facts,
+    paras: [collect ? (link ? COLLECT_NOTE : COLLECT_NOTE_INVOICE) : (link ? PAYMENT_NOTE : PAYMENT_NOTE_INVOICE)],
+    button: link ? { text: WINNER_PAY_BUTTON, link: link, note: WINNER_PAY_NOTE } : null,
+    sections: [{ heading: WINNER_NEXT_HEADING, items: collect ? COLLECT_STEPS : PAYMENT_STEPS }],
+    closing: WINNER_QUESTIONS,
+    footer: WINNER_FOOTER,
+    preview: collect ? 'Collecting ' + cfg.pieceTitle + ' and how to pay.' : 'The shipping cost for ' + cfg.pieceTitle + ' and how to pay.'
+  };
+  if (!sendNotice_(c, title, o)) return;
+  if (!cfg.testMode) {
+    recordOrderTime_(c, 'payment requested');
+    if (collect && !orderCell_(c, 'delivery note')) {
+      var noteCell = c.data.sheet.getRange(winner.row, ensureColumn_(c.data.sheet, 'delivery note') + 1);
+      noteCell.setValue('collect at the studio');
+    }
+  }
+
+  ui.alert(title,
+    cfg.testMode
+      ? 'Test email sent to ' + c.testAddress + ' (test mode, nothing was recorded).'
+      : 'Payment details sent to ' + winner.first + ' (' + winner.email + '). The time is saved in the "payment requested" column. When the payment arrives, type the date in the "paid" column.',
+    ui.ButtonSet.OK);
+}
+
+function sendDispatchEmail() {
+  var title = 'Send dispatch email';
+  var c = winnerContext_(title);
+  if (!c) return;
+  var ui = c.ui, cfg = c.cfg, winner = c.winner;
+
+  var tracking = askText_(ui, title,
+    'Tracking details for ' + winner.first + ': carrier and number, for example "PostNord 00123456789".\n' +
+    'You can leave this empty to send the email without tracking details.');
+  if (tracking === null) return;
+
+  var unpaid = cfg.testMode ? false : !orderCell_(c, 'paid');
+  var already = cfg.testMode ? '' : orderCell_(c, 'dispatched');
+  var question = 'To: ' + winner.first + ' (' + winner.email + ')\n' +
+    'Piece: ' + cfg.pieceTitle + '\n' +
+    'Tracking: ' + (tracking || 'none given') + '\n\n';
+  if (unpaid) question += 'Careful: the "paid" column is empty for this winner. Only dispatch after payment has arrived.\n\n';
+  if (cfg.testMode) {
+    question += 'Test mode is ON: the email goes to ' + c.testAddress + ' only, nobody else receives anything. Send it?';
+  } else if (already) {
+    question += 'A dispatch email was already sent (' + already + '). Send it again?';
+  } else {
+    question += 'Send the dispatch email now?';
+  }
+  if (ui.alert(title, question, ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+
+  var facts = [['Dispatched', Utilities.formatDate(new Date(), TZ, 'EEEE d MMMM yyyy')]];
+  if (tracking) facts.push(['Tracking', tracking]);
+  var o = {
+    subject: DISPATCH_SUBJECT + cfg.pieceTitle,
+    label: DISPATCH_LABEL,
+    heading: DISPATCH_HEADING,
+    intro: DISPATCH_INTRO,
+    piece: cfg.pieceTitle,
+    facts: facts,
+    paras: [DISPATCH_NOTE],
+    button: null,
+    sections: [],
+    closing: WINNER_QUESTIONS,
+    footer: WINNER_FOOTER,
+    preview: cfg.pieceTitle + ' has been dispatched.'
+  };
+  if (!sendNotice_(c, title, o)) return;
+  if (!cfg.testMode) recordOrderTime_(c, 'dispatched');
+
+  ui.alert(title,
+    cfg.testMode
+      ? 'Test email sent to ' + c.testAddress + ' (test mode, nothing was recorded).'
+      : 'The dispatch email was sent to ' + winner.first + ' (' + winner.email + '). The time is saved in the "dispatched" column.',
+    ui.ButtonSet.OK);
+}
+
+/* ------------------------------------------------------------------ */
+/* Rounds: start a new round, ask previous participants                */
+/*                                                                     */
+/* Status values on the Invitees tab (the "status" column):            */
+/*   approved      invited to bid in the current round                 */
+/*   returning     took part in an earlier round, paused until they    */
+/*                 answer (no invitation, no reminder)                 */
+/*   declined      answered "not this round" (asked again next round)  */
+/*   unsubscribed  answered "remove me" (never asked again)            */
+/*   pending       new sign-up waiting for you to approve              */
+/*   revoked       blocked by you                                      */
+/* Two columns are added: asked (when the question email was sent) and */
+/* answered (when they last answered).                                 */
+/* ------------------------------------------------------------------ */
+
+// The email that asks previous participants, and the gentle nudge. Same layout as the others.
+var ASK_SUBJECT = 'Would you like to join the next round?';
+var ASK_LABEL = 'A new round';
+var ASK_HEADING = 'Will you join the next round?';
+var ASK_INTRO = 'A new round of bidding is coming. You took part in the last one, and I would love for you to join again. Would you like to be invited?';
+var ASK_PARAS = [
+  'If you say yes, I will email you an invitation before bidding opens, with a preview of the piece and how bidding works.',
+  'If you would rather skip this one, or not hear from me about bidding again, that is fine too. There is a choice for each on the page.',
+  'If you do not answer, I will not send you anything about this round.'
+];
+var ASK_BUTTON = 'Tell me your answer';
+var ASK_BUTTON_NOTE = 'Your personal link. It opens a page with three choices: yes, not this round, or remove me from the list.';
+var ASK_FOOTER = 'You are receiving this because you took part in an earlier bidding round at enperfeitas.com. I will not send you anything about this round unless you say yes.';
+var NUDGE_SUBJECT = 'A gentle reminder: would you like to join the next round?';
+var NUDGE_LABEL = 'A gentle reminder';
+var NUDGE_HEADING = 'Still thinking about the next round?';
+var NUDGE_INTRO = 'A small reminder about the new round of bidding. I have not heard from you yet, and that is perfectly fine. Would you like to be invited?';
+
+// Columns that belong to one round only. They are emptied when a new round starts.
+var ROUND_COLUMNS = ['reminded', 'delivery note', 'payment requested', 'paid', 'dispatched', 'asked', 'answered'];
+
+function originOf_(cfg) {
+  var origin = cfg.baseUrl.replace(/^(https?:\/\/[^\/]+).*$/, '$1');
+  return /^https?:\/\//.test(origin) ? origin : 'https://enperfeitas.com';
+}
+
+// Values of extra columns by sheet row, for the columns that exist: { row: { 'asked': '...', ... } }
+function readExtraCols_(sheet, names) {
+  var values = sheet.getDataRange().getValues();
+  var headers = values[0].map(normKey_);
+  var idx = {};
+  names.forEach(function (n) {
+    var i = headers.indexOf(normKey_(n));
+    if (i >= 0) idx[n] = i;
+  });
+  var out = {};
+  for (var r = 1; r < values.length; r++) {
+    var rec = {};
+    names.forEach(function (n) {
+      rec[n] = n in idx ? str_(values[r][idx[n]]) : '';
+    });
+    out[r + 1] = rec;
+  }
+  return out;
+}
+
+function setCell_(sheet, row, colIndex, value) {
+  var cell = sheet.getRange(row, colIndex + 1);
+  cell.setNumberFormat('@');
+  cell.setValue(value);
+}
+
+/* ---- What the page asks and answers (web app) ---- */
+
+// Only people who have been in a round can answer. A pending or blocked row never can.
+var ANSWERING_STATUSES = ['approved', 'returning', 'declined', 'unsubscribed'];
+
+function roundInfo_(code) {
+  var data = readInvitees_();
+  var me = findInvitee_(data, code);
+  if (!me || ANSWERING_STATUSES.indexOf(me.status) < 0) return { ok: true, valid: false };
+  var answer = 'none';
+  if (me.status === 'approved') answer = 'yes';
+  else if (me.status === 'declined') answer = 'no';
+  else if (me.status === 'unsubscribed') answer = 'removed';
+  return { ok: true, valid: true, firstName: me.first, answer: answer, invited: me.status === 'approved' && !!me.sent };
+}
+
+function respondToRound_(code, answer) {
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(20000)) return fail_('busy');
+  try {
+    var data = readInvitees_();
+    var me = findInvitee_(data, code);
+    if (!me) return fail_('invalid_code');
+    if (me.status === 'revoked') return fail_('revoked');
+    if (ANSWERING_STATUSES.indexOf(me.status) < 0) return fail_('invalid_code');
+    var next = { yes: 'approved', no: 'declined', remove: 'unsubscribed' }[String(answer)];
+    if (!next) return fail_('bad_answer');
+    // Someone who already has this round's invitation can still remove themselves,
+    // but cannot step out of the round halfway by saying "not this round".
+    if (me.status === 'approved' && me.sent && answer === 'no') return fail_('already_invited');
+    if (me.status !== next) {
+      setCell_(data.sheet, me.row, data.cols.status, next);
+      setCell_(data.sheet, me.row, ensureColumn_(data.sheet, 'answered'), iso_(Date.now()));
+      SpreadsheetApp.flush();
+    }
+    return { ok: true, answer: answer, firstName: me.first, invited: next === 'approved' && !!me.sent };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ---- Menu: Start new round ---- */
+
+function startNewRound() {
+  var title = 'Start new round';
+  var ui = SpreadsheetApp.getUi();
+  var cfg = readConfig_();
+  var closed = cfg.status === 'closed' || (cfg.closingMs !== null && cfg.closingMs <= Date.now());
+  if (!closed && !cfg.testMode) {
+    ui.alert(title, 'The current round is still open. Close the auction first (Invitations > Close auction), or wait for the closing time. Nothing was changed.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var data = readInvitees_();
+  var pause = [];       // took part last round: approved and invitation sent
+  var again = [];       // answered "not this round": asked again
+  var stay = [];        // already waiting for an answer
+  var left = { pending: 0, notInvited: 0, other: 0 };
+  data.rows.forEach(function (r) {
+    if (!r.code && !r.email && !r.first) return;   // empty row
+    if (r.status === 'approved' && r.sent) pause.push(r);
+    else if (r.status === 'declined') again.push(r);
+    else if (r.status === 'returning') stay.push(r);
+    else if (r.status === 'approved') left.notInvited++;
+    else if (r.status === 'pending') left.pending++;
+    else left.other++;   // revoked, unsubscribed, anything else
+  });
+  var names = function (list) {
+    var n = list.slice(0, 12).map(function (r) { return r.first || r.email; });
+    return n.join(', ') + (list.length > 12 ? ' and ' + (list.length - 12) + ' more' : '');
+  };
+
+  var q = 'This starts a new round.\n\n' +
+    'PAUSED until they answer (took part last round): ' + pause.length + (pause.length ? '\n' + names(pause) : '') + '\n\n' +
+    (again.length ? 'Asked again (answered "not this round" before): ' + again.length + '\n' + names(again) + '\n\n' : '') +
+    (stay.length ? 'Already waiting for an answer: ' + stay.length + '\n\n' : '') +
+    'NOT TOUCHED:\n' +
+    '- new sign-ups waiting for approval: ' + left.pending + '\n' +
+    '- approved but not invited yet: ' + left.notInvited + '\n' +
+    '- removed, blocked or other: ' + left.other + '\n\n' +
+    'Before anything changes, the Invitees and Bids tabs are copied to backup tabs, and the old bids are kept in their own tab. Then the Bids tab is emptied and the round columns are cleared for the paused people only.\n\n';
+  if (cfg.roundStarted) {
+    q += 'WARNING: a new round was already started on ' + cfg.roundStarted + '. If you invited people since then, starting again would pause them too.\n\n';
+  }
+  q += 'Continue?';
+  if (ui.alert(title, q, ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var stamp = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HHmm');
+  var safe = function (s) { return s.replace(/[\[\]\*\?:\/\\]/g, ' ').replace(/\s+/g, ' ').trim(); };
+  function copyTab(sheet, name) {
+    var base = safe(name).slice(0, 90);
+    var finalName = base, n = 2;
+    while (ss.getSheetByName(finalName)) finalName = base + ' ' + n++;
+    var copy = sheet.copyTo(ss);
+    copy.setName(finalName);
+    return finalName;
+  }
+  var backupName = copyTab(data.sheet, 'Invitees backup ' + stamp);
+  var oldBidsName = copyTab(getSheet_(SHEET_BIDS), 'Bids ' + stamp.slice(0, 10) + ' ' + (cfg.pieceTitle || 'round').slice(0, 40));
+
+  // Only the paused people (and the "not this round" people) are changed.
+  var toReturning = pause.concat(again);
+  var cols = {};
+  ROUND_COLUMNS.forEach(function (n) { cols[n] = ensureColumn_(data.sheet, n); });
+  toReturning.concat(stay).forEach(function (r) {
+    setCell_(data.sheet, r.row, data.cols.status, 'returning');
+    setCell_(data.sheet, r.row, data.cols.sent, '');
+    ROUND_COLUMNS.forEach(function (n) { setCell_(data.sheet, r.row, cols[n], ''); });
+  });
+
+  var bidsSheet = getSheet_(SHEET_BIDS);
+  var last = bidsSheet.getLastRow();
+  if (last > 1) bidsSheet.getRange(2, 1, last - 1, 5).clearContent();
+  writeConfigValue_('winner_emailed', '', true);
+  writeConfigValue_('round_started', iso_(Date.now()), true);
+  SpreadsheetApp.flush();
+  clearStateCache_();
+
+  ui.alert(title,
+    toReturning.length + ' people are paused as "returning". Nothing else in the Invitees tab was changed.\n\n' +
+    'Backups: "' + backupName + '" and "' + oldBidsName + '".\n\n' +
+    'Next: update piece_title, description, closing_time and status in Config for the new piece, then use Invitations > Ask previous participants.',
+    ui.ButtonSet.OK);
+}
+
+/* ---- Menu: Ask previous participants ---- */
+
+function askPreviousParticipants() {
+  var title = 'Ask previous participants';
+  var ui = SpreadsheetApp.getUi();
+  var cfg = readConfig_();
+  if (!cfg.baseUrl) {
+    ui.alert(title, 'Please fill in page_base_url in Config first. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+  var data = readInvitees_();
+  var extra = readExtraCols_(data.sheet, ['asked']);
+  var waiting = data.rows.filter(function (r) {
+    return r.status === 'returning' && r.code && r.email && r.first;
+  });
+  var notAsked = waiting.filter(function (r) { return !extra[r.row].asked; });
+  var asked = waiting.filter(function (r) { return !!extra[r.row].asked; });
+  if (!waiting.length) {
+    ui.alert(title, 'Nobody is waiting for an answer. People become "returning" when you use Invitations > Start new round.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var testAddress = Session.getEffectiveUser().getEmail() || Session.getActiveUser().getEmail();
+  if (cfg.testMode && !testAddress) {
+    ui.alert(title, 'Test mode is on, but your own email address could not be found. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+  var choice = ui.alert(title,
+    'People waiting for an answer: ' + waiting.length + '\n' +
+    'Not asked yet: ' + notAsked.length + '\n' +
+    'Asked, no answer yet: ' + asked.length + '\n\n' +
+    'YES: ask the ' + notAsked.length + ' who have not been asked yet.\n' +
+    'NO: send a gentle nudge to the ' + asked.length + ' who have not answered.\n' +
+    'CANCEL: send nothing.' +
+    (cfg.testMode ? '\n\nTest mode is ON: the emails go to ' + testAddress + ' only, nobody else receives anything.' : ''),
+    ui.ButtonSet.YES_NO_CANCEL);
+  if (choice !== ui.Button.YES && choice !== ui.Button.NO) return;
+  var nudge = choice === ui.Button.NO;
+  var todo = nudge ? asked : notAsked;
+  if (!todo.length) {
+    ui.alert(title, 'Nobody is left in that group. Nothing was sent.', ui.ButtonSet.OK);
+    return;
+  }
+  var quota = MailApp.getRemainingDailyQuota();
+  if (quota < todo.length) {
+    ui.alert(title, 'Only ' + quota + ' email(s) can be sent today, but ' + todo.length + ' are waiting. Nothing was sent. Try again tomorrow.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var askedCol = cfg.testMode ? -1 : ensureColumn_(data.sheet, 'asked');
+  var origin = originOf_(cfg);
+  var sent = 0;
+  for (var i = 0; i < todo.length; i++) {
+    if (MailApp.getRemainingDailyQuota() < 1) break;
+    var p = todo[i];
+    var o = {
+      subject: nudge ? NUDGE_SUBJECT : ASK_SUBJECT,
+      label: nudge ? NUDGE_LABEL : ASK_LABEL,
+      heading: nudge ? NUDGE_HEADING : ASK_HEADING,
+      intro: nudge ? NUDGE_INTRO : ASK_INTRO,
+      piece: '',
+      facts: [],
+      paras: ASK_PARAS,
+      button: { text: ASK_BUTTON, link: origin + '/join-round.html?code=' + encodeURIComponent(p.code), note: ASK_BUTTON_NOTE, label: 'YOUR PERSONAL LINK' },
+      sections: [],
+      closing: WINNER_QUESTIONS,
+      footer: ASK_FOOTER,
+      preview: 'Would you like to be invited to the next round of bidding?'
+    };
+    var subject = o.subject;
+    var body = buildNoticePlain_(p.first, o);
+    var testNote = '';
+    if (cfg.testMode) {
+      subject = '[TEST] ' + subject;
+      testNote = 'TEST MODE. In the real round this would go to: ' + p.email;
+      body = testNote + '\n\n' + body;
+    }
+    MailApp.sendEmail({
+      to: cfg.testMode ? testAddress : p.email,
+      subject: subject,
+      body: body,
+      htmlBody: buildNoticeHtml_(cfg, p.first, o, testNote),
+      name: 'Enperfeitas Studio'
+    });
+    if (!cfg.testMode) setCell_(data.sheet, p.row, askedCol, iso_(Date.now()));
+    sent++;
+  }
+  ui.alert(title,
+    sent + ' email(s) sent' + (cfg.testMode ? ' to ' + testAddress + ' (test mode, "asked" cells left empty).' : '. The time is saved in the "asked" column. Answers appear in the "status" column as people respond: approved (yes), declined (not this round) or unsubscribed (remove me).'),
+    ui.ButtonSet.OK);
 }
 
 /* ------------------------------------------------------------------ */
@@ -1258,6 +1887,7 @@ function createTabs() {
     ['page_base_url', 'https://enperfeitas.com/bidding.html'],
     ['reply_by', ''],
     ['payment_link', ''],
+    ['payment_link_no_shipping', ''],
     ['photo_prefix', 'beige-jeand-de-g'],
     ['photo_count', 4],
     ['photo_alt', 'Beige linen book with a mustard leather spine'],
