@@ -192,7 +192,7 @@ The menu follows the order of a round, top to bottom.
 | Send payment details | When the winner replies: shipping cost and payment link, or the collection version. |
 | Send dispatch email | When the piece is posted: tracking details. |
 | Start new round | After a round is finished, before the next one. |
-| Ask previous participants | Asks last round's people if they want to join the next one. |
+| Ask previous participants | Asks last round's people if they want to join the next one. Only people who ticked "Staying in touch" on the sign-up form are asked; the others are skipped and left as they are. |
 | Reset test bids | Only while testing. |
 | Create Bids and Config tabs | First time only. |
 

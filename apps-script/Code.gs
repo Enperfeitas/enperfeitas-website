@@ -45,6 +45,7 @@ var STATUS = {
 var COL = {
   REMINDED: 'reminded',
   ASKED: 'asked',
+  STAY: 'staying in touch',   // a Form question, read only (never added or cleared by the script)
   ANSWERED: 'answered',
   DELIVERY_NOTE: 'delivery note',
   PAYMENT_REQUESTED: 'payment requested',
@@ -1636,14 +1637,22 @@ function askPreviousParticipants() {
       return;
     }
     var data = readInvitees_();
-    var extras = readExtraCols_(data.sheet, [COL.ASKED]);
-    var waiting = data.rows.filter(function (r) {
+    var extras = readExtraCols_(data.sheet, [COL.ASKED, COL.STAY]);
+    // Only people who ticked "Staying in touch" on the sign-up form are asked.
+    var stays = function (r) {
+      var v = String(extras[r.row][COL.STAY] || '').trim().toLowerCase();
+      return v !== '' && ['no', 'false', 'unticked', 'x'].indexOf(v) === -1;
+    };
+    var returning = data.rows.filter(function (r) {
       return r.status === STATUS.RETURNING && r.code && r.email && r.first;
     });
+    var waiting = returning.filter(stays);
+    var skipped = returning.length - waiting.length;
     var notAsked = waiting.filter(function (r) { return !extras[r.row][COL.ASKED]; });
     var asked = waiting.filter(function (r) { return !!extras[r.row][COL.ASKED]; });
     if (!waiting.length) {
-      ui.alert(title, 'Nobody is waiting for an answer. People become "returning" when you use Invitations > Start new round.', ui.ButtonSet.OK);
+      ui.alert(title, 'Nobody is waiting for an answer. People become "returning" when you use Invitations > Start new round, and only those who ticked "Staying in touch" are asked.' +
+        (skipped ? '\n\nReturning people skipped because they did not tick "Staying in touch": ' + skipped : ''), ui.ButtonSet.OK);
       return;
     }
     var testAddress = resolveTestAddress_(ui, title, cfg);
@@ -1652,7 +1661,8 @@ function askPreviousParticipants() {
     var choice = ui.alert(title,
       'People waiting for an answer: ' + waiting.length + '\n' +
       'Not asked yet: ' + notAsked.length + '\n' +
-      'Asked, no answer yet: ' + asked.length + '\n\n' +
+      'Asked, no answer yet: ' + asked.length + '\n' +
+      'Skipped (did not tick "Staying in touch"): ' + skipped + '\n\n' +
       'YES: ask the ' + notAsked.length + ' who have not been asked yet.\n' +
       'NO: send a gentle nudge to the ' + asked.length + ' who have not answered.\n' +
       'CANCEL: send nothing.' +
