@@ -27,10 +27,10 @@
        H1       page titles
        H2       section titles, the home statement, the big bid figures
        H3       card titles, sub-headings and prices
-       P1       normal text (18px, as on mishmash.pt)
+       P1       normal text (16px, 15px on phones)
        P2       secondary text: notes, descriptions on cards, small print
        Caption  the smallest print
-       UI       buttons and the menu (16px)
+       UI       buttons, the menu, header and footer (14px, 13px on phones)
 
      Exceptions, on purpose (not on the scale):
        - the big photo headlines (home .hv-hero h1, .hero-cover-content h1)
