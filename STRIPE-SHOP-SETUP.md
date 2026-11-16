@@ -1,35 +1,31 @@
-# Turning on the shop
+# Shop & digital delivery
 
-The Shop page (`website/shop.html`) is built and live, but every "Buy now" button currently just opens an email instead of taking a payment, because it needs a real Stripe Payment Link and none exist yet. This is deliberate: you can turn on real checkout for one product at a time, whenever you're ready, without touching any code.
+## The shop is live
 
-## One-time setup
+"Buy now" buttons on the Shop page are connected to real Stripe Payment Links on the correct account. If any sizes are still waiting on a link, they're listed under "Size variants still needed" below.
 
-1. Create a free [Stripe account](https://dashboard.stripe.com/register) if you don't have one yet (Swedish businesses are fully supported, payouts in SEK).
-2. In the Stripe Dashboard, turn on **Stripe Tax** if you want it to calculate Swedish VAT (25%) automatically, optional, but saves you doing it by hand.
+## Digital tutorials
 
-## Per product: create a Payment Link
+Stripe Payment Links take the payment but do not deliver the file. After each sale Stripe notifies you, and you email the PDF to the buyer.
 
-For each product below, in the Stripe Dashboard go to **Payment links → Create payment link**, add the product with its price, and. This is the part that makes "days people can buy" work, set **Limit the number of payments** to your stock count (e.g. 1 for a one-off, or however many you have on hand). The link automatically stops accepting orders once it sells out, and you can deactivate it manually at any time from the Payment Links list, whether or not it's sold out.
+The PDFs are NOT stored in this repository: it is public, so anything in it can be downloaded without paying. `.gitignore` blocks `downloads/` and `*.pdf`. Keep the master copies outside the repository (for example in `Documents\Enperfeitas-private-downloads\`).
 
-For the Spacers and Corner Cutting Jig, which come in several sizes, add each size as its own price on the same Payment Link, Stripe will show a dropdown at checkout so the buyer picks the size themselves.
+Each tutorial also has a hidden thank-you page. It is optional: if you set a Payment Link to redirect there (**Payment links**, open the link, **Edit**, **After payment**, **Don't show confirmation page**), the buyer sees "This file is still being added" and your email address, because there is no file to download. If you do not use the redirect, the buyer sees Stripe's own confirmation page. Either way you send the PDF by email.
 
-Once a link is created, copy its URL and send it to me (or paste it directly into `build.py`, in the `PRODUCTS` list, as that product's `"stripe_link"` value, then run `python3 build.py` again). The button switches from emailing you to taking real payment immediately, no other changes needed.
+| Product | Optional redirect page |
+|---|---|
+| Punching Cradle Tutorial (DIY) | `https://enperfeitas.com/download-tutorial-punching-cradle.html` |
+| Bookcloth Tutorial (DIY) | `https://enperfeitas.com/download-tutorial-bookcloth.html` |
+| Concertina (Accordion) Bookbinding Tutorial | `https://enperfeitas.com/download-tutorial-concertina.html` |
+| Single-Case Binding Tutorial | `https://enperfeitas.com/download-tutorial-singlecase.html` |
 
-## Products to set up
+**Why the PDFs are kept out of the repository:** a public GitHub repository, and everything in its history, can be downloaded by anyone. A paid file placed there is free to anyone who guesses or finds its name. If real access control is ever needed, use a delivery tool (such as SendOwl) or private storage with expiring links.
 
-| Product | Price | Notes |
-|---|---|---|
-| Punching Cradle | 550 kr | Physical, set your real stock count as the payment limit. |
-| Bookbinding Spacers (Acrylic) | From 75 kr | Physical, set your real stock count as the payment limit. |
-| Corner Cutting Jig | From 90 kr | Physical, set your real stock count as the payment limit. |
-| Punching Cradle Tutorial (DIY) | 90 kr | Digital, email the file to the buyer after purchase (Stripe doesn't deliver it for you). |
-| Bookcloth Tutorial (DIY) | 90 kr | Digital, email the file to the buyer after purchase (Stripe doesn't deliver it for you). |
-| Concertina (Accordion) Bookbinding Tutorial | 90 kr | Digital, email the file to the buyer after purchase (Stripe doesn't deliver it for you). |
-| Single-Case Binding Tutorial | 90 kr | Digital, email the file to the buyer after purchase (Stripe doesn't deliver it for you). |
+## Size variants
 
-## Digital delivery
+A single Payment Link cannot show a dropdown where each choice has a different price. What Stripe can do: (a) one link per size, so every price is exact; or (b) one link with a "Dropdown" custom field (**Add custom fields**), which only records the choice and does not change the price, so a pricier size needs a manual follow-up. Use (b) only if every size costs the same.
 
-Stripe Payment Links take the payment but won't email the tutorial file itself, after each digital sale, Stripe will notify you, and you send the PDF/video over email. If this becomes a hassle once sales pick up, Stripe supports attaching a downloadable file directly to a Payment Link so delivery happens automatically, ask me to set that up when you're ready.
+Right now: the Spacers and the Corner Cutting Jig both use (b) for the single pieces (one link, size chosen at Stripe checkout), plus a separate link for the complete set (all 6 spacers, or all three jig sizes).
 
 ## Photos still needed
 

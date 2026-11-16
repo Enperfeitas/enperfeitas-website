@@ -1861,13 +1861,11 @@ PRODUCTS = [
         # it falls back to a mailto prefilled with that size, so nothing is
         # ever a dead end -- see shop_card().
         "variant_options": [
-            {"label": "7mm", "stripe_link": "https://buy.stripe.com/28E28rccecA2dvef1n14401"},
-            {"label": "10mm", "stripe_link": "https://buy.stripe.com/dRm7sL0twgQiezig5r14402"},
-            {"label": "15mm", "stripe_link": "https://buy.stripe.com/cNiaEX3FI9nQezif1n14403"},
-            {"label": "20mm", "stripe_link": "https://buy.stripe.com/5kQ9ATccebvY1Mw3iF14404"},
-            {"label": "25mm", "stripe_link": "https://buy.stripe.com/dRm7sLekmbvY4YI5qN14405"},
-            {"label": "90° L-shape", "stripe_link": "https://buy.stripe.com/3cI00jekmdE676Q7yV14406"},
-            {"label": "complete set of 6", "stripe_link": "https://buy.stripe.com/cNidR92BEbvYezi3iF1440f"},
+            # One link for a single spacer: the size (7, 10, 15, 20, 25mm or
+            # the 90 degree L-shape) is chosen in a dropdown inside Stripe's own
+            # checkout, since every single spacer costs the same.
+            {"label": "Single spacer (choose the size at checkout)", "stripe_link": "https://buy.stripe.com/28E28rccecA2dvef1n14401"},
+            {"label": "Complete set of 6", "stripe_link": "https://buy.stripe.com/cNidR92BEbvYezi3iF1440f"},
         ],
     },
     {
@@ -1878,12 +1876,12 @@ PRODUCTS = [
         "desc": "A 3D-printed mitring tool for precise 45&deg; cuts on cover turn-ins. Available in 2mm, 2.5mm, 3mm, or all three sizes.",
         "image": "shop-corner-jig.webp",
         "source": "http://static1.squarespace.com/static/6287cba0410c800d0ff1f2b2/6288d8c4ef40836604a51764/63e9328ae785253f65371480/1676227224944/Enperfeitas+Starting+Kit-4.jpg?format=1500w",
-        "stripe_link": "https://buy.stripe.com/5kQcN5a462ZsfDmaL714408",
+        "stripe_link": "https://buy.stripe.com/aFa5kD2BE0Rkcra4mJ14407",
         "variant_options": [
-            {"label": "2mm", "stripe_link": "https://buy.stripe.com/aFa5kD2BE0Rkcra4mJ14407"},
-            {"label": "2.5mm", "stripe_link": "https://buy.stripe.com/5kQcN5a462ZsfDmaL714408"},
-            {"label": "3mm", "stripe_link": "https://buy.stripe.com/bJe9AT5NQ6bEgHq1ax14409"},
-            {"label": "all three sizes", "stripe_link": "https://buy.stripe.com/28E6oH3FI1Vo9eYcTf1440a"},
+            # One link for a single jig: 2mm, 2.5mm or 3mm is chosen in a dropdown
+            # inside Stripe's own checkout, since every single jig costs the same.
+            {"label": "Single jig (choose the size at checkout)", "stripe_link": "https://buy.stripe.com/aFa5kD2BE0Rkcra4mJ14407"},
+            {"label": "All three sizes", "stripe_link": "https://buy.stripe.com/28E6oH3FI1Vo9eYcTf1440a"},
         ],
     },
     {
@@ -2819,47 +2817,29 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
             "\"Size variants still needed\" below.\n\n"
         )
     f.write(
-        "## Turn on automatic digital delivery\n\n"
-        "Each digital tutorial has its own \"thank you\" page on the site, ready to receive a "
-        "buyer the moment they pay. To connect it: in the Stripe Dashboard, go to **Payment "
-        "links**, open that product's link, click **Edit**, scroll to **After payment**, choose "
-        "**Don't show confirmation page**, and paste in that product's URL below. Repeat for "
-        "all four, once set, buyers land straight on their download page after paying, no "
-        "action needed from you per sale.\n\n"
-        "| Product | Redirect this Payment Link to |\n|---|---|\n"
+        "## Digital tutorials\n\n"
+        "Stripe Payment Links take the payment but do not deliver the file. After each sale "
+        "Stripe notifies you, and you email the PDF to the buyer.\n\n"
+        "The PDFs are NOT stored in this repository: it is public, so anything in it can be "
+        "downloaded without paying. `.gitignore` blocks `downloads/` and `*.pdf`. Keep the "
+        "master copies outside the repository (for example in "
+        "`Documents\\Enperfeitas-private-downloads\\`).\n\n"
+        "Each tutorial also has a hidden thank-you page. It is optional: if you set a Payment "
+        "Link to redirect there (**Payment links**, open the link, **Edit**, **After payment**, "
+        "**Don't show confirmation page**), the buyer sees \"This file is still being added\" "
+        "and your email address, because there is no file to download. If you do not use the "
+        "redirect, the buyer sees Stripe's own confirmation page. Either way you send the PDF "
+        "by email.\n\n"
+        "| Product | Optional redirect page |\n|---|---|\n"
     )
     for slug, name, ext, page_filename in DOWNLOAD_MANIFEST:
         f.write(f"| {name} | `https://enperfeitas.com/{page_filename}` |\n")
 
-    _missing_downloads = [
-        (slug, name, ext, page_filename) for (slug, name, ext, page_filename) in DOWNLOAD_MANIFEST
-        if not os.path.exists(os.path.join(DIST, "downloads", f"{slug}.{ext}"))
-    ]
-    if _missing_downloads:
-        f.write(
-            "\n## Files still needed\n\n"
-            "Each download page is built but empty until the real file is in place, until then, "
-            "buyers see a \"still being added, email us\" message instead of a broken link, so "
-            "nothing is broken in the meantime. Send these to me (or drop them yourself into "
-            "`website/downloads/`, named exactly as below) and I'll wire them in:\n\n"
-            "| Product | Save as | Type |\n|---|---|---|\n"
-        )
-        for slug, name, ext, page_filename in _missing_downloads:
-            kind = "Video" if ext in ("mp4", "mov") else "PDF"
-            f.write(f"| {name} | `downloads/{slug}.{ext}` | {kind} |\n")
-        f.write(
-            "\nIf one of these is actually a video already hosted somewhere (YouTube, Vimeo, "
-            "Google Drive), send me that link instead of the file itself, large video files "
-            "aren't a great fit for the GitHub repo, and the download page can point straight at "
-            "it instead.\n"
-        )
-    else:
-        f.write("\n## Files\n\nAll four tutorial files are in place. Nothing more to do here.\n")
     f.write(
-        "\n**Note on privacy:** these download pages aren't password-protected or checked against "
-        "an actual Stripe payment, anyone with the direct link could open one. For 90 kr "
-        "tutorials this is a common, low-risk trade-off among small shops; if that ever matters "
-        "more, a paid delivery tool (like SendOwl) can add real access control later.\n\n"
+        "\n**Why the PDFs are kept out of the repository:** a public GitHub repository, and "
+        "everything in its history, can be downloaded by anyone. A paid file placed there is "
+        "free to anyone who guesses or finds its name. If real access control is ever needed, "
+        "use a delivery tool (such as SendOwl) or private storage with expiring links.\n\n"
     )
     if SHOP_PAUSED:
         f.write(
@@ -2891,9 +2871,15 @@ with open(os.path.join(os.path.dirname(DIST), "STRIPE-SHOP-SETUP.md"), "w", enco
             f.write("\n")
         else:
             f.write(
-                "## Size variants\n\nEvery size of Spacers and Corner Cutting Jig has its own "
-                "Payment Link. The dropdown on the Shop page charges the right price automatically "
-                "for every option. Nothing more to do here.\n\n"
+                "## Size variants\n\n"
+                "A single Payment Link cannot show a dropdown where each choice has a different "
+                "price. What Stripe can do: (a) one link per size, so every price is exact; or (b) "
+                "one link with a \"Dropdown\" custom field (**Add custom fields**), which only "
+                "records the choice and does not change the price, so a pricier size needs a "
+                "manual follow-up. Use (b) only if every size costs the same.\n\n"
+                "Right now: the Spacers and the Corner Cutting Jig both use (b) for the single "
+                "pieces (one link, size chosen at Stripe checkout), plus a separate link for the "
+                "complete set (all 6 spacers, or all three jig sizes).\n\n"
             )
     f.write(
         "## Photos still needed\n\n"
