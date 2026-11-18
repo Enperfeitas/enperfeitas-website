@@ -2042,7 +2042,7 @@ body = f"""
 
 <section>
   <div class="wrap" style="text-align:center;max-width:720px;">
-    <p style="color:var(--muted);font-size:var(--fs-p2);">Questions before you buy? <a href="mailto:info@enperfeitas.com">Get in touch</a>. See also <a href="shipping-info.html">Shipping Info</a> and <a href="refund-policy.html">Refunds and Returns</a>.</p>
+    <p style="color:var(--muted);font-size:var(--fs-p2);">Prices include VAT. Shipping is added at checkout. Questions before you buy? <a href="mailto:info@enperfeitas.com">Get in touch</a>. See also <a href="shipping-info.html">Shipping Info</a> and <a href="refund-policy.html">Refunds and Returns</a>.</p>
   </div>
 </section>
 """
@@ -2691,18 +2691,42 @@ page("privacy-policy.html", "Privacy Policy | Enperfeitas Studio", "Enperfeitas 
 # ---------------------------------------------------------------- REFUND POLICY
 body = f"""
 <section class="page-header wrap">
-  <h1>Refund Policy</h1>
+  <h1>Refunds and Returns</h1>
+  <p>Last updated: November 18, 2026</p>
 </section>
 <section>
-  <div class="wrap">
-    <h2>Return process</h2>
-    <p>Enperfeitas offers a 14-day return policy from the day of reception, for unused items in original condition. Contact <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a> with your name and order number or proof of purchase to start a return. Return shipping costs are the buyer's responsibility, except for damaged or faulty items. <strong>Items sent back without first requesting a return will not be accepted.</strong></p>
-    <h2>Damaged or defective items</h2>
-    <p>Products that arrive defective, damaged, or incorrect should be reported immediately to <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a> for evaluation and resolution.</p>
-    <h2>Non-returnable items</h2>
-    <p>Custom or personalised items, and discounted merchandise, are excluded from returns.</p>
+  <div class="wrap" style="max-width:720px;">
+    <h2>Your right to change your mind: 14 days</h2>
+    <p>If you are a consumer and buy from us online, you have 14 days to withdraw from your purchase without giving a reason. For goods, the 14 days start the day you receive the goods (or the last item, if you ordered several in one order).</p>
+    <p>To withdraw, tell us clearly by email to <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a>, with your name and order details. You can use the form at the bottom of this page, but you do not have to. Send the goods back within 14 days of telling us.</p>
+    <h2>Returning goods</h2>
+    <p>You pay the cost of sending the goods back. Please pack them well. You may open and try the goods as you would in a shop, but you can be asked to cover any loss in value caused by handling beyond that. Please return them in a condition close to how you received them.</p>
+    <h2>Your refund</h2>
+    <p>We refund the price you paid, including the standard delivery cost you paid on the original order, within 14 days of receiving your withdrawal message. We may wait until we have the goods back or you have shown that you sent them. The refund goes to the payment method you used. If you chose a more expensive delivery than our standard option, the extra cost is not refunded.</p>
+    <h2>What cannot be returned</h2>
+    <ul>
+      <li><strong>Custom-made or personalised items</strong>, such as bespoke books and boxes made to your specifications. These are exempt from the right of withdrawal. Your rights if something is wrong with the work are covered under <em>Faulty or damaged items</em> below.</li>
+      <li><strong>Digital downloads</strong> (PDF and video guides) once delivery has started, when you have agreed at checkout to immediate delivery and accepted that this ends your right of withdrawal. If you did not give that agreement, the 14 days apply as usual.</li>
+      <li><strong>Workshops on a fixed date</strong> are leisure activities booked for a specific date, so the 14-day right does not apply. Instead, our cancellation terms apply: see the workshop pages.</li>
+    </ul>
+    <h2>Faulty or damaged items</h2>
+    <p>If an item is faulty, damaged or not what you ordered, contact us at <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a> as soon as you notice, with your name, order details and, if you can, a photo. You have three years to make a complaint, and a complaint made within two months of discovering the fault is always in time. We will repair or replace the item, or reduce the price or refund you if that is not possible. We pay the cost of returning a faulty item.</p>
+    <h2>Workshops and memberships</h2>
+    <p>Workshop cancellation and refund terms are shown on each workshop page. For studio memberships, if you withdraw within 14 days of buying and have already used the studio, we refund the part you have not used.</p>
+    <h2>Disputes</h2>
+    <p>If we cannot agree, you can take the matter to the Swedish National Board for Consumer Disputes (Allm&auml;nna reklamationsn&auml;mnden), <a href="https://www.arn.se" target="_blank" rel="noopener">arn.se</a>. Consumer advice is available from Konsumentverket and the municipal consumer advisers.</p>
     <h2>Contact</h2>
-    <p>All return inquiries: <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a>, with your name and order number or proof of purchase. Return shipping instructions are provided only after a request is approved.</p>
+    <p>Enperfeitas Studio, Gudmundr&aring;gatan 10, V&auml;llingby, Sweden. Organisation number SE920423738301. Email <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a>.</p>
+    <h2>Withdrawal form</h2>
+    <p>Copy this into an email to <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a> if you wish to withdraw:</p>
+    <div style="border:1px solid var(--line);border-radius:10px;padding:16px 20px;background:#fafafa;">
+      <p style="margin:0 0 8px;">I hereby give notice that I withdraw from my contract of sale of the following goods:</p>
+      <p style="margin:0 0 8px;">Goods: ______________________</p>
+      <p style="margin:0 0 8px;">Ordered on / received on: ______________________</p>
+      <p style="margin:0 0 8px;">Name: ______________________</p>
+      <p style="margin:0 0 8px;">Address: ______________________</p>
+      <p style="margin:0;">Date: ______________________</p>
+    </div>
   </div>
 </section>
 """
@@ -2734,10 +2758,35 @@ page("shipping-info.html", "Shipping Info | Enperfeitas Studio", "Enperfeitas St
 body = f"""
 <section class="page-header wrap">
   <h1>Terms of Service</h1>
+  <p>Last updated: November 18, 2026</p>
 </section>
 <section>
-  <div class="wrap" style="text-align:center;">
-    <p>If you have any specific questions regarding our terms of service, please state them carefully in an email to <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a>.</p>
+  <div class="wrap" style="max-width:720px;">
+    <p>These terms apply when you buy from Enperfeitas Studio online. They do not limit your rights as a consumer under Swedish law.</p>
+    <h2>Who we are</h2>
+    <p>Enperfeitas Studio, Gudmundr&aring;gatan 10, V&auml;llingby, Sweden. Organisation number SE920423738301. Email <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a>.</p>
+    <h2>Prices and payment</h2>
+    <p>Prices are in Swedish kronor (SEK) and include VAT (moms) for consumers. Shipping costs are added at checkout. Payment is handled by Stripe. We do not see or store your card details. Your purchase is confirmed when payment is completed and you receive a confirmation email.</p>
+    <h2>Delivery</h2>
+    <p>Delivery times, destinations and costs are on the <a href="shipping-info.html">Shipping Info</a> page. Digital guides are sent to you by email after purchase.</p>
+    <h2>Right of withdrawal</h2>
+    <p>Consumers have 14 days to withdraw from an online purchase without giving a reason. Custom-made items, digital downloads that have been delivered with your agreement, and workshops on a fixed date are exceptions. Everything you need to know, including how to withdraw and a withdrawal form, is on the <a href="refund-policy.html">Refunds and Returns</a> page.</p>
+    <h2>Faulty goods and complaints</h2>
+    <p>Goods must match what we have described. If something is faulty, you have three years to make a complaint, and a complaint made within two months of finding the fault is always in time. See <a href="refund-policy.html">Refunds and Returns</a> for how to contact us and what we do.</p>
+    <h2>Bespoke work</h2>
+    <p>Bespoke books and boxes are made to your specifications under a written agreement that sets out the design, price, deposit and delivery time. Those terms apply together with these terms. Your rights as a consumer, including your rights if the finished work is faulty, remain.</p>
+    <h2>Workshops</h2>
+    <p>Workshop booking and cancellation terms are shown on each workshop page. We may cancel a workshop because of illness or too few participants, and if we do, you receive a full refund.</p>
+    <h2>Bidding rounds</h2>
+    <p>Artisan Edition pieces are offered in invitation-only bidding rounds. The rules for each round are shown on the <a href="bidding.html">bidding page</a>.</p>
+    <h2>Guides, tools and content</h2>
+    <p>Digital guides and the free tools are for your personal use. Please do not copy, resell or share the guides. The text, images and designs on this website belong to Enperfeitas Studio. The free tools are offered as they are, without any guarantee that they suit your purpose.</p>
+    <h2>Personal data</h2>
+    <p>How we handle your personal data is described in our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+    <h2>Disputes and applicable law</h2>
+    <p>Swedish law applies. If you are a consumer in another country, the mandatory consumer protection rules in the country where you live still apply. If we cannot resolve a complaint, you can take it to the Swedish National Board for Consumer Disputes (Allm&auml;nna reklamationsn&auml;mnden), <a href="https://www.arn.se" target="_blank" rel="noopener">arn.se</a>.</p>
+    <h2>Questions</h2>
+    <p>Write to us at <a href="mailto:info@enperfeitas.com">info@enperfeitas.com</a>.</p>
   </div>
 </section>
 """
