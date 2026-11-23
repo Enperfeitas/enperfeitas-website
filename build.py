@@ -7,7 +7,9 @@ import json
 import html
 import urllib.parse
 
-DIST = "/home/claude/enperfeitas/dist"
+# Output folder. Set ENPERFEITAS_DIST to build somewhere else (for example a scratch folder, to compare first).
+DIST = os.environ.get("ENPERFEITAS_DIST") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "dist")
+os.makedirs(DIST, exist_ok=True)
 
 # ---------------------------------------------------------------- STRUCTURED DATA
 # Small blocks of JSON-LD that tell Google what the pages are (the business, the
@@ -2602,7 +2604,12 @@ privacy_sections = accordion([
      "policies; and fulfil and manage your orders, payments, returns, and exchanges. We "
      "may also process information to protect someone&rsquo;s vital interests (for example, "
      "to prevent harm). We only process your information for other purposes with your "
-     "prior consent.</p>"),
+     "prior consent.</p>"
+     "<p>Some of this is automatic. When you buy a PDF tutorial, we email the file to the "
+     "address you paid with. After you attend a workshop, we send you one follow-up email "
+     "about that workshop. These are service emails, not marketing, and we do not add you "
+     "to a mailing list because of them. Your enquiries, bookings and payments are also "
+     "recorded in our own records so that we can run and bookkeep the studio.</p>"),
     ("3. What legal bases do we rely on?",
      "<p>If you are located in the EU or UK, we rely on one or more of: your "
      "<strong>consent</strong> (which you can withdraw at any time); <strong>performance "
@@ -2614,17 +2621,19 @@ privacy_sections = accordion([
      "statement, or a court order) we may process information without consent, as "
      "allowed under Canadian law.</p>"),
     ("4. When and with whom do we share your information?",
+     "<p>We use service providers to run the studio, and they handle your information only "
+     "for that purpose: <strong>Stripe</strong> (card payments), <strong>Understory</strong> "
+     "(workshop bookings and payments), <strong>Google</strong> (email, documents and "
+     "spreadsheets, where enquiries and orders are kept) and <strong>Bokio</strong> "
+     "(bookkeeping). We do not sell your information.</p>"
      "<p>We may share your information during a business transfer, for example, in "
      "connection with a merger, sale of company assets, financing, or acquisition of "
      "all or part of the business.</p>"),
     ("5. Do we use cookies and other tracking technologies?",
      "<p>We may use cookies and similar technologies to keep our Services secure, "
-     "remember your preferences, and support basic site functions. We also use "
-     "<strong>Google Analytics</strong> to understand how the Services are used. You "
-     "can opt out at <a href=\"https://tools.google.com/dlpage/gaoptout\" target=\"_blank\" "
-     "rel=\"noopener\">Google&rsquo;s opt-out page</a>. Third parties and service providers "
-     "may also use tracking technologies on our Services for analytics and "
-     "advertising.</p>"),
+     "remember your preferences, and support basic site functions. Third parties and "
+     "service providers may also use tracking technologies on our Services for "
+     "analytics and advertising.</p>"),
     ("6. How long do we keep your information?",
      "<p>We keep your personal information only for as long as necessary for the "
      "purposes set out in this notice, unless a longer period is required by law (for "
@@ -2674,7 +2683,7 @@ privacy_sections = accordion([
 body = f"""
 <section class="page-header wrap">
   <h1>Privacy Policy</h1>
-  <p>Last updated: January 18, 2026</p>
+  <p>Last updated: November 23, 2026</p>
 </section>
 <section>
   <div class="wrap" style="max-width:720px;">
