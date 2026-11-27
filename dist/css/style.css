@@ -36,7 +36,10 @@
        - the big photo headlines (home .hv-hero h1, .hero-cover-content h1)
        - the logo text, and the +/- icons on accordions
        - form fields, 16px, so iPhones do not zoom in when you tap them
-       - the Box Maker and Booklet Imposition tool controls
+       - inside the Box Maker and Booklet Imposition drawings and page
+         previews (sizes there are part of the picture)
+     The two tools' own text is put on this scale near the end of this file
+     ("Free tools: text on the website's type scale").
      ================================================================== */
   --fs-h1: clamp(2rem, 4vw, 3.2rem);
   --fs-h2: clamp(1.5rem, 2.6vw, 2rem);
@@ -1536,6 +1539,30 @@ body.hv-float .hero-cover-scrim {
   .bm-sheets { flex-wrap: wrap !important; overflow: visible !important; }
   .bm-noprint { display: none !important; }
 }
+
+/* Free tools: text on the website's type scale.
+   Box Maker and Booklet Imposition are compiled apps that set their text sizes
+   inline (font-size: 12.5px and so on). Rather than change their code, each of
+   those sizes is mapped here to the matching size on the type scale at the top
+   of this file, so the tools follow the same rules as every other page:
+     26px tool title                         -> H1 (page title)
+     15 / 14.5px panel titles                -> H3 (sub-heading)
+     13 to 10.5px text, labels, notes        -> P2 (secondary text)
+     13px tool buttons and tabs              -> UI
+     11 / 10.5px BOLD small section labels   -> Caption ("Binding", "Cut order")
+     number fields and drop-downs            -> 16px (no iPhone zoom)
+   Drawings (SVG text) and the page previews keep their own sizes.
+   If a tool is rebuilt with different sizes, add or change a line here. */
+:is(#boxmaker-root, #imposition-root) div[style*="font-size: 26px"] { font-size: var(--fs-h1) !important; line-height: 1.15; }
+:is(#boxmaker-root, #imposition-root) div:is([style*="font-size: 15px"], [style*="font-size: 14.5px"]) { font-size: var(--fs-h3) !important; line-height: var(--lh-h3); }
+:is(#boxmaker-root, #imposition-root) :not(text):not(input):not(select):not(button):is(
+  [style*="font-size: 13.5px"], [style*="font-size: 13px"], [style*="font-size: 12.5px"],
+  [style*="font-size: 12px"], [style*="font-size: 11.5px"], [style*="font-size: 11px"],
+  [style*="font-size: 10.5px"]) { font-size: var(--fs-p2) !important; }
+:is(#boxmaker-root, #imposition-root) button:is([style*="font-size: 13px"], [style*="font-size: 12.5px"], [style*="font-size: 12px"]) { font-size: var(--fs-ui) !important; }
+:is(#boxmaker-root, #imposition-root) :not(text):not(input):not(select):not(button):is(
+  [style*="font-size: 11px"], [style*="font-size: 10.5px"]):is([style*="font-weight: 700"], [style*="font-weight: bold"]) { font-size: var(--fs-cap) !important; }
+:is(#boxmaker-root, #imposition-root) :is(input:not([type=checkbox]):not([type=radio]), select, textarea) { font-size: var(--fs-input) !important; }
 
 /* Free tools: the gentle reminder card (js/support-nudge.js) that slides up
    after a print or download. */
