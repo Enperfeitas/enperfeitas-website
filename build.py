@@ -2304,29 +2304,42 @@ page("contact.html", "Contact | Enperfeitas Studio",
 
 # Pay-what-you-like support section shown at the bottom of each free tool
 # (Stripe Payment Links). {intro_task} is filled in per tool.
+# The amounts must match the Stripe links (checked 2026-11-27: 40, 100 and 250 SEK).
+# If a link's amount changes in Stripe, change it here and rebuild.
+DONATIONS = [
+    {"icon": "&#9749;", "title": "Coffee", "amount": 40, "button": "Buy me a coffee",
+     "text": "Fuel for the next tool. A small thank-you that goes a long way.",
+     "href": "https://donate.stripe.com/7sYbJ1foqcA2fDm1ax1440g", "aria": "Buy Suzete a coffee"},
+    {"icon": "&#129525;", "title": "Bookcloth for the studio", "amount": 100, "button": "Add some bookcloth",
+     "text": "Helps me stock the studio with lovely bookcloth for more books and workshops.",
+     "href": "https://donate.stripe.com/cNi7sL3FI1Vo9eYaL71440h", "aria": "Contribute bookcloth for the studio"},
+    {"icon": "&#10024;", "title": "Hot foil machine jar", "amount": 250, "button": "Fill the jar",
+     "text": "Every coin gets the studio closer to gold-stamped covers.",
+     "href": "https://donate.stripe.com/00wdR92BE57A62M7yV1440i", "aria": "Contribute to the hot foil machine saving jar"},
+]
+
+def _donation_card(d):
+    return f"""      <div class="accordion-card" style="display:flex;flex-direction:column;">
+        <h3>{d['icon']} {d['title']}</h3>
+        <p style="text-align:left;color:var(--muted);margin-bottom:22px;">{d['text']}</p>
+        <a class="btn secondary donate-link" style="margin-top:auto;" href="{d['href']}" target="_blank" rel="noopener" aria-label="{d['aria']}, {d['amount']} kronor">{d['button']}&nbsp;&middot;&nbsp;{d['amount']}&nbsp;kr</a>
+      </div>"""
+
+# The gentle reminder card (js/support-nudge.js) reads its three options from this JSON, so the
+# amounts and links are written in one place only.
+_NUDGE_JSON = json.dumps([{"label": d["button"], "amount": d["amount"], "href": d["href"]} for d in DONATIONS]).replace("<", "\\u003c")
+
 SUPPORT_SECTION = """<section class="section-tight" id="support">
   <div class="wrap">
     <h2 style="text-align:center;">Free to use. Pay if you like.</h2>
     <p style="text-align:left;max-width:620px;margin:0 auto 32px;color:var(--muted);">This tool is free, and it stays free. If it saved you {intro_task}, feel free to throw a coin in the jar, entirely up to you. Thank you!</p>
     <div class="grid-3">
-      <div class="accordion-card" style="display:flex;flex-direction:column;">
-        <h3>&#9749; Coffee</h3>
-        <p style="text-align:left;color:var(--muted);margin-bottom:22px;">Fuel for the next tool. A small thank-you that goes a long way.</p>
-        <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/7sYbJ1foqcA2fDm1ax1440g" target="_blank" rel="noopener" aria-label="Buy Suzete a coffee">Buy me a coffee</a>
-      </div>
-      <div class="accordion-card" style="display:flex;flex-direction:column;">
-        <h3>&#129525; Bookcloth for the studio</h3>
-        <p style="text-align:left;color:var(--muted);margin-bottom:22px;">Helps me stock the studio with lovely bookcloth for more books and workshops.</p>
-        <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/cNi7sL3FI1Vo9eYaL71440h" target="_blank" rel="noopener" aria-label="Contribute bookcloth for the studio">Add some bookcloth</a>
-      </div>
-      <div class="accordion-card" style="display:flex;flex-direction:column;">
-        <h3>&#10024; Hot foil machine jar</h3>
-        <p style="text-align:left;color:var(--muted);margin-bottom:22px;">Every coin gets the studio closer to gold-stamped covers.</p>
-        <a class="btn secondary" style="margin-top:auto;" href="https://donate.stripe.com/00wdR92BE57A62M7yV1440i" target="_blank" rel="noopener" aria-label="Contribute to the hot foil machine saving jar">Fill the jar</a>
-      </div>
+""" + "\n".join(_donation_card(d) for d in DONATIONS) + """
     </div>
   </div>
 </section>
+<script type="application/json" id="donate-options">""" + _NUDGE_JSON + """</script>
+<script src="js/support-nudge.js"></script>
 """
 # ---------------------------------------------------------------- BOX MAKER
 # A private studio tool (Suzete's own React component, reviewed, two real
